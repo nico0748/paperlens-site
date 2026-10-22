@@ -12,7 +12,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
         <div className="lp-hero-text">
           <p className="lp-eyebrow">{t.eyebrow}</p>
           <h1 id="hero-title" className="lp-hero-title">
-            <img src="/brand/icon-mark.svg" alt="" width={56} height={56} className="lp-hero-icon" />
+            <img src="/brand/icon-mark.png" alt="" width={56} height={56} className="lp-hero-icon" />
             {site.name}
           </h1>
           <p className="lp-hero-lead">{t.lead}</p>
