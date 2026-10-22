@@ -1,102 +1,131 @@
-type Feature = {
-  title: string;
-  body: string[];
-  tag?: string;
-  stages?: boolean;
-};
+import type { Dictionary } from "@/lib/i18n";
 
-const features: Feature[] = [
-  {
-    title: "1 文ごとの対訳",
-    tag: "対訳",
-    body: [
-      "取り込んだ PDF を 1 文ずつに分け、右側に原文と訳を並べます。",
-      "文の区切りと位置は GROBID で取ります。PDF 上の枠を押すとその文の訳へ、訳を押すと PDF のその場所へ移ります。",
-      "GROBID が無くても簡易解析で動きます。ただし精度は落ちます。",
-    ],
-  },
-  {
-    title: "訳・用語・数式を残す",
-    tag: "訳・用語・数式",
-    body: [
-      "PDF の文を選ぶと、マーカーを引いて訳や用語の説明を書けます。",
-      "数式は TeX で記録し、KaTeX で数式として表示します。",
-    ],
-  },
-  {
-    title: "テンプレートから作る読解ノート",
-    tag: "記録",
-    stages: true,
-    body: [
-      "論文を取り込むと、テンプレートから読解ノート（note.md）を作ります。",
-      "読む段階ごとに書く欄があるので、途中でやめても、どこまで分かったかがノートに残ります。",
-    ],
-  },
-  {
-    title: "Claude から使う（MCP）",
-    tag: "AI",
-    body: [
-      "MCP サーバーを登録すると、Claude Desktop や Claude Code から画面と同じ操作ができます。",
-      "全文の対訳は Claude に頼めます。翻訳 API のキーは要りません。",
-      "アプリを起動していなくても使えます。開いていれば、書き込みは画面にすぐ出ます。",
-    ],
-  },
-  {
-    title: "発表スライドと論文をつなぐ",
-    tag: "三面レイアウト",
-    body: [
-      "論文発表会のスライド（PDF か PPTX）を論文の左に並べられます。",
-      "スライドの一部を四角で囲み、論文のどの文章・図・数式が根拠なのかをつなぐと、両者が色の線で結ばれます。",
-      "表示はスライド・論文・補足情報の三面で、いつも 2 面を並べて見せます。",
-    ],
-  },
-  {
-    title: "単語帳・数式帳・グラフ",
-    tag: "リスト",
-    body: [
-      "すべての論文の用語と数式を、単語帳と数式帳として 1 つの画面で引けます。",
-      "グラフでは、論文と用語のつながりを見られます。",
-    ],
-  },
-  {
-    title: "Obsidian 互換の保管庫",
-    tag: "保管庫",
-    body: [
-      "データは保存先フォルダの普通のファイルです。データベースは使いません。",
-      "Obsidian の保管庫としてそのまま開けます。Obsidian で note.md を書き換えても、画面にすぐ反映されます。",
-    ],
-  },
-];
+type T = Dictionary["features"];
 
-const stages = ["未読", "概要把握", "精読", "検討", "まとめ済み"];
-
-export function Features() {
+/** 主な機能 3 つは、文と見本を左右に交互に並べる。残りはカードで並べる */
+export function Features({ t }: { t: T }) {
   return (
     <section id="features" className="lp-section" aria-labelledby="features-title">
       <div className="container">
-        <h2 id="features-title" className="lp-h2">できること</h2>
-        <p className="lp-section-lead">
-          読む、訳す、書き留める。この 3 つを 1 つの画面で続けられます。
-        </p>
-        <ul className="lp-features" role="list">
-          {features.map((f) => (
-            <li key={f.title} className="lp-feature">
-              {f.tag && <p className="lp-tag">{f.tag}</p>}
-              <h3 className="lp-h3">{f.title}</h3>
-              {f.body.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-              {f.stages && (
-                <ol className="lp-stages" aria-label="読解の段階">
-                  {stages.map((s) => (
-                    <li key={s}>{s}</li>
-                  ))}
-                </ol>
-              )}
+        <header className="lp-section-head">
+          <h2 id="features-title" className="lp-h2">
+            {t.title}
+          </h2>
+          <p className="lp-section-lead">{t.lead}</p>
+        </header>
+
+        <div className="lp-blocks">
+          {t.blocks.map((b, i) => (
+            <article key={b.title} className="lp-block">
+              <div className="lp-block-text">
+                <p className="lp-kicker">{b.kicker}</p>
+                <h3 className="lp-h3">{b.title}</h3>
+                {b.body.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+                {b.points.length > 0 && (
+                  <ul className="lp-points">
+                    {b.points.map((p) => (
+                      <li key={p}>{p}</li>
+                    ))}
+                  </ul>
+                )}
+                {i === 1 && (
+                  <ol className="lp-stages" aria-label={t.stagesLabel}>
+                    {t.stages.map((s) => (
+                      <li key={s}>{s}</li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+              <BlockVisual index={i} stages={t.stages} />
+            </article>
+          ))}
+        </div>
+
+        <h3 className="lp-more-title">{t.moreTitle}</h3>
+        <ul className="lp-cards" role="list">
+          {t.more.map((f) => (
+            <li key={f.title} className="lp-card">
+              <p className="lp-tag">{f.tag}</p>
+              <h4 className="lp-h4">{f.title}</h4>
+              <p>{f.body}</p>
             </li>
           ))}
         </ul>
       </div>
     </section>
+  );
+}
+
+/** 各機能の見本（飾り） */
+function BlockVisual({ index, stages }: { index: number; stages: string[] }) {
+  if (index === 0) {
+    return (
+      <div className="lp-visual" aria-hidden="true">
+        <div className="lp-pair">
+          <p className="lp-pair-en">
+            The dominant sequence transduction models are based on complex recurrent or convolutional neural networks.
+          </p>
+          <p className="lp-pair-ja" lang="ja">
+            主要な系列変換モデルは、複雑な再帰型または畳み込み型のニューラルネットワークに基づいている。
+          </p>
+        </div>
+        <div className="lp-pair on">
+          <p className="lp-pair-en">
+            We propose a new simple network architecture, the <mark>Transformer</mark>, based solely on attention mechanisms.
+          </p>
+          <p className="lp-pair-ja" lang="ja">
+            注意機構だけに基づく、新しい単純なネットワーク構造 <mark>Transformer</mark> を提案する。
+          </p>
+        </div>
+      </div>
+    );
+  }
+  if (index === 1) {
+    return (
+      <div className="lp-visual lp-visual-note" aria-hidden="true">
+        <p className="lp-note-file">note.md</p>
+        <pre className="lp-note-body">
+          <span className="md-meta">{"---\nstatus: "}</span>
+          <span className="md-value">{stages[2]}</span>
+          <span className="md-meta">{"\n---\n"}</span>
+          <span className="md-h">{"## "}</span>
+          <span className="md-h">{stages[1]}</span>
+          {"\n- Attention-only encoder–decoder\n- No recurrence, no convolution\n\n"}
+          <span className="md-h">{"## "}</span>
+          <span className="md-h">{stages[2]}</span>
+          {"\n"}
+          <span className="md-math">{"$$\\mathrm{softmax}(QK^\\top/\\sqrt{d_k})V$$"}</span>
+          {"\n- [[Scaled Dot-Product Attention]]"}
+        </pre>
+      </div>
+    );
+  }
+  return (
+    <div className="lp-visual lp-visual-link" aria-hidden="true">
+      <div className="lp-link-slide">
+        <div className="lp-mock-line lp-w60 strong" />
+        <div className="lp-link-box">
+          <div className="lp-mock-line lp-w90" />
+          <div className="lp-mock-line lp-w70" />
+        </div>
+        <div className="lp-mock-line lp-w80" />
+      </div>
+      <svg className="lp-link-line" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path d="M0 45 C 45 45, 55 62, 100 62" />
+      </svg>
+      <div className="lp-link-paper">
+        <div className="lp-mock-line lp-w70 strong" />
+        <div className="lp-mock-line lp-w100" />
+        <div className="lp-mock-line lp-w90" />
+        <div className="lp-link-target">
+          <div className="lp-mock-line lp-w100" />
+          <div className="lp-mock-line lp-w80" />
+        </div>
+        <div className="lp-mock-line lp-w100" />
+        <div className="lp-mock-line lp-w60" />
+      </div>
+    </div>
   );
 }

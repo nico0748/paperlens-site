@@ -1,32 +1,41 @@
+import { fill, type Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
+import { DownloadIcon, GitHubIcon } from "../icons";
 import { AppMock } from "./AppMock";
 
-export function Hero() {
+export function Hero({ dict }: { dict: Dictionary }) {
+  const t = dict.hero;
   return (
     <section className="lp-hero" aria-labelledby="hero-title">
+      <div className="lp-hero-glow" aria-hidden="true" />
       <div className="container lp-hero-inner">
         <div className="lp-hero-text">
-          <p className="lp-eyebrow">ローカルファーストな論文リーダー</p>
+          <p className="lp-eyebrow">{t.eyebrow}</p>
           <h1 id="hero-title" className="lp-hero-title">
-            <img src="/brand/icon-mark.svg" alt="" width={48} height={48} className="lp-hero-icon" />
+            <img src="/brand/icon-mark.svg" alt="" width={56} height={56} className="lp-hero-icon" />
             {site.name}
           </h1>
-          <p className="lp-hero-lead">
-            論文を 1 文ずつ対訳で読み、訳・用語・数式・読解メモを Markdown のノートに残せます。
-          </p>
-          <p className="lp-hero-desc">
-            PDF は手元の端末から出ません。アプリは自分の PC の中だけで動きます。
-            記録は保存先フォルダの普通のファイルなので、Obsidian の保管庫としてそのまま開けます。
-          </p>
+          <p className="lp-hero-lead">{t.lead}</p>
+          <p className="lp-hero-desc">{t.desc}</p>
           <div className="lp-cta">
-            <a href="#download" className="btn btn-primary lp-btn-lg">ダウンロード</a>
-            <a href={site.repo} className="btn btn-secondary lp-btn-lg">GitHub で見る</a>
+            <a href="#download" className="btn btn-primary btn-lg">
+              <DownloadIcon />
+              {t.download}
+            </a>
+            <a href={site.repo} className="btn btn-secondary btn-lg">
+              <GitHubIcon />
+              {t.github}
+            </a>
           </div>
-          <p className="lp-hero-note">
-            無料で使えるオープンソースです（{site.license} ライセンス）。
-          </p>
+          <dl className="lp-platforms">
+            <dt>{t.platformsLabel}</dt>
+            {dict.download.platforms.map((p) => (
+              <dd key={p.name}>{p.name}</dd>
+            ))}
+          </dl>
+          <p className="lp-hero-note">{fill(t.note, { license: site.license })}</p>
         </div>
-        <AppMock />
+        <AppMock t={dict.mock} />
       </div>
     </section>
   );

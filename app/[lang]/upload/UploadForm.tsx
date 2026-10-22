@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { formatBytes } from "@/lib/format";
+import { fill, type Locale } from "@/lib/i18n/config";
+import type { Dictionary } from "@/lib/i18n/ja";
 import { blobReader, inspectZip, type ZipSummary } from "@/lib/zip/inspect";
+import { Notice } from "@/components/Notice";
 
 type Check =
   | { state: "none" }
@@ -18,20 +21,21 @@ type Phase =
   | { state: "error"; message: string };
 
 type UploadTarget = { method: "PUT"; url: string; headers: Record<string, string> };
+type T = Dictionary["upload"];
 
-async function postJson<T>(url: string, body: unknown): Promise<T> {
+async function postJson<R>(t: T, url: string, body: unknown): Promise<R> {
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error ?? `サーバーがエラーを返しました（${res.status}）。`);
-  return data as T;
+  if (!res.ok) throw new Error(data.error ?? fill(t.serverError, { status: res.status }));
+  return data as R;
 }
 
 /** 進み具合を出すため fetch ではなく XHR で送る */
-function putWithProgress(target: UploadTarget, file: File, onProgress: (loaded: number) => void) {
+function putWithProgress(t: T, target: UploadTarget, file: File, onProgress: (loaded: number) => void) {
   return new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open(target.method, target.url);
@@ -40,7 +44,7 @@ function putWithProgress(target: UploadTarget, file: File, onProgress: (loaded: 
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) resolve();
       else {
-        let msg = `送信に失敗しました（${xhr.status}）。`;
+        let msg = fill(t.sendFailedStatus, { status: xhr.status });
         try {
           msg = JSON.parse(xhr.responseText).error ?? msg;
         } catch {
@@ -49,12 +53,12 @@ function putWithProgress(target: UploadTarget, file: File, onProgress: (loaded: 
         reject(new Error(msg));
       }
     };
-    xhr.onerror = () => reject(new Error("送信に失敗しました。通信の状態を確かめてください。"));
+    xhr.onerror = () => reject(new Error(t.sendFailed));
     xhr.send(file);
   });
 }
 
-export function UploadForm({ maxBytes }: { maxBytes: number }) {
+export function UploadForm({ maxBytes, lang, t }: { maxBytes: number; lang: Locale; t: T }) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [check, setCheck] = useState<Check>({ state: "none" });
@@ -75,11 +79,11 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
       return;
     }
     if (!/\.zip$/i.test(f.name)) {
-      setCheck({ state: "error", errors: ["拡張子が .zip のファイルを選んでください。"] });
+      setCheck({ state: "error", errors: [t.notZip] });
       return;
     }
     if (f.size > maxBytes) {
-      setCheck({ state: "error", errors: [`ファイルが大きすぎます。${formatBytes(maxBytes)} までにしてください。`] });
+      setCheck({ state: "error", errors: [fill(t.tooLarge, { max: formatBytes(maxBytes) })] });
       return;
     }
     setCheck({ state: "checking" });
@@ -94,10 +98,10 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
     const description = String(form.get("description") ?? "").trim();
 
     let fErr: string | null = null;
-    if (!file) fErr = "ZIP ファイルを選んでください。";
-    else if (check.state === "checking") fErr = "ZIP の中身を確かめています。終わるまでお待ちください。";
-    else if (check.state !== "ok") fErr = "このファイルはアップロードできません。下の理由を確かめてください。";
-    const tErr = title ? null : "題名を入力してください。";
+    if (!file) fErr = t.chooseFile;
+    else if (check.state === "checking") fErr = t.stillChecking;
+    else if (check.state !== "ok") fErr = t.cannotUpload;
+    const tErr = title ? null : t.titleRequired;
     setFileError(fErr);
     setTitleError(tErr);
     if (fErr) {
@@ -111,17 +115,17 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
 
     try {
       const f = file!;
-      const { id, upload } = await postJson<{ id: string; upload: UploadTarget }>("/api/shared/uploads", {
+      const { id, upload } = await postJson<{ id: string; upload: UploadTarget }>(t, "/api/shared/uploads", {
         size: f.size,
       });
       setPhase({ state: "uploading", loaded: 0, total: f.size });
-      await putWithProgress(upload, f, (loaded) => setPhase({ state: "uploading", loaded, total: f.size }));
+      await putWithProgress(t, upload, f, (loaded) => setPhase({ state: "uploading", loaded, total: f.size }));
       setPhase({ state: "finishing" });
-      await postJson(`/api/shared/uploads/${id}/complete`, { title, description, filename: f.name });
-      router.push("/shared");
+      await postJson(t, `/api/shared/uploads/${id}/complete`, { title, description, filename: f.name });
+      router.push(`/${lang}/shared`);
       router.refresh();
     } catch (err) {
-      setPhase({ state: "error", message: err instanceof Error ? err.message : "アップロードに失敗しました。" });
+      setPhase({ state: "error", message: err instanceof Error ? err.message : t.failed });
     }
   }
 
@@ -133,10 +137,11 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
     <form className="card stack" onSubmit={onSubmit} noValidate>
       <div className="field">
         <label htmlFor="file">
-          ZIP ファイル<span className="req">必須</span>
+          {t.fileLabel}
+          <span className="req">{t.required}</span>
         </label>
         <p id="file-hint" className="hint">
-          <code>papers/&lt;論文ID&gt;/paper.pdf</code> の形の ZIP を選んでください。{formatBytes(maxBytes)} までです。
+          {fill(t.fileHint, { max: formatBytes(maxBytes) })}
         </p>
         <input
           ref={fileRef}
@@ -155,24 +160,24 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
           </p>
         )}
         <div id="file-check" aria-live="polite">
-          {check.state === "checking" && <p className="hint">ZIP の中身を確かめています…</p>}
+          {check.state === "checking" && <p className="hint">{t.checking}</p>}
           {check.state === "error" && (
-            <div className="notice error">
-              <p>この ZIP はアップロードできません。</p>
+            <Notice kind="error" title={t.rejected}>
               <ul className="error-list">
                 {check.errors.map((m) => (
                   <li key={m}>{m}</li>
                 ))}
               </ul>
-            </div>
+            </Notice>
           )}
-          {check.state === "ok" && file && <Preview summary={check.summary} file={file} />}
+          {check.state === "ok" && file && <Preview summary={check.summary} file={file} t={t} />}
         </div>
       </div>
 
       <div className="field">
         <label htmlFor="title">
-          題名<span className="req">必須</span>
+          {t.titleLabel}
+          <span className="req">{t.required}</span>
         </label>
         <input
           ref={titleRef}
@@ -186,7 +191,7 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
           aria-invalid={titleError ? true : undefined}
         />
         <p id="title-hint" className="hint">
-          一覧に出る名前です。120 文字までです。
+          {t.titleHint}
         </p>
         {titleError && (
           <p id="title-error" className="field-error">
@@ -197,11 +202,12 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
 
       <div className="field">
         <label htmlFor="description">
-          説明<span className="opt">任意</span>
+          {t.descLabel}
+          <span className="opt">{t.optional}</span>
         </label>
         <textarea id="description" name="description" maxLength={2000} disabled={busy} aria-describedby="desc-hint" />
         <p id="desc-hint" className="hint">
-          どんな論文をまとめたものかを書きます。2000 文字までです。
+          {t.descHint}
         </p>
       </div>
 
@@ -209,39 +215,46 @@ export function UploadForm({ maxBytes }: { maxBytes: number }) {
         {phase.state === "uploading" && (
           <div className="progress">
             <label htmlFor="upload-progress">
-              送信しています… {Math.floor((phase.loaded / Math.max(phase.total, 1)) * 100)}%（
-              {formatBytes(phase.loaded)} / {formatBytes(phase.total)}）
+              {fill(t.sending, {
+                percent: Math.floor((phase.loaded / Math.max(phase.total, 1)) * 100),
+                loaded: formatBytes(phase.loaded),
+                total: formatBytes(phase.total),
+              })}
             </label>
             <progress id="upload-progress" max={phase.total} value={phase.loaded} />
           </div>
         )}
-        {phase.state === "finishing" && <p className="hint">ZIP の中身を確かめて、登録しています…</p>}
+        {phase.state === "finishing" && <p className="hint">{t.finishing}</p>}
         {phase.state === "error" && (
-          <div className="notice error" role="alert">
+          <Notice kind="error" role="alert">
             <p>{phase.message}</p>
-          </div>
+          </Notice>
         )}
       </div>
 
       <div className="form-actions">
         <button type="submit" className="btn btn-primary" disabled={busy}>
-          {busy ? "アップロードしています…" : "アップロード"}
+          {busy ? t.submitting : t.submit}
         </button>
       </div>
     </form>
   );
 }
 
-function Preview({ summary, file }: { summary: ZipSummary; file: File }) {
+function Preview({ summary, file, t }: { summary: ZipSummary; file: File; t: T }) {
   return (
     <div className="preview">
       <h3>
-        {summary.layout === "single" ? "論文フォルダ 1 本" : `論文 ${summary.papers.length} 本`}
-        {summary.hasTemplates && "（テンプレート付き）"}
+        {summary.layout === "single" ? t.previewSingle : fill(t.previewCount, { count: summary.papers.length })}
+        {summary.hasTemplates && t.previewTemplates}
       </h3>
       <p className="hint">
-        {file.name}・{formatBytes(file.size)}・ファイル {summary.fileCount} 個（展開すると{" "}
-        {formatBytes(summary.uncompressedSize)}）
+        {fill(t.previewMeta, {
+          name: file.name,
+          size: formatBytes(file.size),
+          files: summary.fileCount,
+          unpacked: formatBytes(summary.uncompressedSize),
+        })}
       </p>
       <ul>
         {summary.papers.map((p) => (
@@ -253,7 +266,7 @@ function Preview({ summary, file }: { summary: ZipSummary; file: File }) {
             ) : (
               <code>{p.id}</code>
             )}
-            <span className="hint">（{p.files.join(", ")}）</span>
+            <span className="hint"> ({p.files.join(", ")})</span>
           </li>
         ))}
       </ul>

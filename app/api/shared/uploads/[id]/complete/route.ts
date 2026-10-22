@@ -64,6 +64,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     hasTemplates: s.hasTemplates,
   };
   await store.putMeta(item);
-  revalidatePath("/shared");
+  revalidatePath("/[lang]/shared", "page");
   return Response.json({ item }, { status: 201, headers: { "Cache-Control": "no-store" } });
 }

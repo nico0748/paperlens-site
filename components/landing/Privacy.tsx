@@ -1,28 +1,40 @@
-export function Privacy() {
+import type { Dictionary } from "@/lib/i18n";
+
+/** 手元で完結すること・外へ送ることを、2 列で見比べられるようにする */
+export function Privacy({ t }: { t: Dictionary["privacy"] }) {
   return (
-    <section className="lp-section lp-section-alt" aria-labelledby="privacy-title">
-      <div className="container lp-privacy">
-        <div>
-          <h2 id="privacy-title" className="lp-h2">論文は手元から出ません</h2>
-          <p className="lp-section-lead">
-            未公開の原稿も安心して読めるよう、外へ出る通信を最小にしています。
-          </p>
-          <ul className="lp-checks">
-            <li>アプリのサーバーは自分の PC の中（127.0.0.1）だけで待ち受けます。ほかの端末からはつながりません。</li>
-            <li>PDF と記録は、選んだ保存先フォルダにだけ置きます。</li>
-            <li>文の区切りに使う GROBID は、手元の Docker で動かせます。</li>
-          </ul>
-        </div>
-        <div className="card lp-privacy-card">
-          <h3 className="lp-h3">外へ送るのは、頼んだときだけ</h3>
-          <ul>
-            <li>
-              設定で Claude の API キーを入れ、「訳す」「用語を調べる」「数式にする」を押したとき。
-              送るのは選んだ範囲と前後の本文、題名です（数式では選んだ範囲の画像も）。PDF 全体は送りません。
-            </li>
-            <li>URL（arXiv など）を指定して論文を取り込んだとき。</li>
-            <li>GROBID を別のホストに置いたとき。</li>
-          </ul>
+    <section id="privacy" className="lp-section lp-section-alt" aria-labelledby="privacy-title">
+      <div className="container">
+        <header className="lp-section-head">
+          <h2 id="privacy-title" className="lp-h2">
+            {t.title}
+          </h2>
+          <p className="lp-section-lead">{t.lead}</p>
+        </header>
+        <div className="lp-compare">
+          <section className="lp-compare-col lp-compare-local" aria-labelledby="privacy-local">
+            <p className="lp-tag lp-tag-accent">{t.local.tag}</p>
+            <h3 id="privacy-local" className="lp-h3">
+              {t.local.title}
+            </h3>
+            <ul className="lp-checks">
+              {t.local.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+          <section className="lp-compare-col" aria-labelledby="privacy-remote">
+            <p className="lp-tag">{t.remote.tag}</p>
+            <h3 id="privacy-remote" className="lp-h3">
+              {t.remote.title}
+            </h3>
+            <p className="lp-muted">{t.remote.lead}</p>
+            <ul className="lp-arrows">
+              {t.remote.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
         </div>
       </div>
     </section>
