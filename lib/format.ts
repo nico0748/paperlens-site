@@ -1,3 +1,5 @@
+import { intlLocale, type Locale } from "@/lib/i18n/config";
+
 export function formatBytes(n: number) {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
@@ -5,10 +7,10 @@ export function formatBytes(n: number) {
   return `${(n / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
 
-export function formatDate(iso: string) {
+export function formatDate(iso: string, lang: Locale = "ja") {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
-  return new Intl.DateTimeFormat("ja-JP", {
+  return new Intl.DateTimeFormat(intlLocale[lang], {
     year: "numeric",
     month: "long",
     day: "numeric",

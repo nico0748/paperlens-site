@@ -5,6 +5,7 @@ export const site = {
   repo: "https://github.com/nico0748/LogiXiv",
   releases: "https://github.com/nico0748/LogiXiv/releases",
   latestRelease: "https://github.com/nico0748/LogiXiv/releases/latest",
-  sourceZip: "https://github.com/nico0748/LogiXiv/archive/refs/heads/main.zip",
+  issues: "https://github.com/nico0748/LogiXiv/issues",
+  sourceZip:"https://github.com/nico0748/LogiXiv/archive/refs/heads/main.zip",
   license: "MIT",
 } as const;

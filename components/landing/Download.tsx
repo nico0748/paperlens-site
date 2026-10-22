@@ -1,62 +1,76 @@
+import { fill, type Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
+import { ArrowRightIcon, DownloadIcon } from "../icons";
 
-const steps = `git clone https://github.com/nico0748/LogiXiv.git
-cd LogiXiv
-npm install
-npm run build
-cd apps/reader
-npm run app      # デスクトップ版のウィンドウで開く
-# または
-npm start        # ブラウザで http://127.0.0.1:5175 を開く`;
+export function Download({ t }: { t: Dictionary["download"] }) {
+  const steps = [
+    "git clone https://github.com/nico0748/LogiXiv.git",
+    "cd LogiXiv",
+    "npm install",
+    "npm run build",
+    "cd apps/reader",
+    `npm run app      ${t.runOpenApp}`,
+    t.runOr,
+    `npm start        ${t.runOpenBrowser}`,
+  ].join("\n");
+  const grobid = "docker compose -f docker/grobid.yml up -d   # http://localhost:8070";
 
-const grobid = `docker compose -f docker/grobid.yml up -d   # http://localhost:8070`;
-
-export function Download() {
   return (
     <section id="download" className="lp-section" aria-labelledby="download-title">
       <div className="container">
-        <h2 id="download-title" className="lp-h2">ダウンロード</h2>
-        <p className="lp-section-lead">
-          PaperLens は GitHub で配布しています。{site.license} ライセンスのオープンソースです。
-        </p>
+        <header className="lp-section-head">
+          <h2 id="download-title" className="lp-h2">
+            {t.title}
+          </h2>
+          <p className="lp-section-lead">{fill(t.lead, { license: site.license })}</p>
+        </header>
 
-        <div className="lp-download-grid">
-          <div className="card lp-dl-card">
-            <h3 className="lp-h3">デスクトップ版</h3>
-            <p>
-              macOS（.dmg）、Windows（NSIS のインストーラー）、Linux（AppImage）向けの配布物は、
-              GitHub のリリースのページに置きます。
-            </p>
-            <p className="lp-muted">
-              まだ配布物が無いことがあります。そのときは下の「ソースから動かす」をお使いください。
-            </p>
-            <a href={site.latestRelease} className="btn btn-primary">リリース一覧を開く</a>
+        <div className="lp-download">
+          <div className="lp-dl-main">
+            <h3 className="lp-h3">{t.desktopTitle}</h3>
+            <p>{t.desktopDesc}</p>
+            <ul className="lp-os" role="list">
+              {t.platforms.map((p) => (
+                <li key={p.name}>
+                  <span className="lp-os-name">{p.name}</span>
+                  <span className="lp-os-file">{p.file}</span>
+                </li>
+              ))}
+            </ul>
+            <a href={site.latestRelease} className="btn btn-primary btn-lg">
+              <DownloadIcon />
+              {t.desktopCta}
+            </a>
+            <p className="lp-muted">{t.desktopNote}</p>
           </div>
-
-          <div className="card lp-dl-card">
-            <h3 className="lp-h3">ソースコード</h3>
-            <p>最新のソースコードを ZIP でダウンロードできます。git を使う場合は下の手順でも取得できます。</p>
-            <a href={site.sourceZip} className="btn btn-secondary">ソースコード（ZIP）</a>
+          <div className="lp-dl-side">
+            <h3 className="lp-h3">{t.sourceTitle}</h3>
+            <p>{t.sourceDesc}</p>
+            <a href={site.sourceZip} className="btn btn-secondary">
+              {t.sourceCta}
+              <ArrowRightIcon size={18} />
+            </a>
           </div>
         </div>
 
         <div className="lp-source">
-          <h3 className="lp-h3">ソースから動かす</h3>
+          <h3 className="lp-h3">{t.runTitle}</h3>
           <p>
-            Node.js 22.6 以上が必要です。<code>node -v</code> で確かめられます。
+            {t.runRequirement[0]}
+            <code>{t.runRequirement[1]}</code>
+            {t.runRequirement[2]}
           </p>
-          <pre className="lp-pre" tabIndex={0} aria-label="ソースから動かす手順">
+          <pre className="lp-pre" tabIndex={0} aria-label={t.runStepsLabel}>
             <code>{steps}</code>
           </pre>
-          <p>
-            文の区切りを正確にするため、GROBID を Docker で動かすことを強くおすすめします。
-            リポジトリの最上位で次を実行します。
-          </p>
-          <pre className="lp-pre" tabIndex={0} aria-label="GROBID を起動する手順">
+          <p>{t.grobidText}</p>
+          <pre className="lp-pre" tabIndex={0} aria-label={t.grobidLabel}>
             <code>{grobid}</code>
           </pre>
           <p>
-            詳しい使い方は <a href={`${site.repo}#readme`}>GitHub の README</a> にあります。
+            {t.readme[0]}
+            <a href={`${site.repo}#readme`}>{t.readme[1]}</a>
+            {t.readme[2]}
           </p>
         </div>
       </div>

@@ -1,0 +1,299 @@
+import type { Dictionary } from "./ja";
+
+/** English strings. Keep the same shape as ja.ts. */
+export const en: Dictionary = {
+  meta: {
+    title: "PaperLens — Read papers and keep translations, terms, equations and notes in Markdown",
+    description:
+      "PaperLens is a local-first paper reader. Read a PDF sentence by sentence with a side-by-side translation, and keep your translations, terms, equations and reading notes in a Markdown vault.",
+  },
+
+  common: {
+    skipToContent: "Skip to main content",
+    siteNav: "Site",
+    menu: "Menu",
+    closeMenu: "Close",
+    language: "Language",
+    languageList: "Display language",
+    login: "Log in",
+    logout: "Log out",
+    breadcrumb: "You are here",
+    home: "Home",
+    backToTop: "Back to top",
+  },
+
+  nav: {
+    features: "Features",
+    privacy: "Privacy",
+    download: "Download",
+    shared: "Shared data",
+    github: "GitHub",
+  },
+
+  hero: {
+    eyebrow: "A local-first paper reader",
+    lead: "Read papers sentence by sentence with a side-by-side translation, and keep translations, terms, equations and reading notes as Markdown.",
+    desc: "Your PDFs never leave your device. The app runs only on your own computer. Notes are plain files in a folder you choose, so you can open it as an Obsidian vault as is.",
+    download: "Download for free",
+    github: "View on GitHub",
+    platformsLabel: "Available for",
+    note: "Free and open source ({license} License).",
+  },
+
+  mock: {
+    slides: "Slides",
+    paper: "Paper",
+    tabs: ["Pairs", "Notes", "Terms", "Math", "Log"],
+    status: "GROBID · 42/202 translated · Saved",
+    caption:
+      "A sketch of the app. From left: presentation slides, the paper PDF, and the side panel (sentence pairs, translations, terms, equations, notes).",
+  },
+
+  stack: {
+    title: "Works with the tools you already use",
+    items: [
+      { name: "Markdown", desc: "Notes are plain files" },
+      { name: "Obsidian", desc: "Open as a vault" },
+      { name: "GROBID", desc: "Finds sentences and their positions" },
+      { name: "KaTeX", desc: "Renders TeX equations" },
+      { name: "MCP", desc: "Drive it from Claude" },
+      { name: "PDF / PPTX", desc: "Papers and slides" },
+    ],
+  },
+
+  features: {
+    title: "Read. Translate. Take notes.",
+    lead: "All three, in one window, without breaking your flow.",
+    blocks: [
+      {
+        kicker: "01 — Read",
+        title: "Sentence-by-sentence translation",
+        body: [
+          "PaperLens splits an imported PDF into sentences and shows each original next to its translation.",
+          "Click a box on the PDF to jump to its translation, or click a translation to jump back to the PDF.",
+        ],
+        points: [
+          "Sentence boundaries and positions come from GROBID",
+          "Works without GROBID using a simpler parser (less accurate)",
+          "Ask Claude to translate the whole paper — no translation API key needed",
+        ],
+      },
+      {
+        kicker: "02 — Take notes",
+        title: "Reading notes from a template",
+        body: [
+          "When you import a paper, PaperLens creates a reading note (note.md) from your template.",
+          "Each reading stage has its own fields, so even if you stop halfway, the note shows how far you got.",
+        ],
+        points: [],
+      },
+      {
+        kicker: "03 — Connect",
+        title: "Link presentation slides to the paper",
+        body: [
+          "Put the slides from a paper presentation (PDF or PPTX) to the left of the paper.",
+          "Draw a box around part of a slide and link it to the sentence, figure or equation it comes from. The two are joined by a colored line.",
+        ],
+        points: ["Three panes: slides, paper and side panel", "Two panes are always shown side by side"],
+      },
+    ],
+    stagesLabel: "Reading stages",
+    stages: ["Unread", "Skimmed", "Close reading", "Reviewing", "Summarized"],
+    moreTitle: "And more",
+    more: [
+      {
+        tag: "Translations, terms, math",
+        title: "Annotate what you select",
+        body: "Select text in the PDF to highlight it and write a translation or a term definition. Equations are stored as TeX and rendered with KaTeX.",
+      },
+      {
+        tag: "AI",
+        title: "Use it from Claude (MCP)",
+        body: "Register the MCP server to do everything the app can do from Claude Desktop or Claude Code. If the app is open, changes show up immediately.",
+      },
+      {
+        tag: "Lists",
+        title: "Glossary, equation book and graph",
+        body: "Look up the terms and equations from every paper in one place. The graph shows how papers and terms connect.",
+      },
+      {
+        tag: "Vault",
+        title: "An Obsidian-compatible vault",
+        body: "Your data is plain files in a folder you choose — no database. Edit note.md in Obsidian and the app picks up the change right away.",
+      },
+    ],
+  },
+
+  privacy: {
+    title: "Your papers stay on your device",
+    lead: "PaperLens keeps outgoing traffic to a minimum, so you can read unpublished manuscripts with peace of mind.",
+    local: {
+      tag: "Always",
+      title: "Stays on your device",
+      items: [
+        "The app's server listens only on your own computer (127.0.0.1). Other devices cannot connect to it.",
+        "PDFs and notes are stored only in the folder you choose.",
+        "GROBID, used to split sentences, can run locally in Docker.",
+      ],
+    },
+    remote: {
+      tag: "Only when you ask",
+      title: "Leaves your device",
+      lead: "PaperLens connects to the outside only when you:",
+      items: [
+        "Enter a Claude API key in Settings and press Translate, Look up term or Make equation. Only the selection, the surrounding text and the title are sent (plus an image of the selection for equations) — never the whole PDF.",
+        "Import a paper from a URL (such as arXiv).",
+        "Point GROBID at a different host.",
+      ],
+    },
+  },
+
+  download: {
+    title: "Download",
+    lead: "PaperLens is distributed on GitHub. It is open source under the {license} License.",
+    desktopTitle: "Desktop app",
+    desktopDesc: "Builds for macOS, Windows and Linux are published on the GitHub Releases page.",
+    desktopNote: "Builds may not be available yet. If so, use “Run from source” below.",
+    platforms: [
+      { name: "macOS", file: ".dmg" },
+      { name: "Windows", file: "Installer" },
+      { name: "Linux", file: "AppImage" },
+    ],
+    desktopCta: "Open the Releases page",
+    sourceTitle: "Source code",
+    sourceDesc: "Download the latest source code as a ZIP, or clone it with git using the steps below.",
+    sourceCta: "Source code (ZIP)",
+    runTitle: "Run from source",
+    runRequirement: ["Requires Node.js 22.6 or later. Check with ", "node -v", "."],
+    runStepsLabel: "Steps to run from source",
+    runOpenApp: "# open in a desktop window",
+    runOr: "# or",
+    runOpenBrowser: "# open http://127.0.0.1:5175 in your browser",
+    grobidText:
+      "For accurate sentence boundaries, we strongly recommend running GROBID in Docker. Run this at the top of the repository:",
+    grobidLabel: "Steps to start GROBID",
+    readme: ["See the ", "README on GitHub", " for full instructions."],
+  },
+
+  sharedBand: {
+    eyebrow: "Shared data",
+    title: "Paper data, ready to open",
+    body: "Log in to download paper data (ZIP) that opens in PaperLens. Start reading with translations, terms and reading notes already in place.",
+    cta: "Browse shared data",
+  },
+
+  footer: {
+    tagline: "Read papers and keep translations, terms, equations and notes in Markdown.",
+    product: "Product",
+    resources: "Resources",
+    community: "Community",
+    releases: "Release notes",
+    readme: "Documentation (README)",
+    zipFormat: "Shared ZIP format",
+    source: "Source code",
+    issues: "Report an issue",
+    license: "PaperLens is open source software under the {license} License.",
+  },
+
+  login: {
+    title: "Log in",
+    lead: "You need to log in to download shared data.",
+    github: "Log in with GitHub",
+    githubHint:
+      "Log in with your GitHub account. This site has no database; your login is stored only in a cookie in your browser.",
+    errorTitle: "Could not log in",
+    errors: {
+      AccessDenied: "This account is not allowed to log in. Ask the administrator to add it to the list of allowed accounts.",
+      CredentialsSignin: "Invalid user name. Use letters, numbers and hyphens.",
+      Configuration: "There is a problem with the login settings. Please let the site administrator know.",
+      OAuthCallbackError: "Could not complete the GitHub login. Please try again.",
+      default: "Could not log in. Please try again.",
+    },
+    devTitle: "Development login",
+    devHint: "Shown only in development (AUTH_DEV_LOGIN=1). You will be logged in as the GitHub user name you enter.",
+    devLabel: "User name",
+    devFieldHint: "Up to 39 letters, numbers and hyphens.",
+    devSubmit: "Log in with this user name",
+  },
+
+  shared: {
+    title: "Shared data",
+    lead: "Download paper data that opens in PaperLens as a ZIP.",
+    upload: "Upload",
+    loadErrorTitle: "Could not load the list",
+    loadError: "Please wait a moment and reload the page.",
+    empty: "No shared data yet.",
+    listLabel: "Shared data",
+    papers: "Papers",
+    singleFolder: "1 paper folder",
+    paperCount: "{count} papers",
+    withTemplates: " (with templates)",
+    size: "Size",
+    uploadedBy: "Uploaded by",
+    uploadedAt: "Date",
+    showPapers: "Show papers",
+    morePapers: "and {count} more",
+    download: "Download",
+    downloadLabel: "Download “{title}” ({size})",
+    howToTitle: "How to use the ZIP",
+    howToIntro: "The ZIP has the same layout as a PaperLens vault.",
+    howToLayout: [
+      "papers/<paper-id>/paper.pdf        Original PDF (always included)",
+      "papers/<paper-id>/note.md          Reading note",
+      "papers/<paper-id>/paperlens.json   Highlights, terms, equations",
+      "papers/<paper-id>/sentences.json   Sentence-by-sentence translation",
+    ],
+    howToSteps: [
+      "Download and extract the ZIP.",
+      "Move the contents of the extracted papers folder into the papers folder of your vault. You can find the vault location in PaperLens Settings.",
+      "If PaperLens is open, the papers appear in the list automatically. If they don't, restart the app.",
+    ],
+    howToOverwrite:
+      "If a folder with the same paper ID already exists, check its contents before overwriting. If the ZIP has the form <paper-id>/paper.pdf (a single paper folder), move that folder into papers.",
+    howToLicense: "Handle shared PDFs according to the terms of the original papers. Some may not be redistributed.",
+    delete: "Delete",
+    deleting: "Deleting…",
+    deleteLabel: "Delete “{title}”",
+    deleteConfirm: "Delete “{title}”? This cannot be undone.",
+    deleteForbidden: "Only administrators can delete.",
+    deleteNotFound: "The data to delete was not found.",
+    deleteFailed: "Could not delete. Please try again later.",
+  },
+
+  upload: {
+    title: "Upload shared data",
+    lead: "Register a ZIP of PaperLens paper folders.",
+    forbiddenTitle: "You can't upload",
+    forbidden: "Only administrators can upload shared data (403).",
+    backToList: "Back to shared data",
+    aboutZip: "About the ZIP format",
+    required: "Required",
+    optional: "Optional",
+    fileLabel: "ZIP file",
+    fileHint: "Choose a ZIP in the form papers/<paper-id>/paper.pdf. Up to {max}.",
+    notZip: "Choose a file with the .zip extension.",
+    tooLarge: "The file is too large. Keep it under {max}.",
+    chooseFile: "Choose a ZIP file.",
+    stillChecking: "Checking the ZIP contents. Please wait until it finishes.",
+    cannotUpload: "This file can't be uploaded. See the reasons below.",
+    checking: "Checking the ZIP contents…",
+    rejected: "This ZIP can't be uploaded.",
+    titleLabel: "Title",
+    titleHint: "Shown in the list. Up to 120 characters.",
+    titleRequired: "Enter a title.",
+    descLabel: "Description",
+    descHint: "Describe which papers are included. Up to 2000 characters.",
+    sending: "Uploading… {percent}% ({loaded} / {total})",
+    finishing: "Checking the ZIP and registering it…",
+    submit: "Upload",
+    submitting: "Uploading…",
+    serverError: "The server returned an error ({status}).",
+    sendFailedStatus: "Upload failed ({status}).",
+    sendFailed: "Upload failed. Check your connection.",
+    failed: "Upload failed.",
+    previewSingle: "1 paper folder",
+    previewCount: "{count} papers",
+    previewTemplates: " (with templates)",
+    previewMeta: "{name} · {size} · {files} files ({unpacked} unpacked)",
+  },
+};

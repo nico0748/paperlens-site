@@ -1,9 +1,12 @@
+import type { Dictionary } from "@/lib/i18n";
+
 /**
  * アプリ画面の見本（スクリーンショットの代わり）。
  * スライド | 論文 | 補足情報（対訳・訳・用語・数式・記録）の三面を、CSS だけで描く。
  * 飾りなので、支援技術には figure の説明文だけを読ませる。
+ * 対訳の例文は、アプリが英語の論文を日本語に訳すものなので、どの言語のページでもそのまま出す。
  */
-export function AppMock() {
+export function AppMock({ t }: { t: Dictionary["mock"] }) {
   return (
     <figure className="lp-mock">
       <div className="lp-mock-window" aria-hidden="true">
@@ -22,7 +25,7 @@ export function AppMock() {
           </div>
 
           <div className="lp-mock-pane lp-mock-slides">
-            <div className="lp-mock-label">スライド</div>
+            <div className="lp-mock-label">{t.slides}</div>
             <div className="lp-mock-slide">
               <div className="lp-mock-line lp-w60 strong" />
               <div className="lp-mock-group g1">
@@ -40,7 +43,7 @@ export function AppMock() {
           </div>
 
           <div className="lp-mock-pane lp-mock-paper">
-            <div className="lp-mock-label">論文</div>
+            <div className="lp-mock-label">{t.paper}</div>
             <div className="lp-mock-page">
               <div className="lp-mock-line lp-w70 strong" />
               <div className="lp-mock-line lp-w100" />
@@ -57,31 +60,29 @@ export function AppMock() {
 
           <div className="lp-mock-pane lp-mock-side">
             <div className="lp-mock-tabs">
-              <span className="on">対訳</span>
-              <span>訳</span>
-              <span>用語</span>
-              <span>数式</span>
-              <span>記録</span>
+              {t.tabs.map((tab, i) => (
+                <span key={tab} className={i === 0 ? "on" : undefined}>
+                  {tab}
+                </span>
+              ))}
             </div>
             <div className="lp-mock-card">
               <div className="lp-mock-en">The Transformer relies entirely on attention.</div>
-              <div className="lp-mock-ja">Transformer は注意機構だけに頼る。</div>
+              <div className="lp-mock-ja" lang="ja">Transformer は注意機構だけに頼る。</div>
             </div>
             <div className="lp-mock-card on">
               <div className="lp-mock-en">We propose a new simple network architecture.</div>
-              <div className="lp-mock-ja">新しい単純なネットワーク構造を提案する。</div>
+              <div className="lp-mock-ja" lang="ja">新しい単純なネットワーク構造を提案する。</div>
             </div>
             <div className="lp-mock-card">
               <div className="lp-mock-en">Experiments on two tasks show…</div>
-              <div className="lp-mock-ja muted">（未訳）</div>
+              <div className="lp-mock-ja muted" lang="ja">（未訳）</div>
             </div>
           </div>
         </div>
-        <div className="lp-mock-status">GROBID ・ 訳 42/202 ・ 保存しました</div>
+        <div className="lp-mock-status">{t.status}</div>
       </div>
-      <figcaption className="lp-mock-caption">
-        画面の見本。左から発表スライド、論文の PDF、補足情報（対訳・訳・用語・数式・記録）が並びます。
-      </figcaption>
+      <figcaption className="lp-mock-caption">{t.caption}</figcaption>
     </figure>
   );
 }
