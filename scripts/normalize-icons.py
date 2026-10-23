@@ -7,7 +7,7 @@ g = Image.open(src).convert("RGBA")
 a = g.split()[3].point(lambda v: 0 if v < 8 else v)
 g.putalpha(a)
 g = g.crop(a.getbbox())  # 図柄だけ
-NAVY_TOP, NAVY_BOT = (30, 36, 96), (11, 14, 42)  # --navy-800 → --navy-950
+NAVY_TOP, NAVY_BOT = (92, 98, 158), (76, 82, 136)  # アプリの primary #545a92 の前後
 
 def tile(size, margin, radius, glyph_ratio):
     im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -42,5 +42,5 @@ def mark(color=None):
     return im.resize((1024, 1024), Image.LANCZOS)
 
 mark().save(f"{out}/icon-mark-light.png")          # 暗い背景用（象牙色）
-mark((20, 26, 74)).save(f"{out}/icon-mark.png")     # 明るい背景用（--navy-900）
+mark((84, 90, 146)).save(f"{out}/icon-mark.png")     # 明るい背景用（#545a92）
 print("ok", g.size)

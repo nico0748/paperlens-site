@@ -105,7 +105,7 @@
 .lp-shot-hero::before {
   content: ""; position: absolute; z-index: -1; top: 56%; bottom: -100vh; left: -100vw; right: -100vw; background: var(--paper);
 }
-.lp-shot-hero img { display: block; width: 100%; height: auto; filter: drop-shadow(0 20px 32px rgb(11 14 42 / 0.22)); }
+.lp-shot-hero img { display: block; width: 100%; height: auto; filter: drop-shadow(0 20px 32px rgb(29 32 54 / 0.22)); }
 
 /*
  * チップ: 広い画面（1340px 以上）では写真の左右の縁にかけて置く。写真の内側には 56px だけ入り、
@@ -118,7 +118,7 @@
   padding: 8px 16px 8px 8px; text-align: left;
   font-size: 0.9375rem; font-weight: 700; line-height: 1.4; letter-spacing: 0.02em;
   background: #fff; color: var(--ink); border: 1px solid rgb(189 194 255 / 0.6); border-radius: 12px;
-  box-shadow: 0 1px 2px rgb(11 14 42 / 0.2), 0 18px 40px -12px rgb(11 14 42 / 0.5);
+  box-shadow: 0 1px 2px rgb(29 32 54 / 0.2), 0 18px 40px -12px rgb(29 32 54 / 0.5);
 }
 .lp-chip-icon { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 8px; background: var(--indigo-50); color: var(--indigo-700); }
 /* 画面の端からはみ出さない幅（左右の余白 + 写真にかかる 56px - 端の余白 16px）。超えるときだけ 2 行にする */

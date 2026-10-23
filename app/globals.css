@@ -9,13 +9,13 @@
  */
 :root {
   /* ---- プリミティブ ---- */
-  --navy-950: #0b0e2a;
-  --navy-900: #141a4a;
-  --navy-800: #1e2460;
+  --navy-950: #1d2036;
+  --navy-900: #2a2e50;
+  --navy-800: #3c4279;
   --indigo-800: #2b3070;
   --indigo-700: #3f4585;   /* 白地の文字 8.75:1 */
   --indigo-600: #545a92;   /* ブランド（飾りのみ） */
-  --indigo-400: #7a81c4;   /* 紺地の部品の縁 4.5:1 */
+  --indigo-400: #7a81c4;   /* navy-900 地の部品の縁 3.6:1 */
   --indigo-200: #bdc2ff;
   --indigo-100: #dfe2ff;
   --indigo-50: #eef0ff;
@@ -28,8 +28,8 @@
   --line-light: #dde0ef;   /* 飾りの線 */
   --line-ctrl: #7a80aa;    /* 白地の部品の縁 3.8:1、#f4f5fb 地 3.5:1 */
   --on-dark: #f3f4fc;      /* 明朝のにじみを抑えるため純白より少し落とす */
-  --on-dark-2: #c7cbee;    /* navy-900 地 10.4:1 */
-  --on-dark-3: #a9aedd;    /* navy-800 地 6.6:1 */
+  --on-dark-2: #c7cbee;    /* navy-900 地 8.2:1 */
+  --on-dark-3: #b6bbe6;    /* navy-800 地 5.0:1 */
   --marker: #ffe083;       /* 文字 ink との比 13.9:1 */
   --marker-strong: #ffd43d;
   --red-light: #b3261e;    /* 白地 6.5:1 */
@@ -70,9 +70,9 @@
   --radius-card: 16px;
   --radius-panel: 20px;
   --radius-full: 9999px;
-  --shadow-1: 0 1px 2px rgb(18 21 46 / 0.05), 0 8px 24px -12px rgb(20 26 74 / 0.14);
-  --shadow-2: 0 2px 4px rgb(18 21 46 / 0.06), 0 24px 48px -20px rgb(20 26 74 / 0.28);
-  --shadow-pop: 0 6px 20px 4px rgb(11 14 42 / 0.12), 0 2px 6px 0 rgb(11 14 42 / 0.12);
+  --shadow-1: 0 1px 2px rgb(18 21 46 / 0.05), 0 8px 24px -12px rgb(42 46 80 / 0.14);
+  --shadow-2: 0 2px 4px rgb(18 21 46 / 0.06), 0 24px 48px -20px rgb(42 46 80 / 0.28);
+  --shadow-pop: 0 6px 20px 4px rgb(29 32 54 / 0.12), 0 2px 6px 0 rgb(29 32 54 / 0.12);
 
   /* ---- 動き ---- */
   --dur-fast: 150ms;
@@ -278,7 +278,7 @@ pre {
     max-height: calc(100dvh - var(--header-h)); overflow-y: auto;
   }
   /* 開いたメニューの下のページは暗くする（ヘッダー自体は暗くしない: 影を下へずらして上側を出さない） */
-  .header-menu[data-open="true"] { display: flex; box-shadow: var(--shadow-2), 0 100vmax 0 100vmax rgb(11 14 42 / 0.45); }
+  .header-menu[data-open="true"] { display: flex; box-shadow: var(--shadow-2), 0 100vmax 0 100vmax rgb(29 32 54 / 0.45); }
   .site-nav { flex-direction: column; align-items: stretch; gap: 0; }
   .site-nav a { min-height: 56px; padding: 0 4px; border-bottom: 1px solid var(--line-light); border-radius: 0; color: var(--c-text); font-size: 1rem; }
   .header-tools { margin: 16px 0 0; flex-wrap: wrap; gap: 12px; }
