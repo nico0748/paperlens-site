@@ -1,19 +1,18 @@
 # PaperLens アイコン
 
-論文の紙（折り返した角と本文の行）にルーペを重ねた図柄である。ルーペの中では 1 行が拡大され、黄色のマーカーで強調されている。暗い角丸タイルの上に置く。
+セリフ体の P の丸い部分を虫眼鏡にした図柄である。レンズの中に本文の行と Σ が見える。図柄は象牙色で、アプリのアイコンでは藍色の角丸タイルに載せる。
 
 ## 元データ
 
 | ファイル | 用途 |
 | --- | --- |
-| `source/app-icon-original.png` | 受け取った元画像（角丸タイル版）。 |
-| `source/mark-original.png` | 受け取った元画像（タイル無しの図柄）。 |
-| `source/app-icon-flat-original.png` | 受け取った元画像（平らな別案。今は使っていない）。 |
-| `icon.png` | 原本。1024×1024。角丸タイルを Apple の規格どおり 824px にそろえ、周りを透明にしてある。 |
-| `icon-mark.png` | タイル無しの図柄を 1024×1024 の中央に置いたもの。サイトの見出しで使う。 |
+| `source/icon-original.png` | 受け取った元画像。象牙色の図柄だけで、背景は透明。 |
+| `icon.png` | 原本。1024×1024。藍色（`#1e2460` → `#0b0e2a`）の角丸タイルを Apple の規格どおり 824px にし、周りを透明にしてある。 |
+| `icon-mark.png` | タイル無しの図柄を藍色（`#141a4a`）に塗ったもの。サイトの白い部分（ヘッダー）で使う。 |
+| `icon-mark-light.png` | タイル無しの図柄（象牙色）。サイトの藍色の部分（ヒーロー・締め・フッター）で使う。 |
 | `icon-full-bleed.png` | 余白と角丸の無い正方形。apple-touch-icon（iOS が角を丸める）に使う。 |
 
-上の 3 つの原本は、元画像から `python3 scripts/normalize-icons.py brand`（Pillow が要る）で作る。
+上の原本は `python3 scripts/normalize-icons.py brand/source/icon-original.png brand`（Pillow が要る）で作る。
 
 ## 書き出し
 
@@ -28,7 +27,7 @@ npm run icons
 | `png/icon-{16,32,64,128,256,512,1024}.png` | アプリタイルの PNG。 |
 | `PaperLens.icns` | macOS 用。16〜512 の各サイズと @2x を含む。 |
 | `icon.ico` | Windows 用。16/32/48/256 の PNG を埋め込んだ ICO。 |
-| `../public/brand/icon.png`, `icon-mark.png`, `icon-512.png` | サイトの画像。 |
+| `../public/brand/icon.png`, `icon-mark.png`, `icon-mark-light.png`, `icon-512.png` | サイトの画像。 |
 | `../app/icon.png` | Next.js のファビコン（64px）。 |
 | `../app/apple-icon.png` | 180×180 の apple-touch-icon。 |
 

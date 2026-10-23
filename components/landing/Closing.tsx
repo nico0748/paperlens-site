@@ -12,7 +12,7 @@ export function Closing({ dict }: { dict: Dictionary }) {
     <section className="lp-closing theme-dark" aria-labelledby="closing-title">
       <div className="lp-section-art" aria-hidden="true" />
       <div className="container lp-closing-inner" data-reveal>
-        <img src="/brand/icon-mark.png" alt="" width={64} height={64} className="lp-closing-icon" loading="lazy" decoding="async" />
+        <img src="/brand/icon-mark-light.png" alt="" width={64} height={64} className="lp-closing-icon" loading="lazy" decoding="async" />
         <h2 id="closing-title" className="lp-h2">
           {t.title}
         </h2>

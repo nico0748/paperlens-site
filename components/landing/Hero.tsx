@@ -20,7 +20,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
       <div className="lp-hero-art" aria-hidden="true" />
       <div className="container lp-hero-inner">
         <p className="lp-eyebrow-pill">
-          <img src="/brand/icon-mark.png" alt="" width={20} height={20} />
+          <img src="/brand/icon-mark-light.png" alt="" width={20} height={20} />
           <span className="lp-eyebrow-name">{site.name}</span>
           <span className="lp-eyebrow-sep" aria-hidden="true" />
           <span>{t.eyebrow}</span>

@@ -1,27 +1,46 @@
+"""brand/source/icon-original.png（象牙色の P と虫眼鏡、背景は透明）から、アプリのタイルとサイト用の印を作る。"""
 import sys
-from PIL import Image
-B = sys.argv[1]
-tile = Image.open(f"{B}/source/app-icon-original.png").convert("RGBA")
-# 角丸タイル(不透明部分)を Apple の基準どおり 1024 中 824px にそろえる
-x0, y0, x1, y1 = tile.split()[3].point(lambda v: 255 if v > 200 else 0).getbbox()
-side = max(x1 - x0, y1 - y0)
-s = 824 / side
-small = tile.resize((round(tile.width * s), round(tile.height * s)), Image.LANCZOS)
-cx, cy = (x0 + x1) / 2 * s, (y0 + y1) / 2 * s
-out = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
-out.alpha_composite(small, (round(512 - cx), round(512 - cy)))
-out.save(f"{B}/icon.png")
-# apple-touch-icon 用: 角丸の外を塗りつぶした正方形
-cside = min(x1 - x0, y1 - y0)
-mx, my = (x0 + x1) / 2, (y0 + y1) / 2
-sq = tile.crop((round(mx - cside / 2), round(my - cside / 2), round(mx + cside / 2), round(my + cside / 2)))
-bg = Image.new("RGBA", sq.size, tile.getpixel((round(x0 + 60), round(my)))[:3] + (255,))
-bg.alpha_composite(sq)
-bg.convert("RGB").resize((1024, 1024), Image.LANCZOS).save(f"{B}/icon-full-bleed.png")
-# タイル無しの印: 図柄を中央に置いた正方形
-mark = Image.open(f"{B}/source/mark-original.png").convert("RGBA")
-x0, y0, x1, y1 = mark.split()[3].point(lambda v: 255 if v > 200 else 0).getbbox()
-side = max(x1 - x0, y1 - y0) * 1.08
-mx, my = (x0 + x1) / 2, (y0 + y1) / 2
-mark.crop((round(mx - side / 2), round(my - side / 2), round(mx + side / 2), round(my + side / 2))).resize((1024, 1024), Image.LANCZOS).save(f"{B}/icon-mark.png")
-print("ok", tile.getpixel((round(x0), round(my))))
+from PIL import Image, ImageDraw, ImageChops
+src, out = sys.argv[1], sys.argv[2]
+g = Image.open(src).convert("RGBA")
+# ほぼ透明なにじみ（alpha 1 の白）を消す
+a = g.split()[3].point(lambda v: 0 if v < 8 else v)
+g.putalpha(a)
+g = g.crop(a.getbbox())  # 図柄だけ
+NAVY_TOP, NAVY_BOT = (30, 36, 96), (11, 14, 42)  # --navy-800 → --navy-950
+
+def tile(size, margin, radius, glyph_ratio):
+    im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    t = size - margin * 2
+    grad = Image.new("RGBA", (t, t))
+    d = ImageDraw.Draw(grad)
+    for y in range(t):
+        k = y / (t - 1)
+        d.line((0, y, t, y), fill=tuple(round(NAVY_TOP[i] + (NAVY_BOT[i] - NAVY_TOP[i]) * k) for i in range(3)) + (255,))
+    mask = Image.new("L", (t, t), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, t - 1, t - 1), radius, fill=255)
+    im.paste(grad, (margin, margin), mask)
+    gw = round(t * glyph_ratio)
+    gh = round(g.height * gw / g.width)
+    gl = g.resize((gw, gh), Image.LANCZOS)
+    im.alpha_composite(gl, (margin + (t - gw) // 2, margin + (t - gh) // 2))
+    return im
+
+tile(1024, 100, 185, 0.66).save(f"{out}/icon.png")
+fb = tile(1024, 0, 0, 0.62).convert("RGB")
+fb.save(f"{out}/icon-full-bleed.png")
+
+def mark(color=None):
+    side = round(max(g.size) * 1.06)
+    im = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    gl = g.copy()
+    if color:
+        solid = Image.new("RGBA", gl.size, color + (255,))
+        solid.putalpha(gl.split()[3])
+        gl = solid
+    im.alpha_composite(gl, ((side - gl.width) // 2, (side - gl.height) // 2))
+    return im.resize((1024, 1024), Image.LANCZOS)
+
+mark().save(f"{out}/icon-mark-light.png")          # 暗い背景用（象牙色）
+mark((20, 26, 74)).save(f"{out}/icon-mark.png")     # 明るい背景用（--navy-900）
+print("ok", g.size)

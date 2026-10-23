@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // PaperLens のアイコン一式を brand/*.png（1024px の原本）から書き出す。
-// 原本は brand/source/ の元画像から scripts/normalize-icons.py（Pillow）で作る。
+// 原本は `python3 scripts/normalize-icons.py brand/source/icon-original.png brand`（Pillow）で作る。
 // 必要なもの: macOS の sips と iconutil。npm の追加依存はない。
 import { execFileSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -14,8 +14,9 @@ const pngDir = join(brand, "png");
 const tmp = mkdtempSync(join(tmpdir(), "paperlens-icons-"));
 
 const sources = {
-  icon: join(brand, "icon.png"), // 角丸タイル（1024 中 824px、周りは透明）
-  mark: join(brand, "icon-mark.png"), // タイル無しの図柄
+  icon: join(brand, "icon.png"), // 藍色の角丸タイル（1024 中 824px、周りは透明）
+  mark: join(brand, "icon-mark.png"), // タイル無しの図柄（藍色。明るい背景用）
+  markLight: join(brand, "icon-mark-light.png"), // タイル無しの図柄（象牙色。暗い背景用）
   fullBleed: join(brand, "icon-full-bleed.png"), // 余白と角丸の無い正方形
 };
 
@@ -72,7 +73,8 @@ function buildIco(entries) {
 const publicBrand = join(root, "public", "brand");
 mkdirSync(publicBrand, { recursive: true });
 render(sources.icon, 128, join(publicBrand, "icon.png"));
-render(sources.mark, 256, join(publicBrand, "icon-mark.png"));
+render(sources.mark, 128, join(publicBrand, "icon-mark.png"));
+render(sources.markLight, 128, join(publicBrand, "icon-mark-light.png"));
 copyFileSync(join(pngDir, "icon-512.png"), join(publicBrand, "icon-512.png"));
 render(sources.icon, 64, join(root, "app", "icon.png"));
 render(sources.fullBleed, 180, join(root, "app", "apple-icon.png"));
@@ -85,6 +87,7 @@ const outputs = [
   "brand/icon.ico",
   "public/brand/icon.png",
   "public/brand/icon-mark.png",
+  "public/brand/icon-mark-light.png",
   "public/brand/icon-512.png",
   "app/icon.png",
   "app/apple-icon.png",
