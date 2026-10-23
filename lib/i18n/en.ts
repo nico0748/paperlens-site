@@ -40,13 +40,9 @@ export const en: Dictionary = {
     note: "Free and open source ({license} License).",
   },
 
-  mock: {
-    slides: "Slides",
-    paper: "Paper",
-    tabs: ["Pairs", "Notes", "Terms", "Math", "Log"],
-    status: "GROBID · 42/202 translated · Saved",
-    caption:
-      "A sketch of the app. From left: presentation slides, the paper PDF, and the side panel (sentence pairs, translations, terms, equations, notes).",
+  shot: {
+    alt: "PaperLens on a Mac. The presentation slides are on the left and the paper PDF on the right, with color-coded highlights and boxes on the paper.",
+    caption: "Reading the slides and the paper side by side.",
   },
 
   stack: {
@@ -97,6 +93,17 @@ export const en: Dictionary = {
         points: ["Three panes: slides, paper and side panel", "Two panes are always shown side by side"],
       },
     ],
+    linkShotAlt: "Red lines run from boxes on a slide to an equation and sentences in the paper.",
+    gallery: {
+      title: "See it in action",
+      items: [
+        { alt: "The Equations tab. Equation (11) is rendered with KaTeX, with its TeX source, an explanation and the meaning of each symbol.", caption: "Equations: kept in TeX, with a note for every symbol." },
+        { alt: "The Terms tab. Explanations of slow feature analysis and recurrence plots, how each is used in the paper, and related terms.", caption: "Terms: what a word means, and how this paper uses it." },
+        { alt: "The word book, listing terms from every paper in paper and page order.", caption: "Word book: look up terms from every paper in one place." },
+        { alt: "The graph. Papers and terms are joined by lines, and the selected term, FORCE learning, is explained on the right.", caption: "Graph: click a term to see its meaning and the papers it appears in." },
+        { alt: "The whole graph, with lines from two papers fanning out to many terms.", caption: "See how papers and terms connect at a glance." },
+      ],
+    },
     stagesLabel: "Reading stages",
     stages: ["Unread", "Skimmed", "Close reading", "Reviewing", "Summarized"],
     moreTitle: "And more",

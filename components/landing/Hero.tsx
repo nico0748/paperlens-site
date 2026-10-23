@@ -1,7 +1,6 @@
 import { fill, type Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { DownloadIcon, GitHubIcon } from "../icons";
-import { AppMock } from "./AppMock";
 
 export function Hero({ dict }: { dict: Dictionary }) {
   const t = dict.hero;
@@ -35,7 +34,16 @@ export function Hero({ dict }: { dict: Dictionary }) {
           </dl>
           <p className="lp-hero-note">{fill(t.note, { license: site.license })}</p>
         </div>
-        <AppMock t={dict.mock} />
+        <figure className="lp-shot-hero">
+          <img
+            src="/screenshots/hero-mac.webp"
+            alt={dict.shot.alt}
+            width={1600}
+            height={1006}
+            fetchPriority="high"
+          />
+          <figcaption className="lp-shot-caption">{dict.shot.caption}</figcaption>
+        </figure>
       </div>
     </section>
   );
