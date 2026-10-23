@@ -38,10 +38,25 @@ export function Features({ t }: { t: T }) {
                   </ol>
                 )}
               </div>
-              <BlockVisual index={i} stages={t.stages} />
+              <BlockVisual index={i} stages={t.stages} linkShotAlt={t.linkShotAlt} />
             </article>
           ))}
         </div>
+
+        <h3 className="lp-more-title">{t.gallery.title}</h3>
+        <ul className="lp-gallery" role="list">
+          {t.gallery.items.map((g, i) => {
+            const shot = GALLERY[i];
+            return (
+              <li key={shot.src} className={shot.wide ? "lp-gallery-item wide" : "lp-gallery-item"}>
+                <figure>
+                  <img src={shot.src} alt={g.alt} width={shot.width} height={shot.height} loading="lazy" decoding="async" />
+                  <figcaption className="lp-shot-caption">{g.caption}</figcaption>
+                </figure>
+              </li>
+            );
+          })}
+        </ul>
 
         <h3 className="lp-more-title">{t.moreTitle}</h3>
         <ul className="lp-cards" role="list">
@@ -58,8 +73,17 @@ export function Features({ t }: { t: T }) {
   );
 }
 
-/** 各機能の見本（飾り） */
-function BlockVisual({ index, stages }: { index: number; stages: string[] }) {
+/** ギャラリーの画像。説明文は辞書の gallery.items と同じ順に並べる */
+const GALLERY = [
+  { src: "/screenshots/equation.webp", width: 1400, height: 967 },
+  { src: "/screenshots/glossary.webp", width: 1400, height: 955 },
+  { src: "/screenshots/wordbook.webp", width: 1600, height: 949, wide: true },
+  { src: "/screenshots/graph-term.webp", width: 1600, height: 946 },
+  { src: "/screenshots/graph-overview.webp", width: 1600, height: 888 },
+];
+
+/** 各機能の見本。対訳とノートは飾りの図、スライド連携は実際の画面 */
+function BlockVisual({ index, stages, linkShotAlt }: { index: number; stages: string[]; linkShotAlt: string }) {
   if (index === 0) {
     return (
       <div className="lp-visual" aria-hidden="true">
@@ -103,29 +127,8 @@ function BlockVisual({ index, stages }: { index: number; stages: string[] }) {
     );
   }
   return (
-    <div className="lp-visual lp-visual-link" aria-hidden="true">
-      <div className="lp-link-slide">
-        <div className="lp-mock-line lp-w60 strong" />
-        <div className="lp-link-box">
-          <div className="lp-mock-line lp-w90" />
-          <div className="lp-mock-line lp-w70" />
-        </div>
-        <div className="lp-mock-line lp-w80" />
-      </div>
-      <svg className="lp-link-line" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <path d="M0 45 C 45 45, 55 62, 100 62" />
-      </svg>
-      <div className="lp-link-paper">
-        <div className="lp-mock-line lp-w70 strong" />
-        <div className="lp-mock-line lp-w100" />
-        <div className="lp-mock-line lp-w90" />
-        <div className="lp-link-target">
-          <div className="lp-mock-line lp-w100" />
-          <div className="lp-mock-line lp-w80" />
-        </div>
-        <div className="lp-mock-line lp-w100" />
-        <div className="lp-mock-line lp-w60" />
-      </div>
-    </div>
+    <figure className="lp-shot">
+      <img src="/screenshots/slides-link.webp" alt={linkShotAlt} width={1800} height={649} loading="lazy" decoding="async" />
+    </figure>
   );
 }
