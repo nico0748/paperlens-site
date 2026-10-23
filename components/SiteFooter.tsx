@@ -32,7 +32,7 @@ export function SiteFooter({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   ];
 
   return (
-    <footer className="site-footer">
+    <footer className="site-footer theme-dark">
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
