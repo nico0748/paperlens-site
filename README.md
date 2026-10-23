@@ -70,5 +70,5 @@ PaperLens の保管庫の `papers/<論文ID>/` をそのまま ZIP にしたも�
 ## アイコンを作り直す
 
 ```bash
-npm run icons     # brand/icon.svg から PNG・.icns・.ico と、サイト用の画像を作る（rsvg-convert と iconutil を使う）
+npm run icons     # brand/icon.png から PNG・.icns・.ico と、サイト用の画像を作る（macOS の sips と iconutil を使う）
 ```

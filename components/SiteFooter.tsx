@@ -37,7 +37,7 @@ export function SiteFooter({ lang, dict }: { lang: Locale; dict: Dictionary }) {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link href={`/${lang}`} className="brand">
-              <img src="/brand/icon.svg" alt="" width={32} height={32} />
+              <img src="/brand/icon-mark.png" alt="" width={32} height={32} />
               {site.name}
             </Link>
             <p>{t.tagline}</p>

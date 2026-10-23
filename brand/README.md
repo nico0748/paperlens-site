@@ -1,14 +1,19 @@
 # PaperLens アイコン
 
-論文の紙（折り返した角と本文の行）にルーペを重ねた図柄である。ルーペの中では 1 行が拡大され、マーカー黄（`#ffe083`）で強調されている。色はアプリの M3 パレット（primary `#545a92`、primary-strong `#3c4279`、primary-container `#dfe0ff`、surface `#fbf8ff`）に合わせた。
+論文の紙（折り返した角と本文の行）にルーペを重ねた図柄である。ルーペの中では 1 行が拡大され、黄色のマーカーで強調されている。暗い角丸タイルの上に置く。
 
-## 元データ（手で編集するのはこの 3 つだけ）
+## 元データ
 
 | ファイル | 用途 |
 | --- | --- |
-| `icon.svg` | 原本。1024×1024 のアプリタイル。824px の角丸正方形（角の半径 185 = 約 22%）を上下左右 100px の余白の内側に置いている（Apple のアイコン規格に沿う）。64px 以上はこれから書き出す。 |
-| `icon-mark.svg` | 図柄だけ（背景は透明）。サイトのヘッダーなど、明るい背景と暗い背景のどちらにも置ける。 |
-| `favicon.svg` | 小さいサイズ用の簡略版。本文の行を省き、紙・ルーペ・黄色の行だけにした。余白なしの角丸タイル。 |
+| `source/app-icon-original.png` | 受け取った元画像（角丸タイル版）。 |
+| `source/mark-original.png` | 受け取った元画像（タイル無しの図柄）。 |
+| `source/app-icon-flat-original.png` | 受け取った元画像（平らな別案。今は使っていない）。 |
+| `icon.png` | 原本。1024×1024。角丸タイルを Apple の規格どおり 824px にそろえ、周りを透明にしてある。 |
+| `icon-mark.png` | タイル無しの図柄を 1024×1024 の中央に置いたもの。サイトの見出しで使う。 |
+| `icon-full-bleed.png` | 余白と角丸の無い正方形。apple-touch-icon（iOS が角を丸める）に使う。 |
+
+上の 3 つの原本は、元画像から `python3 scripts/normalize-icons.py brand`（Pillow が要る）で作る。
 
 ## 書き出し
 
@@ -16,16 +21,16 @@
 npm run icons
 ```
 
-`scripts/build-icons.mjs` が `rsvg-convert`（`brew install librsvg`）と macOS の `iconutil` を使って次を作る。SVG を直したら必ず再実行する。
+`scripts/build-icons.mjs` が macOS の `sips` と `iconutil` を使って次を作る。原本を差し替えたら必ず再実行する。
 
 | 出力 | 中身 |
 | --- | --- |
-| `png/icon-{16,32,64,128,256,512,1024}.png` | アプリタイルの PNG。32px 以下は `favicon.svg` の図柄を同じ余白に置いた簡略版になる。 |
+| `png/icon-{16,32,64,128,256,512,1024}.png` | アプリタイルの PNG。 |
 | `PaperLens.icns` | macOS 用。16〜512 の各サイズと @2x を含む。 |
-| `icon.ico` | Windows 用。16/32/48 は簡略版（余白なし）、256 は原本。PNG を埋め込んだ ICO。 |
-| `../public/brand/icon.svg`, `icon-mark.svg`, `icon-512.png` | サイトの画像として使うコピー。 |
-| `../app/icon.svg` | Next.js のファビコン（`favicon.svg` のコピー）。 |
-| `../app/apple-icon.png` | 180×180 の apple-touch-icon。iOS が角を丸めるので、余白と角丸のない正方形にしてある。 |
+| `icon.ico` | Windows 用。16/32/48/256 の PNG を埋め込んだ ICO。 |
+| `../public/brand/icon.png`, `icon-mark.png`, `icon-512.png` | サイトの画像。 |
+| `../app/icon.png` | Next.js のファビコン（64px）。 |
+| `../app/apple-icon.png` | 180×180 の apple-touch-icon。 |
 
 ## PaperLens アプリ（Electron）で使う
 

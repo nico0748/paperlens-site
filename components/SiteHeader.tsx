@@ -29,7 +29,7 @@ export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionar
     <header className="site-header">
       <div className="container header-inner">
         <Link href={`/${lang}`} className="brand">
-          <img src="/brand/icon.svg" alt="" width={32} height={32} />
+          <img src="/brand/icon-mark.png" alt="" width={32} height={32} />
           {site.name}
         </Link>
         <MobileMenu label={common.menu} closeLabel={common.closeMenu}>

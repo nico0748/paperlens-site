@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// PaperLens のアイコン一式を brand/*.svg から書き出す。
-// 必要なもの: rsvg-convert (Homebrew の librsvg) と macOS の iconutil。npm の追加依存はない。
+// PaperLens のアイコン一式を brand/*.png（1024px の原本）から書き出す。
+// 原本は brand/source/ の元画像から scripts/normalize-icons.py（Pillow）で作る。
+// 必要なもの: macOS の sips と iconutil。npm の追加依存はない。
 import { execFileSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -12,61 +13,36 @@ const brand = join(root, "brand");
 const pngDir = join(brand, "png");
 const tmp = mkdtempSync(join(tmpdir(), "paperlens-icons-"));
 
-const RSVG = ["/opt/homebrew/bin/rsvg-convert", "/usr/local/bin/rsvg-convert"].find(existsSync) ?? "rsvg-convert";
-
-const iconSvg = readFileSync(join(brand, "icon.svg"), "utf8");
-const faviconSvg = readFileSync(join(brand, "favicon.svg"), "utf8");
-
-// 小さいサイズ (32px 以下) 用: 簡略版の図柄を、本体と同じ余白 (1024 中 100px) の中に置いたもの。
-const faviconInner = faviconSvg.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
-const smallTileSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-<svg x="100" y="100" width="824" height="824" viewBox="0 0 64 64">${faviconInner}</svg></svg>`;
-
-// apple-touch-icon 用: iOS が角を丸めるので、余白と角丸を外した正方形にする。
-const fullBleedSvg = iconSvg
-  .replace(/viewBox="0 0 1024 1024"/, 'viewBox="100 100 824 824"')
-  .replace(/ rx="185"/, "");
-
 const sources = {
-  icon: join(brand, "icon.svg"),
-  small: writeTmp("small.svg", smallTileSvg),
-  favicon: join(brand, "favicon.svg"),
-  fullBleed: writeTmp("full-bleed.svg", fullBleedSvg),
+  icon: join(brand, "icon.png"), // 角丸タイル（1024 中 824px、周りは透明）
+  mark: join(brand, "icon-mark.png"), // タイル無しの図柄
+  fullBleed: join(brand, "icon-full-bleed.png"), // 余白と角丸の無い正方形
 };
 
-function writeTmp(name, text) {
-  const p = join(tmp, name);
-  writeFileSync(p, text);
-  return p;
-}
-
-function render(svg, size, out) {
+function render(src, size, out) {
   mkdirSync(dirname(out), { recursive: true });
-  execFileSync(RSVG, ["-w", String(size), "-h", String(size), "-o", out, svg]);
+  execFileSync("sips", ["-s", "format", "png", "-z", String(size), String(size), src, "--out", out], { stdio: "ignore" });
   return out;
 }
 
-// アプリ用の図柄は 32px 以下で簡略版に切り替える。
-const appSource = (size) => (size <= 32 ? sources.small : sources.icon);
-
 // 1. brand/png/icon-{size}.png
 for (const size of [16, 32, 64, 128, 256, 512, 1024]) {
-  render(appSource(size), size, join(pngDir, `icon-${size}.png`));
+  render(sources.icon, size, join(pngDir, `icon-${size}.png`));
 }
 
-// 2. brand/PaperLens.icns (iconutil に iconset ディレクトリを渡す)
+// 2. brand/PaperLens.icns（iconutil に iconset ディレクトリを渡す）
 const iconset = join(tmp, "PaperLens.iconset");
 mkdirSync(iconset);
 for (const base of [16, 32, 128, 256, 512]) {
-  render(appSource(base), base, join(iconset, `icon_${base}x${base}.png`));
-  render(appSource(base * 2), base * 2, join(iconset, `icon_${base}x${base}@2x.png`));
+  render(sources.icon, base, join(iconset, `icon_${base}x${base}.png`));
+  render(sources.icon, base * 2, join(iconset, `icon_${base}x${base}@2x.png`));
 }
 execFileSync("iconutil", ["-c", "icns", iconset, "-o", join(brand, "PaperLens.icns")]);
 
-// 3. brand/icon.ico (PNG を埋め込んだ ICO を自前で組み立てる)
+// 3. brand/icon.ico（PNG を埋め込んだ ICO を自前で組み立てる）
 const icoEntries = [16, 32, 48, 256].map((size) => ({
   size,
-  data: readFileSync(render(size <= 48 ? sources.favicon : sources.icon, size, join(tmp, `ico-${size}.png`))),
+  data: readFileSync(render(sources.icon, size, join(tmp, `ico-${size}.png`))),
 }));
 writeFileSync(join(brand, "icon.ico"), buildIco(icoEntries));
 
@@ -92,13 +68,13 @@ function buildIco(entries) {
   return Buffer.concat([header, dir, ...entries.map((e) => e.data)]);
 }
 
-// 4. サイト用のコピー
+// 4. サイト用
 const publicBrand = join(root, "public", "brand");
 mkdirSync(publicBrand, { recursive: true });
-copyFileSync(join(brand, "icon.svg"), join(publicBrand, "icon.svg"));
-copyFileSync(join(brand, "icon-mark.svg"), join(publicBrand, "icon-mark.svg"));
+render(sources.icon, 128, join(publicBrand, "icon.png"));
+render(sources.mark, 256, join(publicBrand, "icon-mark.png"));
 copyFileSync(join(pngDir, "icon-512.png"), join(publicBrand, "icon-512.png"));
-copyFileSync(join(brand, "favicon.svg"), join(root, "app", "icon.svg"));
+render(sources.icon, 64, join(root, "app", "icon.png"));
 render(sources.fullBleed, 180, join(root, "app", "apple-icon.png"));
 
 rmSync(tmp, { recursive: true, force: true });
@@ -107,10 +83,10 @@ const outputs = [
   ...[16, 32, 64, 128, 256, 512, 1024].map((s) => `brand/png/icon-${s}.png`),
   "brand/PaperLens.icns",
   "brand/icon.ico",
-  "public/brand/icon.svg",
-  "public/brand/icon-mark.svg",
+  "public/brand/icon.png",
+  "public/brand/icon-mark.png",
   "public/brand/icon-512.png",
-  "app/icon.svg",
+  "app/icon.png",
   "app/apple-icon.png",
 ];
 const missing = outputs.filter((p) => !existsSync(join(root, p)));
