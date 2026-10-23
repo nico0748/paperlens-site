@@ -1,6 +1,7 @@
 /*
  * デザイントークン。デジタル庁デザインシステム（DADS）のトークンを、黒を基調にした配色で使う。
  * - 色は DADS のプリミティブカラー（solid-gray・yellow・light-blue など）から取る
+ * - 書体は筑紫明朝（DADS の標準は Noto Sans JP だが、PaperLens は論文を読む道具なので明朝にしている）
  * - 本文 16px・行間 1.7、文字のコントラストは 4.5:1 以上、部品の縁は 3:1 以上
  * - フォーカスは DADS と同じ黄色（yellow-300）の輪で必ず見せる
  * アクセントの黄は PaperLens のマーカーの色、薄紫は PaperLens 本体の primary に合わせている。
@@ -58,7 +59,8 @@
 
   --max-w: 1200px;
   --header-h: 72px;
-  --font-sans: var(--font-noto-sans), "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  /* 筑紫明朝（Adobe Fonts の FOT-筑紫明朝 Pr6N）。読めないときは Noto Serif JP、さらに OS の明朝にする */
+  --font-serif: "fot-tsukumin-pr6n", var(--font-noto-serif), "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
   --font-mono: var(--font-noto-mono), "Noto Sans Mono", ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
 }
 
@@ -69,7 +71,7 @@ body {
   margin: 0;
   background: var(--c-bg);
   color: var(--c-text);
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.7;
   letter-spacing: 0.02em;

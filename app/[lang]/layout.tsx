@@ -1,15 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Noto_Sans_JP, Noto_Sans_Mono } from "next/font/google";
+import { Noto_Sans_Mono, Noto_Serif_JP } from "next/font/google";
 import "../globals.css";
+import { AdobeFonts } from "@/components/AdobeFonts";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getDictionary, hasLocale, locales } from "@/lib/i18n";
 import { site } from "@/lib/site";
 
-// DADS の基本書体（Noto Sans JP / Noto Sans Mono）
-const sans = Noto_Sans_JP({ subsets: ["latin"], weight: ["400", "700"], display: "swap", variable: "--font-noto-sans" });
+// 本文は筑紫明朝（Adobe Fonts）。キットが無いときや読み込む前は、無料の明朝（Noto Serif JP）で出す
+const serif = Noto_Serif_JP({ subsets: ["latin"], weight: ["400", "700"], display: "swap", variable: "--font-noto-serif" });
 const mono = Noto_Sans_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap", variable: "--font-noto-mono" });
+
+/** Adobe Fonts のキット ID（英数字だけ）。未設定なら筑紫明朝は読まない */
+const adobeFontsKit = /^[a-z0-9]+$/i.test(process.env.ADOBE_FONTS_KIT_ID ?? "") ? process.env.ADOBE_FONTS_KIT_ID! : null;
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -34,7 +38,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const dict = getDictionary(lang);
 
   return (
-    <html lang={lang} className={`${sans.variable} ${mono.variable}`}>
+    <html lang={lang} className={`${serif.variable} ${mono.variable}`}>
       <body>
         <a href="#main" className="skip-link">
           {dict.common.skipToContent}
@@ -44,6 +48,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           {children}
         </main>
         <SiteFooter lang={lang} dict={dict} />
+        {adobeFontsKit && <AdobeFonts kitId={adobeFontsKit} />}
       </body>
     </html>
   );
