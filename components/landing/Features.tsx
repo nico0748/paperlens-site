@@ -28,7 +28,7 @@ export function Features({ t, kicker }: { t: T; kicker: string }) {
             return (
               <li key={b.kicker} className="lp-card lp-feature" data-reveal style={{ "--i": i } as React.CSSProperties}>
                 <div className="lp-card-head">
-                  <span className="lp-icon-tile">
+                  <span className="lp-icon-tile" aria-hidden="true">
                     <Icon size={22} />
                   </span>
                   <p className="lp-card-kicker">{b.kicker}</p>
@@ -39,7 +39,7 @@ export function Features({ t, kicker }: { t: T; kicker: string }) {
                     <p key={line}>{line}</p>
                   ))}
                 </div>
-                <div className="lp-mini">
+                <div className={i === 2 ? "lp-mini lp-mini-shot-frame" : "lp-mini"}>
                   <MiniDiagram index={i} stages={t.stages} stagesLabel={t.stagesLabel} linkShotAlt={t.linkShotAlt} />
                 </div>
                 {b.points.length > 0 && (
@@ -62,14 +62,13 @@ export function Features({ t, kicker }: { t: T; kicker: string }) {
             const Icon = MORE_ICONS[i % MORE_ICONS.length];
             return (
               <li key={f.title} className="lp-card lp-slim" data-reveal style={{ "--i": i } as React.CSSProperties}>
-                <span className="lp-icon-tile lp-icon-tile-sm">
-                  <Icon size={20} />
-                </span>
-                <div>
-                  <p className="lp-tag">{f.tag}</p>
+                <div className="lp-slim-head">
+                  <span className="lp-icon-tile lp-icon-tile-sm" aria-hidden="true">
+                    <Icon size={20} />
+                  </span>
                   <h4 className="lp-h4">{f.title}</h4>
-                  <p className="lp-slim-body">{f.body}</p>
                 </div>
+                <p className="lp-slim-body">{f.body}</p>
               </li>
             );
           })}
@@ -139,15 +138,16 @@ function MiniDiagram({
       </div>
     );
   }
+  // スライドの囲み・赤い線・論文の該当箇所だけを切り出した画像（途中のまっすぐな線は省いている）
   return (
     <img
       className="lp-mini-shot"
-      src="/screenshots/slides-link-900.webp"
-      srcSet="/screenshots/slides-link-900.webp 900w, /screenshots/slides-link.webp 1800w"
-      sizes="(max-width: 1100px) calc(100vw - 32px), 400px"
+      src="/screenshots/slides-link-card-800.webp"
+      srcSet="/screenshots/slides-link-card-800.webp 800w, /screenshots/slides-link-card.webp 1494w"
+      sizes="(max-width: 760px) calc(100vw - 72px), (max-width: 1100px) 45vw, 360px"
       alt={linkShotAlt}
-      width={1800}
-      height={649}
+      width={1494}
+      height={930}
       loading="lazy"
       decoding="async"
       data-fade

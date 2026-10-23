@@ -79,7 +79,7 @@ export function ScreenTabs({ screens, label, enlarge }: { screens: Screen[]; lab
         <div
           key={s.id}
           id={`screens-${s.id}`}
-          className="lp-panel theme-light"
+          className="lp-panel"
           role={enhanced ? "tabpanel" : undefined}
           aria-labelledby={enhanced ? `tab-${s.id}` : undefined}
           tabIndex={enhanced ? 0 : undefined}
@@ -89,7 +89,8 @@ export function ScreenTabs({ screens, label, enlarge }: { screens: Screen[]; lab
             <p className="lp-panel-count">
               {String(i + 1).padStart(2, "0")} / {String(screens.length).padStart(2, "0")}
             </p>
-            <h3 className="lp-h3">{s.label}</h3>
+            {/* タブが画面の名前を示すので、見出しは JavaScript が動く前（タブが無いとき）だけ出す */}
+            {!enhanced && <h3 className="lp-h3">{s.label}</h3>}
             <p className="lp-panel-caption">{s.caption}</p>
             <a href={s.src} className="lp-more" target="_blank" rel="noopener">
               <ExpandIcon size={18} />
@@ -100,7 +101,7 @@ export function ScreenTabs({ screens, label, enlarge }: { screens: Screen[]; lab
             <img
               src={s.small}
               srcSet={`${s.small} 800w, ${s.src} ${s.width}w`}
-              sizes="(max-width: 900px) calc(100vw - 80px), 720px"
+              sizes="(max-width: 1000px) calc(100vw - 32px), 860px"
               alt={s.alt}
               width={s.width}
               height={s.height}

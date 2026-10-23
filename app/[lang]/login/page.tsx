@@ -50,7 +50,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
   }
 
   return (
-    <div className="page">
+    <div className="page page-center">
       <div className="container narrow">
         <Breadcrumb label={dict.common.breadcrumb} items={[{ label: dict.common.home, href: `/${lang}` }, { label: t.title }]} />
         <h1>{t.title}</h1>

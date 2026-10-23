@@ -1,19 +1,19 @@
 import { fill, type Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
-import { CheckIcon, DownloadIcon, GitHubIcon, LinkIcon, NoteIcon, SigmaIcon, TranslateIcon } from "../icons";
+import { ArrowRightIcon, CheckIcon, GitHubIcon, LinkIcon, NoteIcon, SigmaIcon, TranslateIcon } from "../icons";
 
 const CHIP_ICONS = [LinkIcon, TranslateIcon, SigmaIcon, NoteIcon];
 
 /**
  * ヒーロー（紺）。2 行のキャッチ → 説明 1 文 → ボタン 1 列 → 特長の列、その下に大きな画面写真。
- * 写真は紺と白の境目にまたがって置き、まわりに機能のチップを浮かべる（チップは飾りなので読み上げない）。
+ * 写真は紺と白の境目にまたがって置き、広い画面では写真の左右の縁に機能のチップを置く（画面の中身は隠さない）。
+ * 狭い画面では写真の下に 2 列で並べる。チップは飾りなので読み上げない。
  * 写真は LCP なので、JavaScript で隠さず、すぐに読み込む。
  */
 export function Hero({ dict }: { dict: Dictionary }) {
   const t = dict.hero;
   const l = dict.landing;
-  const platforms = dict.download.platforms.map((p) => p.name).join(" / ");
-  const trust = [fill(l.trust[0], { license: site.license }), platforms, ...l.trust.slice(1)];
+  const trust = l.trust.map((item) => fill(item, { license: site.license }));
 
   return (
     <section className="lp-hero theme-dark" aria-labelledby="hero-title">
@@ -35,8 +35,8 @@ export function Hero({ dict }: { dict: Dictionary }) {
         <p className="lp-hero-lead">{t.lead}</p>
         <div className="lp-cta">
           <a href="#download" className="btn btn-primary btn-lg">
-            <DownloadIcon />
             {t.download}
+            <ArrowRightIcon />
           </a>
           <a href={site.repo} className="btn btn-secondary btn-lg">
             <GitHubIcon />
@@ -65,23 +65,20 @@ export function Hero({ dict }: { dict: Dictionary }) {
             fetchPriority="high"
             decoding="async"
           />
+          <ul className="lp-chips" aria-hidden="true">
+            {l.chips.map((text, i) => {
+              const Icon = CHIP_ICONS[i % CHIP_ICONS.length];
+              return (
+                <li key={text} className="lp-chip" style={{ "--i": i } as React.CSSProperties}>
+                  <span className="lp-chip-icon">
+                    <Icon size={18} />
+                  </span>
+                  {text}
+                </li>
+              );
+            })}
+          </ul>
         </figure>
-        <ul className="lp-chips" aria-hidden="true">
-          {l.chips.map((c, i) => {
-            const Icon = CHIP_ICONS[i % CHIP_ICONS.length];
-            return (
-              <li key={c.label} className="lp-chip" style={{ "--i": i } as React.CSSProperties}>
-                <span className="lp-chip-icon">
-                  <Icon size={20} />
-                </span>
-                <span>
-                  <small>{c.label}</small>
-                  <b>{c.text}</b>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
       </div>
     </section>
   );

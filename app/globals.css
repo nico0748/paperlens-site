@@ -239,6 +239,7 @@ pre {
 .header-tools { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .header-tools form { display: contents; }
 .header-tools .btn { margin-left: 8px; }
+.header-tools .btn[aria-current="page"] { background: var(--c-surface-3); border-color: transparent; cursor: default; }
 .menu-button { display: none; }
 
 /* 言語の切り替え */
@@ -276,7 +277,8 @@ pre {
     padding: 8px var(--gutter) 24px;
     max-height: calc(100dvh - var(--header-h)); overflow-y: auto;
   }
-  .header-menu[data-open="true"] { display: flex; }
+  /* 開いたメニューの下のページは暗くする（ヘッダー自体は暗くしない: 影を下へずらして上側を出さない） */
+  .header-menu[data-open="true"] { display: flex; box-shadow: var(--shadow-2), 0 100vmax 0 100vmax rgb(11 14 42 / 0.45); }
   .site-nav { flex-direction: column; align-items: stretch; gap: 0; }
   .site-nav a { min-height: 56px; padding: 0 4px; border-bottom: 1px solid var(--line-light); border-radius: 0; color: var(--c-text); font-size: 1rem; }
   .header-tools { margin: 16px 0 0; flex-wrap: wrap; gap: 12px; }
@@ -287,7 +289,8 @@ pre {
 }
 
 /* ---------- フッター（紺） ---------- */
-.site-footer { padding: 64px 0 32px; background: var(--navy-950); color: var(--c-text-2); }
+/* 締めの帯（navy-950）と溶け合わないよう、フッターは 1 段明るい紺にする */
+.site-footer { padding: 64px 0 32px; background: var(--navy-900); color: var(--c-text-2); }
 .footer-grid { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px; }
 .footer-brand .brand { color: var(--c-text); }
 .footer-brand p { margin: 16px 0 0; max-width: 24em; }
@@ -311,6 +314,10 @@ pre {
 /* ---------- ページの共通部品（共有データ・ログイン・アップロード） ---------- */
 main { min-height: 60vh; }
 .page { padding: 40px 0 96px; background: linear-gradient(180deg, var(--paper-2), var(--paper) 360px); }
+/* 中身の短いページ（ログイン）: 本文の欄を画面の高さいっぱいに伸ばし、中身を縦の中央に置く（フッターの前に白い空きを作らない） */
+body:has(.page-center) { display: flex; flex-direction: column; min-height: 100dvh; }
+body:has(.page-center) > main { flex: 1 0 auto; display: flex; flex-direction: column; min-height: 0; }
+.page-center { flex: 1 0 auto; display: grid; align-content: center; padding-top: 32px; padding-bottom: 64px; }
 .page h1 { font-size: 2.25rem; line-height: 1.35; margin: 0 0 8px; }
 .lead { color: var(--c-text-2); font-size: 1.125rem; line-height: 1.7; max-width: var(--measure); }
 .card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-card); padding: 28px; box-shadow: var(--shadow-1); }

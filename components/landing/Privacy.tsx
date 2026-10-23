@@ -17,7 +17,7 @@ export function Privacy({ t, kicker }: { t: Dictionary["privacy"]; kicker: strin
           <p className="lp-section-lead">{t.lead}</p>
         </header>
         <div className="lp-compare">
-          <section className="lp-card lp-compare-col lp-compare-local" aria-labelledby="privacy-local" data-reveal>
+          <section className="lp-card lp-accent lp-compare-col lp-compare-local" aria-labelledby="privacy-local" data-reveal>
             <p className="lp-tag">{t.local.tag}</p>
             <h3 id="privacy-local" className="lp-h3">
               {t.local.title}

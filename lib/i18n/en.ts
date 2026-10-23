@@ -5,7 +5,7 @@ export const en: Dictionary = {
   meta: {
     title: "PaperLens — A local-first paper reader, one sentence at a time",
     description:
-      "PaperLens is a local-first paper reader that lets you read a PDF sentence by sentence, with each original next to its translation. Your translations, terms, equations and reading notes stay in a Markdown vault.",
+      "PaperLens is a local-first paper reader that lets you read a PDF sentence by sentence, with each sentence next to its translation. Your translations, terms, equations and reading notes stay in a Markdown vault.",
   },
 
   common: {
@@ -33,25 +33,21 @@ export const en: Dictionary = {
   hero: {
     eyebrow: "A paper reader that runs on your computer",
     catch: ["Read papers one sentence at a time.", "Keep what you learn on your own machine."],
-    lead: "PaperLens splits a PDF into sentences and shows each original next to its translation. Translations, terms, equations and reading notes are saved as Markdown files.",
-    desc: "The app runs only on your computer and never sends your PDFs anywhere. Everything is saved as plain files in your vault — a folder you choose — so Obsidian can open it as-is.",
-    download: "Download for free",
+    lead: "PaperLens splits a PDF into sentences and shows each one next to its translation. Claude can translate the whole paper for you. Translations, terms, equations and reading notes are saved as Markdown files.",
+    download: "Get started",
     github: "View on GitHub",
-    platformsLabel: "Available for",
-    note: "Free and open source ({license} License).",
   },
 
   shot: {
     alt: "PaperLens on a Mac. The presentation slides are on the left and the paper PDF on the right, with color-coded highlights and boxes on the paper.",
-    caption: "Reading the slides and the paper side by side.",
   },
 
   stack: {
-    title: "Works with the tools you already use",
+    title: "Works with the formats and tools you already use.",
     items: [
       { name: "Markdown", desc: "Notes are plain files" },
       { name: "Obsidian", desc: "Opens your vault as-is" },
-      { name: "GROBID", desc: "Extracts sentences and their positions" },
+      { name: "GROBID", desc: "Finds sentences and their positions" },
       { name: "KaTeX", desc: "Renders TeX equations" },
       { name: "MCP", desc: "Drive it from Claude" },
       { name: "PDF / PPTX", desc: "Imports papers and slides" },
@@ -60,13 +56,13 @@ export const en: Dictionary = {
 
   features: {
     title: "Read. Take notes. Connect.",
-    lead: "Your whole reading workflow, in one window.",
+    lead: "Your whole reading workflow, in one app.",
     blocks: [
       {
         kicker: "01 — Read",
         title: "Each sentence next to its translation",
         body: [
-          "PaperLens splits an imported PDF into sentences and shows each original next to its translation.",
+          "PaperLens splits an imported PDF into sentences and shows each sentence next to its translation.",
           "Click a box on the PDF to jump to its translation, or click a translation to jump back to the PDF.",
         ],
         points: [
@@ -82,26 +78,26 @@ export const en: Dictionary = {
           "When you import a paper, PaperLens creates a reading note (note.md) from your template.",
           "The note has fields for each reading stage. If you stop halfway, it still shows how far you got.",
         ],
-        points: [],
+        points: ["Tracks your reading stage, from Unread to Summarized", "Edit it in Obsidian and the app updates right away"],
       },
       {
         kicker: "03 — Connect",
         title: "Link presentation slides to the paper",
         body: [
           "Show your journal-club slides (PDF or PPTX) to the left of the paper.",
-          "Draw a box around part of a slide and link it to the sentence, figure or equation it comes from. The two are joined by a colored line.",
+          "Draw a box around part of a slide and join it with a colored line to the sentence, figure or equation it comes from.",
         ],
-        points: ["Three panes: slides, paper and side panel", "Two of them are shown side by side"],
+        points: ["Shows two of the three panes (slides, paper, side panel) side by side", "Claude can add boxes and links over MCP, too"],
       },
     ],
     linkShotAlt: "Red lines run from boxes on a slide to an equation and sentences in the paper.",
     gallery: {
-      title: "See it in action",
+      title: "Your papers become a glossary of terms and equations.",
       items: [
-        { alt: "The Equations tab. Equation (11) is rendered with KaTeX, with its TeX source, an explanation and the meaning of each symbol.", caption: "Equations: kept in TeX, with a note for every symbol." },
-        { alt: "The Terms tab. Explanations of slow feature analysis and recurrence plots, how each is used in the paper, and related terms.", caption: "Terms: what a word means, and how this paper uses it." },
-        { alt: "The glossary, listing terms from every paper in paper and page order.", caption: "Glossary: look up terms from every paper in one place." },
-        { alt: "The graph. Papers and terms are joined by lines, and the selected term, FORCE learning, is explained on the right.", caption: "Graph: click a term to see its meaning and the papers it appears in." },
+        { alt: "The Equations tab. Equation (11) is rendered with KaTeX, with its TeX source, an explanation and the meaning of each symbol.", caption: "Kept in TeX, with a note for every symbol." },
+        { alt: "The Terms tab. Explanations of slow feature analysis and recurrence plots, how each is used in the paper, and related terms.", caption: "What a word means, and how this paper uses it." },
+        { alt: "The glossary, listing terms from every paper in paper and page order.", caption: "Look up terms from every paper in one place." },
+        { alt: "The graph. Papers and terms are joined by lines, and the selected term, FORCE learning, is explained on the right.", caption: "Click a term to see its meaning and the papers it appears in." },
         { alt: "The whole graph, with lines from two papers fanning out to many terms.", caption: "See how papers and terms connect at a glance." },
       ],
     },
@@ -110,22 +106,18 @@ export const en: Dictionary = {
     moreTitle: "And more",
     more: [
       {
-        tag: "Translations, terms, math",
         title: "Annotate what you select",
         body: "Select text in the PDF to highlight it and write a translation or a term definition. Equations are stored as TeX and rendered with KaTeX.",
       },
       {
-        tag: "AI",
         title: "Use it from Claude (MCP)",
         body: "Register the MCP server to do everything the app can do from Claude Desktop or Claude Code. If the app is open, Claude's changes show up on screen immediately.",
       },
       {
-        tag: "Lists",
-        title: "Glossary, equation book and graph",
+        title: "Glossary, equation list and graph",
         body: "Look up the terms and equations from every paper in one place. The graph shows how papers and terms connect.",
       },
       {
-        tag: "Vault",
         title: "An Obsidian-compatible vault",
         body: "Everything is plain files in your vault — no database. Edit note.md in Obsidian and the app picks up the change right away.",
       },
@@ -133,7 +125,7 @@ export const en: Dictionary = {
   },
 
   privacy: {
-    title: "Your papers stay on your computer.",
+    title: "Your PDFs stay on your computer.",
     lead: "PaperLens goes online only when you tell it to, so you can read unpublished manuscripts with peace of mind.",
     local: {
       tag: "Always",
@@ -146,9 +138,10 @@ export const en: Dictionary = {
     },
     remote: {
       tag: "Only when you tell it to",
-      title: "Leaves your computer",
-      lead: "PaperLens goes online only when you:",
+      title: "Goes online",
+      lead: "Only when you:",
       items: [
+        "Use PaperLens from Claude Desktop or Claude Code over MCP. Text that Claude reads is sent to Claude.",
         "Enter a Claude API key in Settings and press Translate, Look up term or Make equation. Only the selection, the surrounding text and the paper's title are sent. For equations, an image of the selection is sent too. The whole PDF is never sent.",
         "Import a paper from a URL (such as arXiv).",
         "Run GROBID on another server.",
@@ -157,19 +150,22 @@ export const en: Dictionary = {
   },
 
   download: {
-    title: "Get started for free.",
+    title: "Try it for free.",
     lead: "PaperLens is distributed on GitHub. It is open source under the {license} License.",
     desktopTitle: "Desktop app",
-    desktopDesc: "Builds for macOS, Windows and Linux are published on the GitHub Releases page.",
-    desktopNote: "App builds may not be published yet. If not, follow “Run from source” below.",
+    desktopDesc: "Builds for macOS, Windows and Linux will be published on the GitHub Releases page when they are ready.",
+    desktopNote: "For now, follow “Run from source” below. It runs on any computer that runs Node.js.",
     platforms: [
       { name: "macOS", file: ".dmg" },
       { name: "Windows", file: "Installer" },
       { name: "Linux", file: "AppImage" },
     ],
+    platformsLabel: "Planned app builds",
+    platformsStatus: "Coming soon",
+    runCta: "Steps to run from source",
     desktopCta: "Open the Releases page",
     sourceTitle: "Source code",
-    sourceDesc: "Download the latest source code as a ZIP, or clone it with git using the steps below.",
+    sourceDesc: "Download the latest source code as a ZIP, or clone it with git.",
     sourceCta: "Source code (ZIP)",
     runTitle: "Run from source",
     runRequirement: ["Requires Node.js 22.6 or later. Check with ", "node -v", "."],
@@ -184,24 +180,18 @@ export const en: Dictionary = {
   },
 
   sharedBand: {
-    eyebrow: "Shared data",
-    title: "Start reading papers that already have translations and notes.",
-    body: "Log in to download shared data (ZIP) for PaperLens. Start reading with translations, terms and reading notes already in place.",
+    title: "Download papers that already have translations and notes.",
+    body: "Log in with GitHub to get shared data (ZIP). Start reading with translations, terms and reading notes already in place.",
     cta: "Browse shared data",
   },
 
   landing: {
-    kickers: { features: "FEATURES", screens: "SCREENS", privacy: "PRIVACY", download: "DOWNLOAD" },
+    kickers: { features: "FEATURES", screens: "SCREENS", privacy: "PRIVACY", download: "GET STARTED" },
     trustLabel: "Highlights",
-    trust: ["{license} License, free", "PDFs stay on your computer", "Opens in Obsidian as-is"],
-    chips: [
-      { label: "Slides", text: "Link slides to the paper" },
-      { label: "Translation", text: "Original and translation, side by side" },
-      { label: "Math & terms", text: "Keep TeX and term notes" },
-      { label: "Vault", text: "Notes saved as Markdown" },
-    ],
+    trust: ["Free, {license} License", "Runs on Node.js (macOS, Windows, Linux)", "PDFs stay on your computer", "Saved as Markdown"],
+    chips: ["Slides linked to the paper", "Side-by-side translation", "Equations and terms", "Notes in Markdown"],
     screens: {
-      lead: "Switch between the equation, term, glossary and graph views.",
+      lead: "Use the tabs below to see the real equation, term, glossary and graph views.",
       tabsLabel: "Screens",
       tabs: [
         { label: "Equations", sub: "TeX and symbol notes" },
@@ -213,8 +203,9 @@ export const en: Dictionary = {
       enlarge: "View full size",
     },
     closing: {
-      title: "Start with the next paper you read.",
-      body: "PaperLens is free to install. Your PDFs and notes stay on your computer.",
+      title: "Try it on the next paper you read.",
+      body: "Your PDFs and notes stay on your computer.",
+      facts: ["{license} License", "Node.js 22.6 or later", "macOS, Windows, Linux"],
     },
   },
 
