@@ -4,6 +4,7 @@ import type { Dictionary, Locale } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { GitHubIcon } from "./icons";
 import { LanguageSelector } from "./LanguageSelector";
+import { LoginLink } from "./LoginLink";
 import { MobileMenu } from "./MobileMenu";
 
 async function currentUser() {
@@ -52,9 +53,7 @@ export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionar
                 </button>
               </form>
             ) : (
-              <Link href={`/${lang}/login`} className="btn btn-ghost btn-sm">
-                {common.login}
-              </Link>
+              <LoginLink href={`/${lang}/login`} label={common.login} />
             )}
           </div>
         </MobileMenu>

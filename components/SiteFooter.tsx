@@ -32,12 +32,12 @@ export function SiteFooter({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   ];
 
   return (
-    <footer className="site-footer">
+    <footer className="site-footer theme-dark">
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
             <Link href={`/${lang}`} className="brand">
-              <img src="/brand/icon-mark.png" alt="" width={32} height={32} />
+              <img src="/brand/icon-mark-light.png" alt="" width={32} height={32} />
               {site.name}
             </Link>
             <p>{t.tagline}</p>

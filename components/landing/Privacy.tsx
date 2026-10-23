@@ -1,19 +1,24 @@
 import type { Dictionary } from "@/lib/i18n";
+import { ShieldIcon } from "../icons";
 
-/** 手元で完結すること・外へ送ることを、2 列で見比べられるようにする */
-export function Privacy({ t }: { t: Dictionary["privacy"] }) {
+/** PC の中で完結すること・外部へ送るものを、2 枚のカードで見比べる（淡い地） */
+export function Privacy({ t, kicker }: { t: Dictionary["privacy"]; kicker: string }) {
   return (
-    <section id="privacy" className="lp-section lp-section-alt" aria-labelledby="privacy-title">
+    <section id="privacy" className="lp-section lp-tint theme-light" aria-labelledby="privacy-title">
       <div className="container">
-        <header className="lp-section-head">
+        <header className="lp-section-head" data-reveal>
+          <span className="lp-icon-tile lp-icon-tile-lg" aria-hidden="true">
+            <ShieldIcon size={28} />
+          </span>
+          <p className="lp-kicker">{kicker}</p>
           <h2 id="privacy-title" className="lp-h2">
             {t.title}
           </h2>
           <p className="lp-section-lead">{t.lead}</p>
         </header>
         <div className="lp-compare">
-          <section className="lp-compare-col lp-compare-local" aria-labelledby="privacy-local">
-            <p className="lp-tag lp-tag-accent">{t.local.tag}</p>
+          <section className="lp-card lp-accent lp-compare-col lp-compare-local" aria-labelledby="privacy-local" data-reveal>
+            <p className="lp-tag">{t.local.tag}</p>
             <h3 id="privacy-local" className="lp-h3">
               {t.local.title}
             </h3>
@@ -23,12 +28,17 @@ export function Privacy({ t }: { t: Dictionary["privacy"] }) {
               ))}
             </ul>
           </section>
-          <section className="lp-compare-col" aria-labelledby="privacy-remote">
-            <p className="lp-tag">{t.remote.tag}</p>
+          <section
+            className="lp-card lp-compare-col"
+            aria-labelledby="privacy-remote"
+            data-reveal
+            style={{ "--i": 1 } as React.CSSProperties}
+          >
+            <p className="lp-tag lp-tag-neutral">{t.remote.tag}</p>
             <h3 id="privacy-remote" className="lp-h3">
               {t.remote.title}
             </h3>
-            <p className="lp-muted">{t.remote.lead}</p>
+            <p className="lp-compare-lead">{t.remote.lead}</p>
             <ul className="lp-arrows">
               {t.remote.items.map((item) => (
                 <li key={item}>{item}</li>

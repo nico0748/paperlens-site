@@ -3,9 +3,10 @@
 .narrow { max-width: 640px; }
 .stack { display: flex; flex-direction: column; gap: 16px; }
 .stack > * { margin: 0; }
-.hint { color: var(--c-text-3); margin: 0; }
+.hint { color: var(--c-text-3); margin: 0; font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.7; }
 .btn-block { width: 100%; }
-.dev-login { margin-top: 24px; border-style: dashed; }
+.dev-login { margin-top: 24px; border-style: dashed; border-color: var(--c-border-strong); box-shadow: none; }
+.narrow .lead { margin-bottom: 32px; }
 .dev-login h2 { font-size: 1.25rem; }
 
 .page-head { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; margin-bottom: 24px; }
@@ -19,22 +20,28 @@
 .shared-desc { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .shared-meta { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 0; }
 .shared-meta div { min-width: 0; }
-.shared-meta dt { font-size: 0.875rem; color: var(--c-text-3); }
+.shared-meta dt { font-family: var(--font-ui); font-size: var(--fs-sm); color: var(--c-text-3); }
 .shared-meta dd { margin: 0; font-weight: 700; }
 .shared-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
-.paper-details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; color: var(--c-link); font-weight: 700; }
+.paper-details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 10px; list-style: none; color: var(--c-link); font-family: var(--font-ui); font-weight: 700; }
+.paper-details summary::-webkit-details-marker { display: none; }
+.paper-details summary::before {
+  content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg); transition: transform var(--dur-fast) var(--ease-standard);
+}
+.paper-details[open] summary::before { transform: rotate(45deg); }
 .paper-list { margin: 4px 0 0; padding-left: 1.25em; }
 .paper-list li { overflow-wrap: anywhere; }
 .paper-title { font-weight: 700; }
 .how-to { margin-top: 32px; }
-.how-to p, .how-to li { color: var(--c-text-2); }
+.how-to p, .how-to li { color: var(--c-text-2); max-width: var(--measure); }
 .how-to h2 { margin-top: 0; font-size: 1.5rem; }
 
 /* フォーム（DADS の入力欄の考え方: ラベルは上、説明とエラーは欄の下に文字で出す） */
 .field { display: flex; flex-direction: column; gap: 6px; }
-.field label { font-weight: 700; display: flex; align-items: center; }
-.field .req { color: var(--c-on-accent); background: var(--c-danger); font-weight: 700; font-size: 0.875rem; margin-left: 8px; padding: 0 8px; border-radius: var(--radius-sm); }
-.field .opt { color: var(--c-text-2); border: 1px solid var(--c-border-strong); font-weight: 700; font-size: 0.875rem; margin-left: 8px; padding: 0 8px; border-radius: var(--radius-sm); }
+.field label { font-family: var(--font-ui); font-weight: 700; display: flex; align-items: center; }
+.field .req { color: #fff; background: var(--c-danger); font-weight: 700; font-size: var(--fs-xs); margin-left: 8px; padding: 0 8px; border-radius: var(--radius-sm); }
+.field .opt { color: var(--c-text-2); border: 1px solid var(--c-border-strong); font-weight: 700; font-size: var(--fs-xs); margin-left: 8px; padding: 0 8px; border-radius: var(--radius-sm); }
 .field input[type="text"],
 .field textarea {
   font: inherit; color: var(--c-text); background: var(--c-bg);
@@ -47,8 +54,8 @@
   font: inherit; font-weight: 600; min-height: 44px; padding: 8px 16px; margin-right: 12px;
   border: 1px solid var(--c-text-2); border-radius: var(--radius); background: transparent; color: var(--c-text); cursor: pointer;
 }
-.field [aria-invalid="true"] { border-color: var(--c-danger); border-width: 2px; }
-.field-error { color: var(--c-danger); font-weight: 700; margin: 0; }
+.field [aria-invalid="true"] { border-color: var(--c-danger); box-shadow: 0 0 0 1px var(--c-danger); }
+.field-error { color: var(--c-danger); font-family: var(--font-ui); font-weight: 700; margin: 0; }
 .field-error::before { content: "！ "; }
 
 .preview { border: 1px solid var(--c-border-strong); border-radius: var(--radius); padding: 12px 16px; background: var(--c-surface-2); }
@@ -58,7 +65,7 @@
 .error-list { margin: 0; padding-left: 1.25em; }
 
 .progress { display: flex; flex-direction: column; gap: 6px; }
-.progress progress { width: 100%; height: 12px; accent-color: var(--c-accent); }
+.progress progress { width: 100%; height: 12px; accent-color: var(--indigo-700); }
 .form-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
 /* 固定ヘッダーの下に隠れないよう、フォーカスで移るときに余白を取る */
