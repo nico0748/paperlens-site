@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import type { Dictionary, Locale } from "@/lib/i18n";
-import { site } from "@/lib/site";
+import { featureHref, featureSlugs, site } from "@/lib/site";
+import { FeaturesMenu } from "./FeaturesMenu";
 import { GitHubIcon } from "./icons";
 import { LanguageSelector } from "./LanguageSelector";
 import { LoginLink } from "./LoginLink";
@@ -19,7 +20,7 @@ async function currentUser() {
 /** DADS のヘッダーコンテナに沿う: 左にロゴ、中央にナビゲーション、右に言語の切り替えとログイン */
 export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const user = await currentUser();
-  const { common, nav } = dict;
+  const { common, nav, featureNav } = dict;
 
   async function logout() {
     "use server";
@@ -35,9 +36,15 @@ export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionar
         </Link>
         <MobileMenu label={common.menu} closeLabel={common.closeMenu}>
           <nav className="site-nav" aria-label={common.siteNav}>
-            <Link href={`/${lang}#features`}>{nav.features}</Link>
+            <FeaturesMenu
+              href={`/${lang}#features`}
+              label={nav.features}
+              toggleLabel={featureNav.toggle}
+              index={{ href: featureHref(lang), label: featureNav.index }}
+              items={featureSlugs.map((slug) => ({ slug, href: featureHref(lang, slug), ...featureNav.items[slug] }))}
+            />
             <Link href={`/${lang}#privacy`}>{nav.privacy}</Link>
-            <Link href={`/${lang}#download`}>{nav.download}</Link>
+            <Link href={`/${lang}#download`}>{nav.start}</Link>
             <Link href={`/${lang}/shared`}>{nav.shared}</Link>
           </nav>
           <div className="header-tools">

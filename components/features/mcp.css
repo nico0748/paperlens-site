@@ -1,0 +1,28 @@
+/* McpStage: Claude との会話の例（上）と、結果が入ったアプリの画面（下）。接頭辞は mcp-。 */
+.mcp-stage { display: grid; gap: 14px; min-width: 0; }
+.mcp-chat {
+  padding: 14px 16px; border-radius: var(--radius-shot); background: var(--c-surface-2);
+  box-shadow: inset 0 0 0 1px var(--c-border);
+}
+.mcp-chat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.mcp-stage[data-enhanced] .mcp-chat-list { gap: 0; }
+.mcp-stage[data-enhanced] .mcp-turn { grid-area: 1 / 1; }
+.mcp-turn { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.mcp-turn p { margin: 0; }
+.mcp-bubble {
+  max-width: 88%; padding: 7px 12px; border-radius: 14px; font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.6;
+}
+.mcp-user { justify-self: end; border-bottom-right-radius: 4px; background: var(--indigo-700); color: #fff; }
+.theme-dark .mcp-user { background: var(--indigo-200); color: var(--ink); }
+.mcp-claude { justify-self: start; border-bottom-left-radius: 4px; background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-light); }
+.mcp-tool { justify-self: start; display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-ui); font-size: var(--fs-xs); color: var(--c-text-3); }
+.mcp-tool code { font-size: var(--fs-xs); }
+.mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] { visibility: hidden; }
+.mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] > * { opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] > * { transform: translate3d(0, 6px, 0); }
+  .mcp-stage[data-enhanced] .mcp-turn > * { transition: opacity 350ms ease, transform 450ms var(--ease-out-expo); }
+  .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] > :nth-child(2) { transition-delay: 300ms; }
+  .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] > :nth-child(3) { transition-delay: 600ms; }
+}
+.mcp-stage[data-enhanced] .mcp-turn[data-state="current"] .mcp-tool code { box-shadow: 0 0 0 2px var(--marker); }

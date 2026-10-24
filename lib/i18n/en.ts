@@ -1,11 +1,11 @@
 import type { Dictionary } from "./ja";
 
-/** English strings. Keep the same shape as ja.ts. */
+/** English strings. Keep the same shape as ja.ts. Top-page copy follows critique/copy-v3.md. */
 export const en: Dictionary = {
   meta: {
-    title: "PaperLens — A local-first paper reader, one sentence at a time",
+    title: "PaperLens — A paper reader that links your slides to the source",
     description:
-      "PaperLens is a local-first paper reader that lets you read a PDF sentence by sentence, with each sentence next to its translation. Your translations, terms, equations and reading notes stay in a Markdown vault.",
+      "PaperLens is an open-source paper reader that links presentation slides to the paper. Jump from a box on a slide straight to the original text, keep terms, equations, and translations beside the paper, and work in it from Claude.",
   },
 
   common: {
@@ -25,198 +25,214 @@ export const en: Dictionary = {
   nav: {
     features: "Features",
     privacy: "Privacy",
-    download: "Download",
+    start: "Get started",
     shared: "Shared data",
     github: "GitHub",
   },
 
+  featureNav: {
+    label: "Features",
+    toggle: "Open the feature list",
+    index: "All features",
+    items: {
+      "slides-link": { label: "Slides & paper", sub: "Box a slide, link it to the source" },
+      supplement: { label: "Companion panel", sub: "Translation, terms, equations" },
+      "wordbook-graph": { label: "Wordbook & graph", sub: "Look up across papers" },
+      mcp: { label: "With Claude (MCP)", sub: "What you ask for lands in the app" },
+      "library-search": { label: "Papers & search", sub: "Import and open from the list" },
+    },
+  },
+
   hero: {
-    eyebrow: "A paper reader that runs on your computer",
-    catch: ["Read papers one sentence at a time.", "Keep what you learn on your own machine."],
-    lead: "PaperLens splits a PDF into sentences and shows each one next to its translation. Claude can translate the whole paper for you. Translations, terms, equations and reading notes are saved as Markdown files.",
-    download: "Get started",
+    eyebrow: "A paper reader for journal clubs and close reading",
+    catch: ["From slide to source.", "From source to slide."],
+    lead: "Box part of a slide and link it to the paper, and you can jump straight back to the sentence it rests on. Terms, equations, and a sentence-by-sentence translation sit right beside the paper.",
+    primary: "Run from source",
     github: "View on GitHub",
+    seeFeatures: "See features",
+    trustLabel: "PaperLens at a glance",
+    trust: ["{license} licensed", "Your PDFs stay on your machine", "Vault opens in Obsidian", "Works with Claude via MCP"],
+    alt: "PaperLens with presentation slides on the left and the paper PDF on the right. Boxes on the slides are joined to passages in the paper by colored lines.",
   },
 
-  shot: {
-    alt: "PaperLens on a Mac. The presentation slides are on the left and the paper PDF on the right, with color-coded highlights and boxes on the paper.",
-  },
+  kickers: { uses: "USE CASES", map: "MAP", features: "FEATURES", privacy: "PRIVACY", start: "GET STARTED" },
 
-  stack: {
-    title: "Works with the formats and tools you already use.",
+  uses: {
+    title: "How people use it",
+    lead: "Before and during a journal club, reading on your own, looking back later. Each moment calls on a slightly different set of features.",
+    usesLabel: "Features used",
     items: [
-      { name: "Markdown", desc: "Notes are plain files" },
-      { name: "Obsidian", desc: "Opens your vault as-is" },
-      { name: "GROBID", desc: "Finds sentences and their positions" },
-      { name: "KaTeX", desc: "Renders TeX equations" },
-      { name: "MCP", desc: "Drive it from Claude" },
-      { name: "PDF / PPTX", desc: "Imports papers and slides" },
+      {
+        kicker: "At journal club",
+        title: "When someone asks, show them the source",
+        story:
+          "Import your slides and link each point to the passage it comes from. When someone asks \"where does the paper say that?\", click the box on the slide. The paper scrolls to that spot, and everyone sees the original wording.",
+        uses: ["Slides & paper", "Full screen", "Companion panel"],
+      },
+      {
+        kicker: "Reading on your own",
+        title: "Don't stall on a term or an equation",
+        story:
+          "Read sentence by sentence with the translation alongside. Select an unfamiliar word to look it up; turn an equation into TeX and check what each symbol means. What you find stays next to the paper, so the same word won't stop you twice.",
+        uses: ["Side-by-side translation", "Terms", "Equations", "Translation"],
+      },
+      {
+        kicker: "Looking back",
+        title: "The terms you looked up connect your papers",
+        story:
+          "Every term you've looked up is in the wordbook, and each entry takes you back to its page in the paper. Follow shared terms through the graph, and the links between the papers you've read start to show.",
+        uses: ["Wordbook & equation book", "Graph", "Search"],
+      },
     ],
+  },
+
+  map: {
+    title: "A map of the app",
+    lead: "Switch with the icons on the left edge and the tabs on the right.",
+    ribbonTitle: "Icons on the left edge",
+    tabsTitle: "Tabs on the right (companion panel)",
+    more: "Learn more",
+    ribbon: [
+      { label: "Papers", desc: "Import papers from a PDF or an arXiv ID, and open them from the list." },
+      { label: "Search", desc: "Search paper titles and everything you've written down: translations, notes, terms, equations." },
+      { label: "Lists (terms & equations)", desc: "Look up terms and equations from all your papers in the wordbook and equation book." },
+      { label: "Graph", desc: "See how papers and terms connect." },
+      { label: "Slides & paper", desc: "Put slides beside the paper and link them with boxes and lines." },
+    ],
+    extra: [
+      { label: "Settings", desc: "Set your Claude API key, vault location, and MCP setup." },
+      { label: "Help", desc: "Guides, FAQ, and keyboard shortcuts." },
+    ],
+    tabs: [
+      { label: "Translation (side by side)", desc: "Every sentence, original and translation together. Click one to find it in the PDF." },
+      { label: "Translation (selection)", desc: "Translations and highlights for passages you selected." },
+      { label: "Terms", desc: "What each term means and how this paper uses it." },
+      { label: "Equations", desc: "Equations in TeX, with what each symbol means." },
+    ],
+    tabsMore: "More on the companion panel",
   },
 
   features: {
-    title: "Read. Take notes. Connect.",
-    lead: "Your whole reading workflow, in one app.",
-    blocks: [
-      {
-        kicker: "01 — Read",
-        title: "Each sentence next to its translation",
-        body: [
-          "PaperLens splits an imported PDF into sentences and shows each sentence next to its translation.",
-          "Click a box on the PDF to jump to its translation, or click a translation to jump back to the PDF.",
-        ],
-        points: [
-          "GROBID extracts sentence boundaries and positions",
-          "Works without GROBID using a simpler parser (less accurate)",
-          "Let Claude translate the whole paper over MCP — no translation API key needed",
-        ],
-      },
-      {
-        kicker: "02 — Take notes",
-        title: "Reading notes, created from a template",
-        body: [
-          "When you import a paper, PaperLens creates a reading note (note.md) from your template.",
-          "The note has fields for each reading stage. If you stop halfway, it still shows how far you got.",
-        ],
-        points: ["Tracks your reading stage, from Unread to Summarized", "Edit it in Obsidian and the app updates right away"],
-      },
-      {
-        kicker: "03 — Connect",
-        title: "Link presentation slides to the paper",
-        body: [
-          "Show your journal-club slides (PDF or PPTX) to the left of the paper.",
-          "Draw a box around part of a slide and join it with a colored line to the sentence, figure or equation it comes from.",
-        ],
-        points: ["Shows two of the three panes (slides, paper, side panel) side by side", "Claude can add boxes and links over MCP, too"],
-      },
-    ],
-    linkShotAlt: "Red lines run from boxes on a slide to an equation and sentences in the paper.",
-    gallery: {
-      title: "Your papers become a glossary of terms and equations.",
-      items: [
-        { alt: "The Equations tab. Equation (11) is rendered with KaTeX, with its TeX source, an explanation and the meaning of each symbol.", caption: "Kept in TeX, with a note for every symbol." },
-        { alt: "The Terms tab. Explanations of slow feature analysis and recurrence plots, how each is used in the paper, and related terms.", caption: "What a word means, and how this paper uses it." },
-        { alt: "The glossary, listing terms from every paper in paper and page order.", caption: "Look up terms from every paper in one place." },
-        { alt: "The graph. Papers and terms are joined by lines, and the selected term, FORCE learning, is explained on the right.", caption: "Click a term to see its meaning and the papers it appears in." },
-        { alt: "The whole graph, with lines from two papers fanning out to many terms.", caption: "See how papers and terms connect at a glance." },
-      ],
+    title: "What it does",
+    slides: {
+      kicker: "Slides & paper",
+      title: "Check each slide against the original text.",
+      body: "Draw a box on a slide to make a group. With the group selected, pick a sentence, figure, or equation in the paper, and a colored line joins the two. Click the group to jump to the passage; click the marker in the paper to jump back to the slide.",
+      bullets: ["Import slides as PDF or PPTX", "Replace the slides, and your boxes stay", "Lines stay visible in full screen, ready to present"],
+      cta: "More on slides & paper",
+      alt: "Colored lines run from boxes on a slide to a sentence and an equation in the paper.",
     },
-    stagesLabel: "Reading stages",
-    stages: ["Unread", "Overview", "Close reading", "Evaluating", "Summarized"],
-    moreTitle: "And more",
-    more: [
-      {
-        title: "Annotate what you select",
-        body: "Select text in the PDF to highlight it and write a translation or a term definition. Equations are stored as TeX and rendered with KaTeX.",
-      },
-      {
-        title: "Use it from Claude (MCP)",
-        body: "Register the MCP server to do everything the app can do from Claude Desktop or Claude Code. If the app is open, Claude's changes show up on screen immediately.",
-      },
-      {
-        title: "Glossary, equation list and graph",
-        body: "Look up the terms and equations from every paper in one place. The graph shows how papers and terms connect.",
-      },
-      {
-        title: "An Obsidian-compatible vault",
-        body: "Everything is plain files in your vault — no database. Edit note.md in Obsidian and the app picks up the change right away.",
-      },
-    ],
+    supplement: {
+      kicker: "Companion panel",
+      title: "Keep terms, equations, and translation beside the paper.",
+      body: "Select a word and choose \"Look up term\" to get its meaning and how this paper uses it. Select an equation and choose \"Make equation\" to get it in TeX, with each symbol explained. Both are written from the surrounding text, so they stay close to what the paper actually means.",
+      bullets: [
+        "Terms: definition, details, use in this paper, related terms",
+        "Equations: TeX, what the equation does, what each symbol means",
+        "Translation: every sentence, with a glossary to keep wording consistent",
+      ],
+      note: "The buttons use your Claude API key (billed by usage). For the full translation, ask Claude via MCP. You can also write entries by hand.",
+      cta: "More on the companion panel",
+      alt: "The Equations tab of the companion panel, showing an equation rendered from TeX with each symbol explained.",
+    },
+    connected: {
+      kicker: "Slides, paper, companion panel",
+      title: "Wherever you start, you land back in the paper.",
+      body: "Both the slides and the companion panel are tied to the paper. A tab switches the view between [slides | paper] and [paper | companion panel]. The paper stays put, so you can compare as you read.",
+      nodes: ["Slides", "Paper", "Companion panel"],
+      bullets: [
+        "Click a group on a slide → the linked passage",
+        "Click a term's or equation's location → that spot in the paper",
+        "Click a sentence in the translation → that sentence in the PDF",
+      ],
+      cta: "See how they connect",
+    },
+    lists: {
+      kicker: "Wordbook & graph",
+      title: "Terms you look up carry across papers.",
+      body: "Every term you look up, in any paper, goes into one wordbook. Equations you transcribe go into the equation book. The graph shows how papers connect through the terms they share.",
+      bullets: ["Sort by paper and page, or alphabetically", "Jump from any entry to its page in the paper", "In the graph, papers that share terms sit close together"],
+      cta: "More on the wordbook & graph",
+      alt: "The wordbook, listing terms from every paper in paper-and-page order.",
+    },
+    mcp: {
+      kicker: "With Claude (MCP)",
+      title: "Ask Claude, and the result lands in the app.",
+      body: "Register PaperLens as an MCP server, and Claude Desktop or Claude Code can work in it. Ask \"explain this equation\" or \"translate the whole paper\", and the results go into the Equations or Translation tab. If the app is open, they appear right away.",
+      bullets: ["Save what you worked out in chat as a note on a sentence or a slide group", "Full translation needs no API key", "Claude can draw groups and links on your slides, too"],
+      cta: "More on using Claude",
+      chatLabel: "Example conversation with Claude",
+      chat: [
+        { ask: "Translate the whole paper", tool: "set_translations" },
+        { ask: "Explain this equation", tool: "add_equation" },
+        { ask: "Save that explanation as a note on this sentence", tool: "add_sentence_note" },
+      ],
+      alt: "Equations and translations written by Claude, shown in the PaperLens companion panel.",
+    },
+    library: {
+      kicker: "Papers & search",
+      title: "Import papers and open them from the list.",
+      body: "Import papers from a PDF or an arXiv ID, and open them from the list. Search looks through paper titles and everything you've written down: translations, notes, terms, equations.",
+      bullets: ["Filter the list by title, author, year, or tag", "Export BibTeX for all your papers"],
+      cta: "More on papers & search",
+      alt: "The paper list, with imported papers below the search box.",
+    },
   },
 
   privacy: {
-    title: "Your PDFs stay on your computer.",
-    lead: "PaperLens goes online only when you tell it to, so you can read unpublished manuscripts with peace of mind.",
-    local: {
-      tag: "Always",
-      title: "Stays on your computer",
-      items: [
-        "The app's server runs only on your computer (127.0.0.1). Other devices cannot connect to it.",
-        "PDFs and notes are stored only in the vault you choose.",
-        "GROBID, used to split sentences, can run locally in Docker.",
-      ],
-    },
-    remote: {
-      tag: "Only when you tell it to",
-      title: "Goes online",
-      lead: "Only when you:",
-      items: [
-        "Use PaperLens from Claude Desktop or Claude Code over MCP. Text that Claude reads is sent to Claude.",
-        "Enter a Claude API key in Settings and press Translate, Look up term or Make equation. Only the selection, the surrounding text and the paper's title are sent. For equations, an image of the selection is sent too. The whole PDF is never sent.",
-        "Import a paper from a URL (such as arXiv).",
-        "Run GROBID on another server.",
-      ],
-    },
+    title: "Your papers stay in a folder on your computer.",
+    body: "The app's server runs only on your own computer (127.0.0.1). It talks to the outside only when you ask Claude for something, import a paper from a URL, or point it at a GROBID server elsewhere.",
+    sendTitle: "What goes to Claude",
+    detail: "When you use a lookup button, it sends only the selection, the text around it, and the paper's title (plus an image of the selection for equations). Never the whole PDF.",
+    vaultTitle: "Where your data lives",
+    vault: "Your data is plain files in a vault folder. No database, and the folder opens as an Obsidian vault as is.",
   },
 
-  download: {
-    title: "Try it for free.",
-    lead: "PaperLens is distributed on GitHub. It is open source under the {license} License.",
-    desktopTitle: "Desktop app",
-    desktopDesc: "Builds for macOS, Windows and Linux will be published on the GitHub Releases page when they are ready.",
-    desktopNote: "For now, follow “Run from source” below. It runs on any computer that runs Node.js.",
-    platforms: [
-      { name: "macOS", file: ".dmg" },
-      { name: "Windows", file: "Installer" },
-      { name: "Linux", file: "AppImage" },
+  start: {
+    title: "Run from source",
+    lead: "There's no installer yet. For now, you run PaperLens from the source on GitHub.",
+    requirement: "Requires Node.js 22.6 or later.",
+    stepsLabel: "Steps to run from source",
+    steps: [
+      {
+        title: "Get the code and build",
+        body: "",
+        code: "git clone https://github.com/nico0748/LogiXiv.git\ncd LogiXiv\nnpm install\nnpm run build\ncd apps/reader",
+      },
+      {
+        title: "Start it",
+        body: "`npm run app` opens the app window. To use a browser instead, run `npm start` and open http://127.0.0.1:5175.",
+        code: "",
+      },
+      {
+        title: "Run GROBID (recommended)",
+        body: "From the repository root, run `docker compose -f docker/grobid.yml up -d`. Sentence splitting gets more accurate. PaperLens works without it, but less precisely.",
+        code: "",
+      },
     ],
-    platformsLabel: "Planned app builds",
-    platformsStatus: "Coming soon",
-    runCta: "Steps to run from source",
-    desktopCta: "Open the Releases page",
-    sourceTitle: "Source code",
-    sourceDesc: "Download the latest source code as a ZIP, or clone it with git.",
-    sourceCta: "Source code (ZIP)",
-    runTitle: "Run from source",
-    runRequirement: ["Requires Node.js 22.6 or later. Check with ", "node -v", "."],
-    runStepsLabel: "Steps to run from source",
-    runOpenApp: "# open in the app window",
-    runOr: "# or",
-    runOpenBrowser: "# open http://127.0.0.1:5175 in your browser",
-    grobidText:
-      "For accurate sentence boundaries, we strongly recommend running GROBID in Docker. Run this at the repository root (the top-level folder):",
-    grobidLabel: "Steps to start GROBID",
-    readme: ["See the ", "README on GitHub", " for full instructions."],
+    codeLabel: "Commands",
+    note: "The repository still uses its old name, LogiXiv.",
+    readme: ["Full instructions are in the ", "README", "."],
+    github: "View on GitHub",
+    sourceZip: "Source code (ZIP)",
   },
 
-  sharedBand: {
-    title: "Download papers that already have translations and notes.",
-    body: "Log in with GitHub to get shared data (ZIP). Start reading with translations, terms and reading notes already in place.",
-    cta: "Browse shared data",
-  },
-
-  landing: {
-    kickers: { features: "FEATURES", screens: "SCREENS", privacy: "PRIVACY", download: "GET STARTED" },
-    trustLabel: "Highlights",
-    trust: ["Free, {license} License", "Runs on Node.js (macOS, Windows, Linux)", "PDFs stay on your computer", "Saved as Markdown"],
-    chips: ["Slides linked to the paper", "Side-by-side translation", "Equations and terms", "Notes in Markdown"],
-    screens: {
-      lead: "Use the tabs below to see the real equation, term, glossary and graph views.",
-      tabsLabel: "Screens",
-      tabs: [
-        { label: "Equations", sub: "TeX and symbol notes" },
-        { label: "Terms", sub: "How the paper uses them" },
-        { label: "Glossary", sub: "Terms from every paper" },
-        { label: "Graph", sub: "From a term to papers" },
-        { label: "Full graph", sub: "Every connection at once" },
-      ],
-      enlarge: "View full size",
-    },
-    closing: {
-      title: "Try it on the next paper you read.",
-      body: "Your PDFs and notes stay on your computer.",
-      facts: ["{license} License", "Node.js 22.6 or later", "macOS, Windows, Linux"],
-    },
+  closing: {
+    title: "Try it at your next journal club.",
+    body: "Start by linking one slide to the paper.",
+    facts: ["{license} license", "Node.js 22.6+", "macOS / Windows / Linux"],
   },
 
   footer: {
-    tagline: "Read papers sentence by sentence, and keep what you learn in Markdown.",
-    product: "Product",
+    tagline: "Slides, paper, and notes on the side—all tied to the paper.",
+    features: "Features",
     resources: "Resources",
     community: "Community",
+    start: "Run from source",
     releases: "Release notes",
     readme: "Documentation (README)",
     zipFormat: "Shared ZIP format",
+    formats: "Works with: PDF / PPTX · Markdown · Obsidian · GROBID · KaTeX · MCP",
     source: "Source code",
     issues: "Report an issue",
     license: "PaperLens is open source software under the {license} License.",

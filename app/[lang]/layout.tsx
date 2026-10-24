@@ -12,6 +12,14 @@ import { site } from "@/lib/site";
 const serif = Noto_Serif_JP({ subsets: ["latin"], weight: ["400", "700"], display: "swap", variable: "--font-noto-serif" });
 const mono = Noto_Sans_Mono({ subsets: ["latin"], weight: ["400", "700"], display: "swap", variable: "--font-noto-mono" });
 
+/**
+ * OG 画像などの絶対 URL の起点。NEXT_PUBLIC_SITE_URL を優先し、Vercel では本番のドメインを使う。
+ * どちらも無いとき（手元）は Next.js の既定（localhost）に任せる。
+ */
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined);
+
 /** Adobe Fonts のキット ID（英数字だけ）。未設定なら筑紫明朝は読まない */
 const adobeFontsKit = /^[a-z0-9]+$/i.test(process.env.ADOBE_FONTS_KIT_ID ?? "") ? process.env.ADOBE_FONTS_KIT_ID! : null;
 
@@ -26,9 +34,19 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   if (!hasLocale(lang)) return {};
   const t = getDictionary(lang).meta;
   return {
+    ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
     title: { default: t.title, template: `%s | ${site.name}` },
     description: t.description,
     alternates: { languages: Object.fromEntries(locales.map((l) => [l, `/${l}`])) },
+    openGraph: {
+      type: "website",
+      siteName: site.name,
+      title: t.title,
+      description: t.description,
+      locale: lang === "ja" ? "ja_JP" : "en_US",
+      images: [{ url: "/og/site.png", width: 1200, height: 630, alt: site.name }],
+    },
+    twitter: { card: "summary_large_image" },
   };
 }
 

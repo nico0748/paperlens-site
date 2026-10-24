@@ -1,0 +1,248 @@
+/*
+ * 機能の一覧（/[lang]/features）と詳細ページ（/[lang]/features/[slug]）のスタイル。接頭辞は fp-。
+ * 色は globals.css の役割の変数（var(--c-...)）を使い、セクションの .theme-dark / 既定の白で切り替える。
+ * 画面写真の枠（ScreenStage）は components/features/stage.css。
+ * 並び（詳細）: ヒーロー（紺）→ 使い方の流れ（白）→ こんなときに（淡）→ Claude からもできる（白）→ 関連する機能（白）→ 締め（紺）
+ */
+
+/* ---------- 共通 ---------- */
+.fp-section { position: relative; padding: var(--section-y) 0; overflow-x: clip; }
+.fp-tint { background: linear-gradient(180deg, #f3f4fb, #eceefa 55%, var(--paper)); }
+.fp-h1 { margin: 0 0 20px; font-size: clamp(2rem, 1.35rem + 2.1vw, 3rem); line-height: 1.35; letter-spacing: 0.03em; }
+:lang(en) .fp-h1 { letter-spacing: 0; line-height: 1.2; }
+.fp-h2 { margin: 0 0 32px; font-size: clamp(1.625rem, 1.15rem + 1.6vw, 2.25rem); line-height: 1.4; }
+.fp-h3 { margin: 0 0 16px; font-size: var(--fs-h3); line-height: 1.5; }
+.fp-lead { margin: 0; max-width: 34em; color: var(--c-text-2); font-size: var(--fs-lead); line-height: 1.8; }
+.fp-section-lead { margin: -16px 0 28px; max-width: 40em; color: var(--c-text-2); }
+:lang(ja) :is(.fp-lead, .fp-step-body, .fp-case, .fp-card-line, .fp-ribbon-body, .fp-mcp-line, .fp-closing-body, .fp-notes li) { word-break: auto-phrase; }
+.fp-kicker {
+  display: inline-flex; align-items: center; gap: 12px; margin: 0 0 20px;
+  font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700; letter-spacing: 0.06em; color: var(--c-brand);
+}
+.fp-kicker-sm { margin: 0 0 8px; font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.12em; color: var(--c-link); }
+.fp-icon-tile {
+  display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 10px;
+  background: var(--indigo-50); color: var(--indigo-700);
+}
+.theme-dark .fp-icon-tile { background: rgb(189 194 255 / 0.14); color: var(--indigo-200); box-shadow: inset 0 0 0 1px rgb(189 194 255 / 0.25); }
+.fp-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.fp-cta-center { justify-content: center; }
+.fp-more {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  font-family: var(--font-ui); font-size: var(--fs-ui); font-weight: 700; color: var(--c-link); text-decoration: none;
+}
+.fp-more:hover { text-decoration: underline; }
+
+/* ---------- ヒーロー（紺） ---------- */
+.fp-hero {
+  position: relative; overflow-x: clip; padding: 16px 0 88px;
+  background: linear-gradient(160deg, var(--navy-950) 0%, var(--navy-900) 55%, var(--navy-800) 100%);
+}
+.fp-hero > .container, .fp-closing > .container { position: relative; }
+.fp-hero-art {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(720px 480px at 78% 12%, rgb(109 116 184 / 0.38), transparent 70%),
+    radial-gradient(560px 420px at 8% 92%, rgb(84 90 146 / 0.32), transparent 70%);
+}
+.fp-hero-art::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(115deg, rgb(189 194 255 / 0.06) 0 1px, transparent 1px 96px);
+  mask-image: radial-gradient(ellipse 70% 80% at 80% 20%, #000 10%, transparent 75%);
+}
+.fp-hero .breadcrumb { margin-bottom: 24px; }
+.fp-hero-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
+.fp-hero-text { padding-bottom: 40px; }
+.fp-hero-media { min-width: 0; }
+.fp-hero .fp-h1 { color: #fff; }
+
+/* ---------- 使い方の流れ（白、スクロールで場面が替わる） ---------- */
+.fp-steps-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 56px; align-items: start; }
+.fp-steps-stage { position: sticky; top: calc(var(--header-h) + 24px); min-width: 0; }
+.fp-steps-list { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+.fp-step {
+  display: flex; flex-direction: column; justify-content: center; min-height: 54vh; padding: 24px 0;
+  scroll-margin-top: calc(var(--header-h) + 24px);
+}
+.fp-step:first-child { min-height: 46vh; justify-content: flex-start; padding-top: 8px; }
+.fp-step:last-child { min-height: 70vh; }
+.fp-step-text { max-width: 30em; }
+.fp-step-n {
+  display: inline-grid; place-items: center; width: 40px; height: 40px; margin: 0 0 16px; border-radius: 50%;
+  font-family: var(--font-ui); font-size: 1rem; font-weight: 700; color: var(--c-text-3);
+  box-shadow: inset 0 0 0 2px var(--c-border-strong);
+  transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base);
+}
+.fp-step-title { margin: 0 0 12px; font-size: var(--fs-h3); line-height: 1.5; color: var(--c-text-3); transition: color var(--dur-base) var(--ease-standard); }
+.fp-step-body { margin: 0; color: var(--c-text-3); line-height: 1.85; transition: color var(--dur-base) var(--ease-standard); }
+.fp-step[data-current] .fp-step-n { background: var(--marker); color: var(--ink); box-shadow: inset 0 0 0 2px var(--marker-strong); }
+.fp-step[data-current] .fp-step-title { color: var(--c-text); }
+.fp-step[data-current] .fp-step-body { color: var(--c-text-2); }
+.fp-ui-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 0; }
+.fp-ui-chips li {
+  display: inline-flex; align-items: center; min-height: 28px; padding: 2px 10px; border-radius: var(--radius-sm);
+  background: var(--paper-2); box-shadow: inset 0 0 0 1px var(--line-ctrl), inset 0 -2px 0 var(--line-light);
+  font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; color: var(--ink-2); letter-spacing: 0.02em;
+}
+.fp-step-still { display: none; }
+
+/* ---------- こんなときに（淡） ---------- */
+.fp-cases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.fp-case {
+  position: relative; padding: 20px 22px 20px 56px; border-radius: var(--radius-card);
+  background: var(--paper); border: 1px solid var(--line-light); box-shadow: var(--shadow-1);
+  font-weight: 700; line-height: 1.7;
+}
+.fp-case::before {
+  content: ""; position: absolute; left: 20px; top: 23px; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--indigo-700) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E") center / 13px no-repeat;
+}
+.fp-notes {
+  margin-top: 32px; padding: 16px 20px; border-radius: var(--radius-lg);
+  background: var(--paper); border: 1px solid var(--line-ctrl);
+  font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.75; color: var(--ink-2);
+}
+.fp-notes-title { margin: 0 0 4px; font-weight: 700; color: var(--ink); }
+.fp-notes ul { margin: 0; padding-left: 1.25em; }
+.fp-notes li + li { margin-top: 4px; }
+
+/* ---------- Claude からもできる（白） ---------- */
+.fp-mcp { padding-bottom: 0; }
+.fp-mcp-inner {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 48px; align-items: center;
+  padding: 32px 36px; border-radius: var(--radius-panel); background: var(--paper-2); box-shadow: inset 0 0 0 1px var(--line-light);
+}
+.fp-mcp-inner .fp-h3 { margin-bottom: 8px; }
+.fp-mcp-line { margin: 0 0 8px; color: var(--c-text-2); }
+.fp-tools { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; }
+.fp-tools code { display: inline-block; padding: 4px 10px; font-size: var(--fs-sm); background: var(--paper); border-color: var(--line-ctrl); color: var(--indigo-800); }
+
+/* MCP のページ: 機能ごとのツール */
+.fp-table-wrap { overflow-x: auto; margin-bottom: 48px; border-radius: var(--radius-lg); box-shadow: inset 0 0 0 1px var(--line-light); }
+.fp-table { width: 100%; border-collapse: collapse; font-family: var(--font-ui); font-size: var(--fs-sm); }
+.fp-table th, .fp-table td { padding: 14px 20px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line-light); }
+.fp-table tr:last-child > * { border-bottom: 0; }
+.fp-table thead th { background: var(--paper-2); color: var(--ink-2); font-size: var(--fs-xs); letter-spacing: 0.06em; }
+.fp-table tbody th { width: 11em; white-space: nowrap; color: var(--ink); }
+.fp-prompts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0; }
+.fp-prompts > div { padding: 20px; border-radius: var(--radius-card); background: var(--paper-2); box-shadow: inset 0 0 0 1px var(--line-light); }
+.fp-prompts dt { margin-bottom: 8px; }
+.fp-prompts dd { margin: 0; color: var(--ink-2); font-size: var(--fs-ui); }
+
+/* ---------- 機能のカード（関連する機能・一覧） ---------- */
+.fp-card-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.fp-card {
+  position: relative; display: flex; flex-direction: column; overflow: hidden;
+  background: var(--paper); border: 1px solid var(--line-light); border-radius: var(--radius-card); box-shadow: var(--shadow-1);
+  transition: border-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
+}
+.fp-card:hover { border-color: var(--line-ctrl); box-shadow: var(--shadow-2); }
+.fp-card:has(.fp-card-link:focus-visible) { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+.fp-card-thumb { aspect-ratio: 16 / 9; overflow: hidden; background: #1f1f25; border-bottom: 1px solid var(--line-light); }
+.fp-card-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 0 0; transition: transform 600ms var(--ease-out-expo); }
+.fp-card:hover .fp-card-thumb img { transform: scale(1.03); }
+.fp-card-body { display: flex; flex-direction: column; flex: 1; padding: 24px; }
+.fp-card-kicker { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; color: var(--indigo-700); }
+.fp-card-kicker .fp-icon-tile { width: 36px; height: 36px; }
+.fp-card-title { margin: 0 0 8px; font-size: 1.25rem; line-height: 1.5; }
+.fp-card-link { color: var(--ink); text-decoration: none; }
+.fp-card-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.fp-card-link:focus-visible { outline: none; }
+.fp-card:hover .fp-card-link { text-decoration: underline; text-decoration-thickness: 2px; }
+.fp-card-line { margin: 0 0 16px; color: var(--ink-2); font-size: var(--fs-ui); line-height: 1.75; }
+.fp-card-more { display: inline-flex; align-items: center; gap: 6px; margin: auto 0 0; font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700; color: var(--indigo-700); }
+.fp-card-grid-index { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px; }
+.fp-card-grid-index > :nth-child(-n + 2) { grid-column: span 3; }
+.fp-card-grid-index > :nth-child(n + 3) { grid-column: span 2; }
+.fp-card-grid-index > :nth-child(-n + 2) .fp-card-title { font-size: var(--fs-h3); }
+
+/* ---------- 一覧のページ ---------- */
+.fp-index-head { padding: 16px 0 8px; background: linear-gradient(180deg, var(--paper-2), var(--paper)); }
+.fp-index-head .fp-h1 { margin-top: 8px; }
+.fp-index-list { padding-top: 40px; }
+.fp-map { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+.fp-ribbon { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 4px; }
+.fp-ribbon-item { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--line-light); }
+.fp-ribbon-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; background: #26262c; color: #d6d8e6; }
+.fp-ribbon-icon-tab { background: var(--indigo-50); color: var(--indigo-700); }
+.fp-ribbon-label { margin: 0; font-weight: 700; line-height: 1.5; }
+.fp-ribbon-label a { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; color: var(--c-link); }
+.fp-ribbon-body { margin: 2px 0 0; color: var(--ink-2); font-size: var(--fs-ui); line-height: 1.7; }
+
+/* ---------- 締め（紺）と前後の機能 ---------- */
+.fp-closing { position: relative; overflow-x: clip; padding: 96px 0 48px; background: var(--navy-950); text-align: center; }
+.fp-closing .fp-h2 { color: #fff; margin-bottom: 16px; }
+.fp-closing-body { margin: 0 auto; max-width: 34em; color: var(--c-text-2); }
+.fp-pager {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 72px; padding-top: 24px;
+  border-top: 1px solid var(--c-line); text-align: left;
+}
+.fp-pager-link {
+  display: flex; flex-direction: column; gap: 4px; min-height: 44px; padding: 12px 16px; border-radius: var(--radius-lg);
+  color: var(--c-text); text-decoration: none;
+}
+.fp-pager-link:hover { background: rgb(255 255 255 / 0.06); color: #fff; }
+.fp-pager-link:hover .fp-pager-title { text-decoration: underline; }
+.fp-pager-next { text-align: right; align-items: flex-end; }
+.fp-pager-dir { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; color: var(--c-text-3); }
+.fp-pager-title { font-size: var(--fs-h4); font-weight: 700; line-height: 1.5; }
+.fp-flip { transform: scaleX(-1); }
+
+/* ---------- 動き（JavaScript が html.fp-motion を付けたときだけ隠す） ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fp-up { from { opacity: 0; transform: translate3d(0, 16px, 0); } to { opacity: 1; transform: none; } }
+  @keyframes fp-rise { from { transform: translate3d(0, 28px, 0); } to { transform: none; } }
+  .fp-hero-text > * { animation: fp-up 0.7s var(--ease-out-expo) both; animation-delay: calc(var(--d, 0) * 80ms); }
+  .fp-hero-text > :nth-child(2) { --d: 1; }
+  .fp-hero-text > :nth-child(3) { --d: 2; }
+  .fp-hero-text > :nth-child(4) { --d: 3; }
+  /* 画面写真は透明にしない（LCP を遅らせない）。位置だけ動かす */
+  .fp-hero-media { animation: fp-rise 0.9s 0.1s var(--ease-out-expo) both; }
+
+  .fp-motion [data-fp-reveal] {
+    opacity: 0; transform: translate3d(0, 24px, 0);
+    transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo), border-color var(--dur-base), box-shadow var(--dur-base);
+    transition-delay: calc(min(var(--i, 0), 5) * 80ms);
+  }
+  .fp-motion [data-fp-reveal].is-in { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-fp-reveal], .fp-hero-text > *, .fp-hero-media { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------- 狭い画面 ---------- */
+@media (max-width: 1000px) {
+  .fp-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .fp-hero-text { padding-bottom: 0; }
+  .fp-steps-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .fp-steps-stage { display: none; }
+  /* 手順ごとに、その場面の写真を下に置く */
+  .fp-step, .fp-step:first-child, .fp-step:last-child { min-height: 0; padding: 0 0 48px; justify-content: flex-start; }
+  .fp-step:last-child { padding-bottom: 0; }
+  .fp-step .fp-step-n { background: var(--marker); color: var(--ink); box-shadow: inset 0 0 0 2px var(--marker-strong); }
+  .fp-step .fp-step-title { color: var(--c-text); }
+  .fp-step .fp-step-body { color: var(--c-text-2); }
+  .fp-step-still { display: block; margin-top: 20px; }
+  .fp-mcp-inner { grid-template-columns: minmax(0, 1fr); padding: 28px 24px; }
+  .fp-map { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .fp-prompts { grid-template-columns: minmax(0, 1fr); }
+  .fp-card-grid-index { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fp-card-grid-index > :nth-child(n) { grid-column: auto; }
+}
+@media (max-width: 600px) {
+  .fp-hero { padding-bottom: 56px; }
+  .fp-hero .breadcrumb { margin-bottom: 12px; }
+  .fp-cta .btn { flex: 1 1 100%; }
+  .fp-card-grid-index { grid-template-columns: minmax(0, 1fr); }
+  .fp-closing { padding-top: 72px; }
+  .fp-pager { grid-template-columns: minmax(0, 1fr); margin-top: 48px; }
+  .fp-pager-next { text-align: left; align-items: flex-start; }
+  .fp-table tbody th { white-space: normal; width: 7em; }
+  .fp-table th, .fp-table td { padding: 12px 14px; }
+}
+
+@media print {
+  [data-fp-reveal] { opacity: 1 !important; transform: none !important; }
+  .fp-hero-art { display: none; }
+  .fp-steps-stage { position: static; }
+}

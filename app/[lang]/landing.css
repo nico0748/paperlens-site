@@ -1,7 +1,7 @@
 /*
  * トップページ（ランディング）だけで使うスタイル。接頭辞は lp-。
  * 色は globals.css の役割の変数（var(--c-...)）を使い、セクションの .theme-dark / .theme-light で切り替える。
- * 並び: ヒーロー（紺）→ 道具（白）→ できること（白）→ 実際の画面（紺）→ プライバシー（淡）→ ダウンロード（白）→ 締め（紺）
+ * 並び: ヒーロー（紺）→ 使い方（白）→ 見取り図（淡）→ 機能の行（白・淡を交互、途中に紺の帯）→ プライバシー（淡）→ はじめ方（白）→ 締め（紺）
  */
 
 /* ---------- セクション共通 ---------- */
@@ -107,97 +107,6 @@
 }
 .lp-shot-hero img { display: block; width: 100%; height: auto; filter: drop-shadow(0 20px 32px rgb(29 32 54 / 0.22)); }
 
-/*
- * チップ: 広い画面（1340px 以上）では写真の左右の縁にかけて置く。写真の内側には 56px だけ入り、
- * Mac の枠とアプリの端の細い帯にしかかからない（画面の中身は隠さない）。1 行に収め、折り返さない。
- * 761〜1339px は余白が足りないので出さない。760px 以下は写真の下に 2 列で並べる。
- */
-.lp-chips { list-style: none; margin: 0; padding: 0; }
-.lp-chip {
-  position: absolute; display: flex; gap: 10px; align-items: center; white-space: nowrap;
-  padding: 8px 16px 8px 8px; text-align: left;
-  font-size: 0.9375rem; font-weight: 700; line-height: 1.4; letter-spacing: 0.02em;
-  background: #fff; color: var(--ink); border: 1px solid rgb(189 194 255 / 0.6); border-radius: 12px;
-  box-shadow: 0 1px 2px rgb(29 32 54 / 0.2), 0 18px 40px -12px rgb(29 32 54 / 0.5);
-}
-.lp-chip-icon { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 8px; background: var(--indigo-50); color: var(--indigo-700); }
-/* 画面の端からはみ出さない幅（左右の余白 + 写真にかかる 56px - 端の余白 16px）。超えるときだけ 2 行にする */
-@media (min-width: 1340px) { .lp-chip { width: max-content; max-width: calc((100vw - 1040px) / 2 + 40px); white-space: normal; } }
-.lp-chip:nth-child(odd) { right: calc(100% - 56px); }
-.lp-chip:nth-child(even) { left: calc(100% - 56px); }
-.lp-chip:nth-child(1) { top: 12%; }
-.lp-chip:nth-child(2) { top: 24%; }
-.lp-chip:nth-child(3) { top: 58%; }
-.lp-chip:nth-child(4) { top: 70%; }
-@media (max-width: 1339px) { .lp-chips { display: none; } }
-
-/* ---------- つながる道具（白） ---------- */
-.lp-stack { padding: 8px 0 0; }
-.lp-stack-title {
-  margin: 0 0 20px; text-align: center; font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700;
-  letter-spacing: 0.06em; color: var(--c-text-3);
-}
-/* 枠の無い 1 列。項目の間に細い縦線、アイコンは淡く */
-.lp-stack-list {
-  list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
-  border-block: 1px solid var(--line-light);
-}
-.lp-stack-list li { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 18px 12px; text-align: center; }
-.lp-stack-list li + li { box-shadow: inset 1px 0 0 var(--line-light); }
-.lp-stack-name { display: inline-flex; align-items: center; gap: 8px; font-size: 1.0625rem; font-weight: 700; letter-spacing: 0.01em; white-space: nowrap; }
-.lp-stack-name svg { color: var(--ink-3); opacity: 0.8; }
-.lp-stack-desc { font-family: var(--font-ui); font-size: var(--fs-xs); line-height: 1.6; color: var(--c-text-3); }
-
-/* ---------- できること（白） ---------- */
-#features { padding-top: var(--space-11); }
-.lp-tab-sub { text-wrap: balance; }
-:lang(ja) :is(.lp-stack-desc, .lp-tab-sub, .lp-trust li, .lp-points li, .lp-panel-caption, .lp-chip) { word-break: auto-phrase; }
-.lp-feature-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; row-gap: 0; }
-/* 3 枚のカードの見出し・本文・図・箇条書きの高さをそろえる（subgrid） */
-.lp-feature {
-  display: grid; grid-row: span 5; grid-template-rows: subgrid;
-  grid-template-areas: "head" "title" "body" "mini" "points";
-}
-.lp-feature .lp-card-head { grid-area: head; }
-.lp-feature .lp-h3 { grid-area: title; font-size: 1.25rem; }
-.lp-feature-body { grid-area: body; display: grid; gap: 8px; align-content: start; color: var(--ink-2); }
-.lp-feature .lp-mini { grid-area: mini; }
-.lp-feature .lp-points { grid-area: points; }
-/* 3 枚の図は同じ 4:3 の枠（中身が多いときだけ伸びる）。中身は上にそろえる */
-.lp-mini {
-  position: relative; margin-top: 20px; aspect-ratio: 4 / 3; padding: 16px;
-  border-radius: var(--radius-lg); background: var(--paper-2); box-shadow: inset 0 0 0 1px var(--line-light);
-  display: flex; flex-direction: column; justify-content: flex-start;
-}
-/* スライド連携は実際の画面の切り抜き。切らずに全体を収め、まわりはアプリの地の色で埋める */
-.lp-mini-shot-frame { padding: 10px; overflow: hidden; background: #27272c; box-shadow: none; justify-content: center; }
-.lp-mini-shot { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: var(--radius); }
-
-.lp-pairs { display: grid; gap: 10px; }
-.lp-pair { padding: 10px 12px; border-radius: 10px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line-light); }
-.lp-pair p { margin: 0; }
-.lp-pair-en { font-size: 0.8125rem; line-height: 1.55; color: var(--ink-3); letter-spacing: 0; }
-.lp-pair-ja { margin-top: 4px !important; font-size: 0.875rem; line-height: 1.6; font-weight: 700; color: var(--ink); }
-.lp-pair.on { background: var(--indigo-50); box-shadow: inset 0 0 0 1px var(--indigo-200), 0 6px 16px -8px rgb(63 69 133 / 0.4); }
-.lp-pair mark, .lp-pair-ja mark { background: var(--marker); color: var(--ink); padding: 0 2px; border-radius: 2px; }
-
-.lp-note { display: grid; gap: 12px; }
-.lp-note-file { border-radius: 10px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line-light); overflow: hidden; }
-.lp-note-name {
-  margin: 0; padding: 6px 12px; border-bottom: 1px solid var(--line-light); background: #fafbfe;
-  font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-3);
-}
-.lp-note-body { margin: 0; padding: 10px 12px; background: transparent; color: var(--ink-2); font-size: 0.8125rem; line-height: 1.7; white-space: pre-wrap; border-radius: 0; }
-.md-meta { color: var(--ink-3); }
-.md-value { background: var(--marker); color: var(--ink); padding: 0 2px; }
-.md-h { color: var(--indigo-700); font-weight: 700; }
-.md-math { color: #8a3f00; }
-.lp-stages { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 4px; font-family: var(--font-ui); font-size: 0.8125rem; }
-.lp-stages li { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-3); }
-.lp-stages li > :first-child, .lp-stages li { line-height: 1.6; }
-.lp-stages li + li::before { content: "›" / ""; color: var(--ink-3); margin-right: 2px; }
-.lp-stages li[aria-current="step"] { color: var(--indigo-700); font-weight: 700; text-decoration: underline 2px var(--marker); text-underline-offset: 4px; }
-
 .lp-points { list-style: none; margin: 20px 0 0; padding: 16px 0 0; display: grid; gap: 8px; align-content: start; border-top: 1px solid var(--line-light); }
 .lp-points li { position: relative; padding-left: 26px; font-size: 0.9375rem; line-height: 1.7; color: var(--ink-2); }
 .lp-points li::before {
@@ -205,95 +114,154 @@
   background: var(--indigo-50) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233f4585' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E") center / 12px no-repeat;
 }
 
-.lp-more-title { margin: var(--space-10) 0 24px; font-size: 1.375rem; text-align: center; }
-.lp-slim-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.lp-slim { display: flex; flex-direction: column; gap: 12px; padding: 24px; box-shadow: none; }
-.lp-slim-head { display: flex; align-items: center; gap: 12px; }
-.lp-slim-head .lp-h4 { margin: 0; }
-.lp-slim-body { font-size: 0.9375rem; line-height: 1.75; color: var(--ink-2); }
-
-/* ---------- 実際の画面（紺、タブ） ---------- */
-.lp-screens { background: var(--navy-900); }
-.lp-tablist { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
-.lp-tab {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 72px; padding: 14px 16px;
-  border: 1px solid var(--indigo-400); border-radius: 12px; background: transparent; color: var(--on-dark);
-  font: inherit; text-align: left; cursor: pointer;
-  transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard), border-color var(--dur-base) var(--ease-standard);
-}
-.lp-tab:hover { background: rgb(189 194 255 / 0.1); }
-.lp-tab-label { font-size: 1.0625rem; font-weight: 700; line-height: 1.4; }
-.lp-tab-sub { font-family: var(--font-ui); font-size: var(--fs-xs); color: var(--on-dark-2); line-height: 1.5; }
-.lp-tab[aria-selected="true"] { background: #fff; border-color: #fff; color: var(--ink); box-shadow: inset 0 -4px 0 var(--marker); }
-.lp-tab[aria-selected="true"] .lp-tab-sub { color: var(--ink-2); }
-
-/* 紺の地にそのまま置く（白い台は敷かない）。写真の枠は 16:10 に固定し、タブを替えても高さが変わらない */
-.lp-panel {
-  display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 40px; align-items: start;
-  border-radius: var(--radius-card);
-}
-.lp-panel:focus-visible { outline: 4px solid var(--marker-strong); outline-offset: 8px; }
-.lp-panel[hidden] { display: none; }
-.lp-tabs:not([data-enhanced]) .lp-panel + .lp-panel { margin-top: 48px; }
-.lp-panel-text { padding-top: 8px; }
-.lp-panel-count { margin: 0 0 12px; font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.12em; color: var(--c-text-3); }
-.lp-panel-caption { margin: 0 0 16px; color: var(--c-text); font-size: var(--fs-lead); line-height: 1.75; }
-.lp-panel-shot { margin: 0; aspect-ratio: 16 / 10; border-radius: var(--radius-shot); background: #141318; box-shadow: 0 0 0 1px rgb(189 194 255 / 0.2), 0 40px 80px -40px rgb(0 0 0 / 0.7); overflow: hidden; }
-.lp-panel-shot img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .lp-more {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
   font-family: var(--font-ui); font-size: var(--fs-ui); font-weight: 700; color: var(--c-link); text-decoration: none;
 }
 .lp-more:hover { text-decoration: underline; }
 
+/* ---------- 使い方（白） ---------- */
+:lang(ja) :is(.lp-trust li, .lp-points li, .lp-ribbon-desc, .lp-tri-points li, .lp-chat-ask, .lp-use-story, .lp-tabs-list dd) { word-break: auto-phrase; }
+.lp-uses { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.lp-use { display: flex; flex-direction: column; }
+.lp-use .lp-h3 { font-size: 1.25rem; }
+.lp-use-story { color: var(--ink-2); font-size: 0.9688rem; line-height: 1.85; }
+.lp-use-foot { margin-top: auto; padding-top: 20px; }
+.lp-use-label { margin: 16px 0 8px !important; padding-top: 16px; border-top: 1px solid var(--line-light); font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; color: var(--ink-3); }
+.lp-use-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.lp-use-chips li {
+  padding: 2px 10px; border-radius: var(--radius-sm); background: var(--indigo-50); color: var(--indigo-700);
+  font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; line-height: 1.7;
+}
+
+/* ---------- 画面の見取り図（淡） ---------- */
+.lp-map-title { margin: 0 0 16px; font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700; letter-spacing: 0.06em; color: var(--ink-2); }
+.lp-ribbon-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.lp-ribbon-card {
+  display: flex; flex-direction: column; background: var(--paper); border: 1px solid var(--line-light);
+  border-radius: var(--radius-card); box-shadow: var(--shadow-1); overflow: hidden;
+  transition: border-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
+}
+.lp-ribbon-card:hover { border-color: var(--indigo-200); box-shadow: var(--shadow-2); }
+.lp-ribbon-body { flex: 1; padding: 24px 20px 20px; }
+/* アプリの左端の帯と同じ暗い地に、明るい線のアイコン */
+.lp-ribbon-icon { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 16px; border-radius: var(--radius-ctrl); background: #26262c; color: #d9dae3; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06); }
+.lp-ribbon-label { margin: 0 0 8px; font-size: 1.125rem; line-height: 1.45; }
+.lp-ribbon-desc { margin: 0; font-size: 0.9375rem; line-height: 1.75; color: var(--ink-2); }
+.lp-ribbon-link {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 0 20px;
+  border-top: 1px solid var(--line-light); background: var(--paper-2);
+  font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700; color: var(--c-link); text-decoration: none;
+}
+.lp-ribbon-link:hover { background: var(--indigo-50); text-decoration: underline; }
+.lp-ribbon-link svg { transition: transform var(--dur-fast) var(--ease-standard); }
+.lp-ribbon-link:hover svg { transform: translateX(3px); }
+.lp-ribbon-extra { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 32px; font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.6; color: var(--ink-3); }
+.lp-ribbon-extra li { display: flex; align-items: flex-start; gap: 8px; }
+.lp-ribbon-extra svg { margin-top: 2px; color: var(--ink-3); }
+.lp-ribbon-extra strong { color: var(--ink-2); margin-right: 4px; }
+.lp-tabs-panel { margin-top: 40px; padding: 24px 28px 12px; background: var(--paper); border: 1px solid var(--line-light); border-radius: var(--radius-card); box-shadow: var(--shadow-1); }
+.lp-tabs-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.lp-tabs-head .lp-map-title { margin: 0; }
+.lp-tabs-list { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.lp-tabs-list > div { padding: 4px 20px 8px; }
+.lp-tabs-list > div:first-child { padding-left: 0; }
+.lp-tabs-list > div + div { box-shadow: inset 1px 0 0 var(--line-light); }
+.lp-tabs-list dt { margin: 0 0 4px; font-weight: 700; font-size: 1.0625rem; }
+.lp-tabs-list dd { margin: 0; font-size: 0.9375rem; line-height: 1.7; color: var(--ink-2); }
+.lp-tabs-panel .lp-more { margin-top: 8px; }
+
+/* ---------- 機能の行（左右交互） ---------- */
+.lp-zig-intro { margin-bottom: var(--space-11); }
+.lp-zig-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
+.lp-zig[data-media="left"] .lp-zig-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.lp-zig[data-media="left"] .lp-zig-media { order: -1; }
+.lp-zig-text { max-width: 34em; }
+.lp-zig-media { min-width: 0; }
+.lp-kicker-icon { display: inline-flex; align-items: center; gap: 12px; font-size: var(--fs-sm); letter-spacing: 0.06em; }
+.lp-kicker-tiles { display: inline-flex; gap: 6px; }
+.lp-zig-title { font-size: clamp(1.5rem, 1.1rem + 1.3vw, 2.125rem); }
+.lp-zig-body { margin: 0; color: var(--ink-2); line-height: 1.85; }
+.lp-zig-note {
+  margin: 16px 0 0; padding-left: 12px; border-left: 3px solid var(--indigo-100);
+  font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.7; color: var(--ink-3);
+}
+.lp-zig-cta { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin-top: 28px; }
+.lp-zig-compact .lp-zig-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.lp-zig-compact .lp-zig-media { justify-self: center; width: 100%; max-width: 340px; }
+.lp-zig-compact .lp-zig-title { font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.75rem); }
+/* 文と写真は、それぞれ自分の側から滑り込む */
+.lp-zig[data-media="right"] .lp-zig-text { --dx: -40px; }
+.lp-zig[data-media="right"] .lp-zig-media { --dx: 40px; }
+.lp-zig[data-media="left"] .lp-zig-text { --dx: 40px; }
+.lp-zig[data-media="left"] .lp-zig-media { --dx: -40px; }
+
+/* MCP: 画面の下に、Claude への頼み方の例を 3 つ */
+.lp-mcp { display: grid; gap: 16px; }
+.lp-chat { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: chat; }
+.lp-chat-item {
+  position: relative; padding: 12px 14px; border-radius: var(--radius-lg); background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--line-light);
+  transition: box-shadow var(--dur-base) var(--ease-standard), background-color var(--dur-base) var(--ease-standard);
+}
+.lp-chat-item[data-on] { background: var(--indigo-50); box-shadow: inset 0 0 0 2px var(--indigo-400); }
+.lp-chat-ask { margin: 0; font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700; line-height: 1.6; color: var(--ink); }
+.lp-chat-ask::before { content: "“"; color: var(--ink-3); }
+.lp-chat-ask::after { content: "”"; color: var(--ink-3); }
+:lang(ja) .lp-chat-ask::before { content: "「"; }
+:lang(ja) .lp-chat-ask::after { content: "」"; }
+.lp-chat-tool { margin: 6px 0 0; font-family: var(--font-ui); font-size: var(--fs-xs); color: var(--ink-3); }
+.lp-chat-tool code { font-size: var(--fs-xs); background: transparent; border: 0; padding: 0; color: var(--indigo-700); }
+
+/* ---------- 3 つがつながる（紺） ---------- */
+.lp-connected { background: var(--navy-900); }
+.lp-tri { display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; }
+.lp-tri-cell { display: flex; align-items: center; }
+.lp-tri-node {
+  display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: var(--radius-full);
+  background: rgb(189 194 255 / 0.1); box-shadow: inset 0 0 0 1px rgb(189 194 255 / 0.35);
+  font-weight: 700; font-size: 1.0625rem; color: var(--on-dark); white-space: nowrap;
+}
+.lp-tri-node svg { color: var(--indigo-200); }
+.lp-tri-node.is-hub { padding: 16px 28px; font-size: 1.25rem; background: #fff; color: var(--ink); box-shadow: 0 0 0 6px rgb(255 224 131 / 0.25), 0 20px 40px -16px rgb(0 0 0 / 0.6); }
+.lp-tri-node.is-hub svg { color: var(--indigo-700); }
+/* 両向きの矢印 */
+.lp-tri-link { position: relative; display: block; width: clamp(40px, 8vw, 120px); height: 2px; margin: 0 10px; background: var(--marker); transform-origin: center; }
+.lp-tri-link::before, .lp-tri-link::after {
+  content: ""; position: absolute; top: -4px; width: 0; height: 0; border-block: 5px solid transparent;
+}
+.lp-tri-link::before { left: -2px; border-right: 8px solid var(--marker); }
+.lp-tri-link::after { right: -2px; border-left: 8px solid var(--marker); }
+.lp-tri-points { list-style: none; margin: 0 auto; padding: 0; max-width: 1000px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 24px; }
+.lp-tri-points li {
+  display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: var(--radius-lg);
+  background: rgb(189 194 255 / 0.06); box-shadow: inset 0 0 0 1px rgb(189 194 255 / 0.16);
+  font-family: var(--font-ui); font-size: var(--fs-ui); line-height: 1.65; color: var(--on-dark-2);
+}
+.lp-tri-points svg { margin-top: 3px; color: var(--marker); }
+.lp-connected-stage { max-width: 1000px; margin: 48px auto 0; }
+.lp-connected-cta { margin-top: 32px; }
+
 /* ---------- プライバシー（淡） ---------- */
-.lp-compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
-.lp-compare-col { padding: 32px; border-radius: var(--radius-panel); }
-.lp-compare-lead { margin: 0 0 16px !important; color: var(--ink-2); }
-.lp-checks, .lp-arrows { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
-.lp-checks li, .lp-arrows li { position: relative; padding-left: 36px; color: var(--ink-2); }
-.lp-checks li::before {
-  content: ""; position: absolute; left: 0; top: 3px; width: 24px; height: 24px; border-radius: 50%;
-  background: var(--indigo-700) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E") center / 14px no-repeat;
-}
-.lp-arrows li::before { content: "→" / ""; position: absolute; left: 4px; top: 0; color: var(--ink-3); font-weight: 700; font-family: var(--font-ui); }
+.lp-privacy { list-style: none; margin: 0 auto; padding: 0; max-width: 1000px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.lp-privacy-card p { color: var(--ink-2); }
+.lp-privacy-card .lp-card-head { margin-bottom: 12px; }
+.lp-privacy-card .lp-h4 { margin: 0; }
 
-/* ---------- ダウンロード（白） ---------- */
-.lp-download { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
-.lp-dl-main { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 48px; align-items: center; padding: 40px; border-radius: var(--radius-panel); }
-.lp-dl-text > p:not(.lp-dl-note) { color: var(--ink-2); margin-bottom: 12px; }
-.lp-inline-link { display: inline-flex; align-items: center; gap: 2px; font-family: var(--font-ui); font-size: var(--fs-ui); font-weight: 700; white-space: nowrap; }
-.lp-dl-note { margin-bottom: 24px !important; font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.7; color: var(--ink-3); }
-/* OS ごとの形式は、まだ押せない予定の情報として見せる（枠線は飾りの薄い線、矢印なし） */
-.lp-os-wrap { padding: 20px; border-radius: var(--radius-card); background: var(--paper-2); }
-.lp-os-label { display: flex; align-items: center; gap: 10px; margin: 0 0 12px !important; font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700; color: var(--ink-2); }
-.lp-badge { padding: 1px 8px; border-radius: var(--radius-sm); background: var(--paper-3); color: var(--ink-2); font-size: var(--fs-xs); font-weight: 700; }
-.lp-os { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; }
-.lp-os-item {
-  display: grid; gap: 2px; padding: 16px; align-content: start;
-  border: 1px solid var(--line-light); border-radius: var(--radius-ctrl); background: var(--paper); color: var(--ink);
+/* ---------- はじめ方（白） ---------- */
+.lp-start-req { margin: 12px 0 0; font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700; color: var(--ink-2); }
+.lp-steps { list-style: none; margin: 0 auto; padding: 0; max-width: 880px; display: grid; gap: 16px; }
+.lp-step { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 20px; align-items: start; padding: 24px 28px; }
+.lp-step > :not(.lp-step-n) { grid-column: 2; }
+.lp-step-n {
+  grid-row: 1 / span 3; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--indigo-700); color: #fff; font-family: var(--font-ui); font-weight: 700;
 }
-.lp-os-item > svg { color: var(--ink-3); margin-bottom: 4px; }
-.lp-os-name { font-family: var(--font-ui); font-size: 1rem; font-weight: 700; }
-.lp-os-file { font-family: var(--font-ui); font-size: var(--fs-sm); color: var(--ink-3); white-space: nowrap; }
-.lp-dl-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-.lp-dl-card { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 32px; }
-.lp-dl-card > p { color: var(--ink-2); font-size: 0.9375rem; margin-bottom: 8px; }
-.lp-dl-card .btn { margin-top: auto; }
-
-.lp-details { border: 1px solid var(--line-light); border-radius: var(--radius-card); background: var(--paper-2); scroll-margin-top: calc(var(--header-h) + 24px); }
-.lp-details summary {
-  display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 0 24px; cursor: pointer; list-style: none;
-  font-family: var(--font-ui); font-weight: 700; color: var(--ink); border-radius: var(--radius-card);
-}
-.lp-details summary::-webkit-details-marker { display: none; }
-.lp-details summary > svg:first-child { color: var(--indigo-700); }
-.lp-details summary:hover { background: var(--paper-3); }
-.lp-details-chevron { margin-left: auto; transition: transform var(--dur-base) var(--ease-standard); }
-.lp-details[open] .lp-details-chevron { transform: rotate(180deg); }
-.lp-details-body { padding: 4px 24px 24px; max-width: 52em; }
-.lp-details-body p { margin: 0 0 12px; color: var(--ink-2); max-width: var(--measure); }
-.lp-pre { margin: 0 0 24px; }
+.lp-step .lp-h4 { margin: 4px 0 8px; }
+.lp-step-body { margin: 0; color: var(--ink-2); }
+.lp-pre { margin: 8px 0 0; }
+.lp-start-foot { max-width: 880px; margin: 24px auto 0; display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; justify-content: space-between; }
+.lp-start-foot p { margin: 0; font-family: var(--font-ui); font-size: var(--fs-sm); color: var(--ink-3); }
 
 /* ---------- 締め（紺） ---------- */
 .lp-closing { position: relative; overflow: hidden; padding: 112px 0; background: var(--navy-950); text-align: center; }
@@ -306,50 +274,41 @@
 .lp-closing-inner { position: relative; }
 .lp-closing-icon { width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 24px; box-shadow: 0 0 0 1px rgb(189 194 255 / 0.25), 0 20px 40px -16px rgb(0 0 0 / 0.6); }
 .lp-closing .lp-section-lead { margin-bottom: 36px; }
-.lp-closing + * { border-top: 0; }
 .site-footer { border-top: 1px solid var(--c-line); }
 
 /* ---------- 狭い画面 ---------- */
 @media (max-width: 1100px) {
-  .lp-feature-grid { grid-template-columns: minmax(0, 1fr); }
-  .lp-feature-grid { row-gap: 24px; }
-  .lp-feature {
-    grid-row: auto; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; grid-template-rows: auto auto auto 1fr;
-    grid-template-areas: "head mini" "title mini" "body mini" "points mini";
-  }
-  .lp-feature .lp-mini { margin-top: 0; align-self: center; }
-  .lp-slim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .lp-stack-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .lp-stack-list li:nth-child(4) { box-shadow: none; }
-  .lp-stack-list li:nth-child(n + 4) { border-top: 1px solid var(--line-light); }
+  .lp-ribbon-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .lp-ribbon-card { grid-column: span 2; }
+  .lp-ribbon-card:nth-child(4) { grid-column: 2 / span 2; }
+  .lp-tabs-list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 12px; }
+  .lp-tabs-list > div:nth-child(odd) { padding-left: 0; box-shadow: none; }
+  .lp-zig-grid, .lp-zig[data-media="left"] .lp-zig-grid { gap: 40px; }
 }
 @media (max-width: 1000px) {
-  .lp-download, .lp-compare { grid-template-columns: minmax(0, 1fr); }
-  .lp-dl-main { grid-template-columns: minmax(0, 1fr); gap: 28px; }
-  .lp-panel { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .lp-panel-shot { order: -1; }
-  .lp-panel-text { padding-top: 0; min-height: 9.5em; }
-  .lp-panel-caption { font-size: 1.0625rem; }
+  .lp-uses { grid-template-columns: minmax(0, 1fr); max-width: 640px; margin: 0 auto; }
+  .lp-zig-grid, .lp-zig[data-media="left"] .lp-zig-grid, .lp-zig-compact .lp-zig-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  /* 狭い画面では写真を先に、動きは下から */
+  .lp-zig[data-media] .lp-zig-media { order: -1; }
+  .lp-zig[data-media] .lp-zig-text, .lp-zig[data-media] .lp-zig-media { --dx: 0px; }
+  .lp-zig-text { max-width: 40em; }
+  .lp-tri-points { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
+  .lp-privacy { grid-template-columns: minmax(0, 1fr); max-width: 640px; }
 }
 @media (max-width: 760px) {
   .lp-hero { padding-top: 48px; }
   .lp-hero-stage { margin-top: 40px; padding-bottom: 40px; }
-  .lp-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
-  .lp-chip { position: static; white-space: normal; font-size: var(--fs-sm); padding: 8px 10px 8px 8px; box-shadow: var(--shadow-1); border-color: var(--line-light); }
-  .lp-chip-icon { width: 28px; height: 28px; }
-  .lp-feature { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "title" "body" "mini" "points"; grid-template-rows: none; }
-  .lp-feature .lp-mini { margin-top: 20px; }
-  .lp-stack-desc { display: none; }
-  .lp-stack-list li { padding: 14px 6px; }
-  .lp-stack-name { flex-direction: column; gap: 4px; font-size: var(--fs-sm); font-family: var(--font-ui); }
-  .lp-tablist {
-    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(148px, 1fr);
-    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
-    margin-inline: calc(-1 * var(--gutter)); padding: 4px var(--gutter) 8px;
-  }
-  .lp-tablist::-webkit-scrollbar { display: none; }
-  .lp-tab { scroll-snap-align: start; }
-  .lp-dl-side { grid-template-columns: minmax(0, 1fr); }
+  .lp-ribbon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lp-ribbon-card, .lp-ribbon-card:nth-child(4) { grid-column: auto; }
+  .lp-ribbon-card:last-child { grid-column: 1 / -1; }
+  .lp-chat { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .lp-zig-compact .lp-zig-media { max-width: 280px; }
+  .lp-tri { flex-direction: column; }
+  .lp-tri-cell { flex-direction: column; }
+  .lp-tri-link { width: 2px; height: 28px; margin: 8px 0; }
+  .lp-tri-link::before, .lp-tri-link::after { left: -4px; border-inline: 5px solid transparent; border-block: 0; }
+  .lp-tri-link::before { top: -2px; border-bottom: 8px solid var(--marker); }
+  .lp-tri-link::after { top: auto; bottom: -2px; right: auto; border-top: 8px solid var(--marker); }
 }
 @media (max-width: 600px) {
   .lp-cta { width: 100%; }
@@ -358,28 +317,31 @@
   .lp-trust li + li { box-shadow: none; }
   .lp-eyebrow-pill { font-size: var(--fs-xs); }
   .lp-eyebrow-name, .lp-eyebrow-sep { display: none; }
-  .lp-slim-grid { grid-template-columns: minmax(0, 1fr); }
-  .lp-os { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .lp-os-item { grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; min-height: 56px; padding: 8px 16px; }
-  .lp-os-item > svg { margin: 0; }
-  .lp-os-wrap { padding: 16px; }
-  .lp-card, .lp-compare-col, .lp-dl-main, .lp-dl-card { padding: 24px 20px; }
-  .lp-dl-main .btn { width: 100%; }
-  .lp-details summary { padding: 0 16px; }
-  .lp-details-body { padding: 4px 16px 16px; }
+  .lp-ribbon-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .lp-ribbon-body { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; padding: 18px 16px 16px; }
+  .lp-ribbon-icon { grid-row: span 2; margin: 0; width: 40px; height: 40px; }
+  .lp-ribbon-label { margin-bottom: 4px; }
+  .lp-ribbon-link { padding: 0 16px; }
+  .lp-tabs-panel { padding: 20px 20px 8px; }
+  .lp-tabs-list { grid-template-columns: minmax(0, 1fr); }
+  .lp-tabs-list > div, .lp-tabs-list > div:nth-child(odd) { padding: 10px 0; box-shadow: none; }
+  .lp-tabs-list > div + div { border-top: 1px solid var(--line-light); }
+  .lp-card { padding: 24px 20px; }
+  .lp-step { padding: 20px 16px; column-gap: 14px; }
+  .lp-step-n { width: 32px; height: 32px; }
   .lp-pre { font-size: 0.8125rem; }
+  .lp-start-foot .lp-cta .btn { flex: 1 1 100%; }
   .lp-closing { padding: 80px 0; }
   .lp-facts { flex-direction: column; gap: 4px; }
   .lp-facts li + li { box-shadow: none; }
-  .lp-more-title { font-size: 1.25rem; }
+  .lp-tri-node { font-size: 1rem; padding: 10px 18px; }
+  .lp-tri-node.is-hub { font-size: 1.125rem; padding: 12px 24px; }
 }
 
 /* ---------- 動き ---------- */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes lp-up { from { opacity: 0; transform: translate3d(0, 16px, 0); } to { opacity: 1; transform: none; } }
   @keyframes lp-rise { from { transform: translate3d(0, 32px, 0); } to { transform: none; } }
-  @keyframes lp-pop { from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.96); } to { opacity: 1; transform: none; } }
-  @keyframes lp-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
 
   /* ヒーローは読み込みと同時に CSS だけで出す。写真は透明にせず、位置だけ動かす（LCP を遅らせない） */
   .lp-hero .lp-eyebrow-pill { animation: lp-up 0.6s var(--ease-out-expo) both; }
@@ -387,11 +349,6 @@
   .lp-hero .lp-hero-lead { animation: lp-up 0.7s 0.24s var(--ease-out-expo) both; }
   .lp-hero .lp-cta, .lp-hero .lp-trust { animation: lp-up 0.7s 0.32s var(--ease-out-expo) both; }
   .lp-shot-hero img { animation: lp-rise 0.9s 0.1s var(--ease-out-expo) both; }
-  .lp-chip {
-    /* 浮かぶ動きは 2 往復（約 12 秒）で止める。ずっと動き続けるものは置かない（WCAG 2.2.2） */
-    animation: lp-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both, lp-float 6s ease-in-out 2;
-    animation-delay: calc(0.7s + var(--i, 0) * 0.12s), calc(1.3s + var(--i, 0) * 0.4s);
-  }
 
   /* スクロールで出す（JavaScript が html.lp-motion を付けたときだけ隠す） */
   .lp-motion [data-reveal] {
@@ -400,26 +357,33 @@
     transition-delay: calc(min(var(--i, 0), 5) * 80ms);
   }
   .lp-motion [data-reveal="fade"] { transform: none; }
-  .lp-motion [data-reveal="scale"] { transform: translate3d(0, 16px, 0) scale(0.98); }
+  /* 機能の行: 文と写真が、それぞれ自分の側から滑り込む（写真は 90ms 遅れて） */
+  .lp-motion [data-reveal="x"] {
+    transform: translate3d(var(--dx, 0px), 0, 0);
+    transition-duration: 0.8s; transition-delay: calc(min(var(--i, 0), 5) * 90ms);
+  }
+  /* つながりの線: 中央から伸びる */
+  .lp-motion [data-reveal="draw"] { opacity: 1; transform: scaleX(0); transition: transform 0.9s var(--ease-out-expo) 0.4s; }
   .lp-motion [data-reveal].is-in { opacity: 1; transform: none; }
-
-  .lp-motion img[data-fade] { opacity: 0; transform: scale(1.015); transition: opacity 0.5s ease-out, transform 0.6s var(--ease-out-expo); }
-  .lp-motion img[data-fade].is-loaded { opacity: 1; transform: none; }
-
-  .lp-tabs[data-enhanced] .lp-panel:not([hidden]) > * { animation: lp-up 0.3s var(--ease-out-expo) both; }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 1000px) {
+  .lp-motion [data-reveal="x"] { transform: translate3d(0, 24px, 0); }
+  .lp-motion [data-reveal="x"].is-in { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 760px) {
+  .lp-motion [data-reveal="draw"] { transform: scaleY(0); }
+  .lp-motion [data-reveal="draw"].is-in { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .lp-hero *, [data-reveal], img[data-fade], .lp-panel > * {
+  .lp-hero *, [data-reveal] {
     animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; translate: none !important;
   }
 }
 
 /* ---------- 印刷 ---------- */
 @media print {
-  [data-reveal], img[data-fade], .lp-hero *, .lp-panel > * {
+  [data-reveal], .lp-hero * {
     opacity: 1 !important; transform: none !important; translate: none !important; animation: none !important; transition: none !important;
   }
-  .lp-chips, .lp-hero-art, .lp-section-art { display: none !important; }
-  .lp-tabs[data-enhanced] .lp-panel[hidden] { display: grid !important; }
-  .lp-tablist { display: none !important; }
+  .lp-hero-art, .lp-section-art { display: none !important; }
 }

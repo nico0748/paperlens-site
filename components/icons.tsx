@@ -245,3 +245,86 @@ export const ArrowUpRightIcon = (p: Props) => (
     <path d="M7 17 17 7m0 0H9m8 0v8" />
   </Svg>
 );
+
+/* ---- アプリの左端のアイコン（リボン）。lucide の図柄に合わせる ---- */
+/** 論文一覧（lucide: files） */
+export const FilesIcon = (p: Props) => (
+  <Svg {...p}>
+    <path d="M20 7h-3a2 2 0 0 1-2-2V2" />
+    <path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z" />
+    <path d="M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8" />
+  </Svg>
+);
+
+/** 検索（lucide: search） */
+export const SearchIcon = (p: Props) => (
+  <Svg {...p}>
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.3-4.3" />
+  </Svg>
+);
+
+/** リスト（lucide: list-checks） */
+export const ListChecksIcon = (p: Props) => (
+  <Svg {...p}>
+    <path d="m3 17 2 2 4-4" />
+    <path d="m3 7 2 2 4-4" />
+    <path d="M13 6h8M13 12h8M13 18h8" />
+  </Svg>
+);
+
+/** グラフ（lucide: waypoints） */
+export const WaypointsIcon = (p: Props) => (
+  <Svg {...p}>
+    <circle cx="12" cy="4.5" r="2.5" />
+    <path d="m10.2 6.3-3.9 3.9" />
+    <circle cx="4.5" cy="12" r="2.5" />
+    <path d="M7 12h10" />
+    <circle cx="19.5" cy="12" r="2.5" />
+    <path d="m13.8 17.7 3.9-3.9" />
+    <circle cx="12" cy="19.5" r="2.5" />
+  </Svg>
+);
+
+/** 発表スライドと論文の対応（lucide: presentation） */
+export const PresentationIcon = (p: Props) => (
+  <Svg {...p}>
+    <path d="M2 3h20" />
+    <path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3" />
+    <path d="m7 21 5-5 5 5" />
+  </Svg>
+);
+
+/** 設定（lucide: settings） */
+export const SettingsIcon = (p: Props) => (
+  <Svg {...p}>
+    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+    <circle cx="12" cy="12" r="3" />
+  </Svg>
+);
+
+/** ヘルプ（lucide: circle-help） */
+export const CircleHelpIcon = (p: Props) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+    <path d="M12 17h.01" />
+  </Svg>
+);
+
+/** 補足情報（右側の面。lucide: panel-right） */
+export const PanelRightIcon = (p: Props) => (
+  <Svg {...p}>
+    <rect width="18" height="18" x="3" y="3" rx="2" />
+    <path d="M15 3v18" />
+  </Svg>
+);
+
+/** Claude から操作する（MCP。lucide: bot） */
+export const BotIcon = (p: Props) => (
+  <Svg {...p}>
+    <path d="M12 8V4H8" />
+    <rect width="16" height="12" x="4" y="8" rx="2" />
+    <path d="M2 14h2M20 14h2M15 13v2M9 13v2" />
+  </Svg>
+);

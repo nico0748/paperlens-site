@@ -236,6 +236,41 @@ pre {
 }
 .site-nav a:hover, .header-icon-link:hover, .lang-button:hover { color: var(--c-text); background: var(--c-surface-2); }
 .site-nav a[aria-current="page"] { color: var(--c-text); text-decoration: underline 2px; text-underline-offset: 6px; }
+/* 「機能」のメニュー（広い画面はポインターかボタンで開く一覧、狭い画面はメニューの中にそのまま並べる） */
+.nav-features { position: relative; }
+.nav-features-trigger { display: flex; align-items: center; }
+.site-nav .nav-features-trigger a { padding-right: 4px; }
+.nav-features-toggle {
+  display: inline-grid; place-items: center; width: 32px; min-height: 44px; padding: 0; margin-left: -2px;
+  border: 0; border-radius: var(--radius); background: transparent; color: var(--c-text-2); cursor: pointer;
+}
+.nav-features-toggle:hover { color: var(--c-text); background: var(--c-surface-2); }
+.nav-features-toggle svg { transition: transform var(--dur-fast) var(--ease-standard); }
+.nav-features[data-open="true"] .nav-features-toggle svg { transform: rotate(180deg); }
+.nav-features-panel {
+  display: none; position: absolute; left: -8px; top: calc(100% + 6px); z-index: 30; width: 360px;
+  padding: 8px; background: var(--paper); border: 1px solid var(--line-ctrl); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+}
+/* ポインターが一覧へ移る途中で閉じないよう、上の隙間を埋める */
+.nav-features-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -8px; height: 8px; }
+.nav-features[data-open="true"] .nav-features-panel { display: block; }
+.nav-features-panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.site-nav .nav-feature {
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 10px; border-radius: var(--radius);
+  color: var(--c-text); text-decoration: none; white-space: normal;
+}
+.site-nav .nav-feature:hover { background: var(--c-surface-2); color: var(--c-text); }
+.site-nav .nav-feature[aria-current="page"] { background: var(--indigo-50); text-decoration: none; }
+.nav-feature-icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--indigo-50); color: var(--indigo-700); }
+.nav-feature-text { display: grid; gap: 0; line-height: 1.4; }
+.nav-feature-label { font-size: var(--fs-ui); font-weight: 700; }
+.nav-feature-sub { font-size: var(--fs-xs); font-weight: 400; color: var(--c-text-3); }
+.site-nav .nav-features-index {
+  display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding: 0 12px;
+  border-top: 1px solid var(--line-light); border-radius: 0 0 var(--radius) var(--radius); color: var(--c-link);
+}
+.site-nav .nav-features-index:hover { color: var(--c-link-hover); text-decoration: underline; }
 .header-tools { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .header-tools form { display: contents; }
 .header-tools .btn { margin-left: 8px; }
@@ -281,6 +316,15 @@ pre {
   .header-menu[data-open="true"] { display: flex; box-shadow: var(--shadow-2), 0 100vmax 0 100vmax rgb(29 32 54 / 0.45); }
   .site-nav { flex-direction: column; align-items: stretch; gap: 0; }
   .site-nav a { min-height: 56px; padding: 0 4px; border-bottom: 1px solid var(--line-light); border-radius: 0; color: var(--c-text); font-size: 1rem; }
+  .nav-features-toggle { display: none; }
+  .nav-features-trigger a { flex: 1; }
+  .nav-features-panel, .nav-features[data-open] .nav-features-panel {
+    display: block; position: static; width: auto; padding: 4px 0 8px 12px; border: 0; border-bottom: 1px solid var(--line-light);
+    border-radius: 0; box-shadow: none; background: transparent;
+  }
+  .nav-features-panel::before { content: none; }
+  .site-nav .nav-feature { min-height: 52px; border-bottom: 0; padding: 6px 4px; }
+  .site-nav .nav-features-index { margin-top: 0; border: 0; min-height: 48px; padding: 0 4px; }
   .header-tools { margin: 16px 0 0; flex-wrap: wrap; gap: 12px; }
   .header-tools .btn { flex: 1 1 100%; margin-left: 0; }
   /* メニューの中ではスクロールで切れないよう、言語の一覧はその場に開く */
@@ -294,6 +338,7 @@ pre {
 .footer-grid { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px; }
 .footer-brand .brand { color: var(--c-text); }
 .footer-brand p { margin: 16px 0 0; max-width: 24em; }
+.footer-brand .footer-formats { margin-top: 12px; font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.7; color: var(--c-text-3); }
 .footer-col h2 { font-family: var(--font-ui); font-size: var(--fs-sm); letter-spacing: 0.08em; margin: 0 0 8px; color: var(--c-text); }
 .footer-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
 .footer-col a { display: inline-flex; align-items: center; min-height: 44px; color: var(--c-text-2); text-decoration: none; }

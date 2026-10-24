@@ -1,19 +1,14 @@
 import { fill, type Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
-import { ArrowRightIcon, CheckIcon, GitHubIcon, LinkIcon, NoteIcon, SigmaIcon, TranslateIcon } from "../icons";
-
-const CHIP_ICONS = [LinkIcon, TranslateIcon, SigmaIcon, NoteIcon];
+import { ArrowRightIcon, CheckIcon, GitHubIcon } from "../icons";
 
 /**
- * ヒーロー（紺）。2 行のキャッチ → 説明 1 文 → ボタン 1 列 → 特長の列、その下に大きな画面写真。
- * 写真は紺と白の境目にまたがって置き、広い画面では写真の左右の縁に機能のチップを置く（画面の中身は隠さない）。
- * 狭い画面では写真の下に 2 列で並べる。チップは飾りなので読み上げない。
- * 写真は LCP なので、JavaScript で隠さず、すぐに読み込む。
+ * ヒーロー（紺）。2 行のキャッチ → 説明 → ボタン 1 列 → 特長の列、その下に大きな画面写真。
+ * 写真は紺と白の境目にまたがって置く。写真は LCP なので、JavaScript で隠さず、すぐに読み込む。
  */
 export function Hero({ dict }: { dict: Dictionary }) {
   const t = dict.hero;
-  const l = dict.landing;
-  const trust = l.trust.map((item) => fill(item, { license: site.license }));
+  const trust = t.trust.map((item) => fill(item, { license: site.license }));
 
   return (
     <section className="lp-hero theme-dark" aria-labelledby="hero-title">
@@ -35,7 +30,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
         <p className="lp-hero-lead">{t.lead}</p>
         <div className="lp-cta">
           <a href="#download" className="btn btn-primary btn-lg">
-            {t.download}
+            {t.primary}
             <ArrowRightIcon />
           </a>
           <a href={site.repo} className="btn btn-secondary btn-lg">
@@ -43,7 +38,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
             {t.github}
           </a>
         </div>
-        <ul className="lp-trust" aria-label={l.trustLabel}>
+        <ul className="lp-trust" aria-label={t.trustLabel}>
           {trust.map((item) => (
             <li key={item}>
               <CheckIcon size={16} />
@@ -59,25 +54,12 @@ export function Hero({ dict }: { dict: Dictionary }) {
             src="/screenshots/hero-mac.webp"
             srcSet="/screenshots/hero-mac-800.webp 800w, /screenshots/hero-mac-1200.webp 1200w, /screenshots/hero-mac.webp 1600w"
             sizes="(max-width: 1120px) calc(100vw - 32px), 1040px"
-            alt={dict.shot.alt}
+            alt={t.alt}
             width={1600}
             height={1006}
             fetchPriority="high"
             decoding="async"
           />
-          <ul className="lp-chips" aria-hidden="true">
-            {l.chips.map((text, i) => {
-              const Icon = CHIP_ICONS[i % CHIP_ICONS.length];
-              return (
-                <li key={text} className="lp-chip" style={{ "--i": i } as React.CSSProperties}>
-                  <span className="lp-chip-icon">
-                    <Icon size={18} />
-                  </span>
-                  {text}
-                </li>
-              );
-            })}
-          </ul>
         </figure>
       </div>
     </section>
