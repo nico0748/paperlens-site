@@ -3,8 +3,9 @@
 import "./stage.css";
 import { useCallback, useEffect, useId, useRef, useState, type FocusEvent, type KeyboardEvent } from "react";
 import type { Stage } from "@/lib/stage-types";
+import { stageMeta, type StageKey } from "@/lib/scenes";
 import { StageView } from "./StageView";
-import { largestSrc, sceneSrc } from "./stage-geometry";
+import { fitRect, frameAspect, isLongJump, largestSrc, panDuration, sceneSrc, unionPct } from "./stage-geometry";
 
 type Lang = "ja" | "en";
 
@@ -17,9 +18,13 @@ export type ScreenStageProps = {
   active?: number;
   /** 点（場面の切り替え）を押したとき。active を渡すときに使う */
   onSelect?: (i: number) => void;
-  /** 表示中の場面が替わったとき（McpStage がチャットを合わせるのに使う） */
+  /** 表示中の場面が替わったとき */
   onSceneChange?: (i: number) => void;
-  /** 1 場面の時間（ms）。既定 4500 */
+  /**
+   * 1 場面の時間（ms）。渡すとすべての場面で同じ時間。
+   * 省略時は説明の長さから決める: ja は clamp(5500, 2600 + 75 × 文字数, 8000)、en は 2600 + 40 × 文字数（同じ範囲）。
+   * 最初の場面だけ 1 秒長く待つ（ページを開いた直後は見出しを読んでいる）。
+   */
   interval?: number;
   /** 何周で止めるか。既定 2（WCAG 2.2.2: 動き続けるものを置かない） */
   loops?: number;
@@ -27,8 +32,17 @@ export type ScreenStageProps = {
   priority?: boolean;
   /** 説明文の行を出すか（既定 true）。ScrollStage では手順の本文が説明を兼ねるので消す */
   showCaption?: boolean;
-  /** 「画面を拡大」を出すか（既定 true） */
+  /** 「画面を拡大」（枠の右下の小さな札）を出すか（既定 true） */
   enlarge?: boolean;
+  /** 最初に見せる場面（既定 0） */
+  startScene?: number;
+  /** 枠の縦横比（"16/10" など）。省略時は lib/scenes.ts の stageMeta */
+  aspect?: string;
+  /**
+   * 場面が替わってから画面が動き出すまでの時間（ms、既定 0）。onSceneChange は先に呼ぶので、
+   * 外の表示（McpStage の会話）を先に出し、そのあとで画面を動かせる。
+   */
+  lead?: number;
   className?: string;
 };
 
@@ -36,6 +50,7 @@ const labels = {
   ja: {
     play: "再生",
     pause: "一時停止",
+    held: "一時停止中（再生）",
     replay: "もう一度再生",
     dots: "場面の切り替え",
     scene: "場面 {n} / {total}",
@@ -46,23 +61,33 @@ const labels = {
   en: {
     play: "Play",
     pause: "Pause",
+    held: "Paused (play)",
     replay: "Play again",
     dots: "Choose a scene",
     scene: "Scene {n} of {total}",
-    enlarge: "Enlarge screen",
+    enlarge: "Enlarge",
     close: "Close",
     captions: "What this screen shows",
   },
 } as const;
 
 const fmt = (t: string, n: number, total: number) => t.replace("{n}", String(n)).replace("{total}", String(total));
+const clampN = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+/** 説明を読み終えられる時間（ms） */
+function holdFor(text: string | undefined, lang: Lang) {
+  const chars = (text ?? "").replace(/\s+/g, lang === "ja" ? "" : " ").length;
+  return Math.round(clampN(2600 + (lang === "ja" ? 75 : 40) * chars, 5500, 8000));
+}
 
 /**
  * 実際の画面写真を枠に入れ、場面ごとに拡大・移動して見せる。
  * - 動かすのは transform と opacity だけ（コンポジターだけで動き、レイアウトがずれない）。
- * - 説明文は aria-live、場面の点は role="tablist"（← → Home End で移る）、再生・一時停止のボタンを常に置く。
+ * - 説明文は全場面ぶんを同じ場所に重ねて、いちばん長い説明の高さを取っておく（場面が替わっても下がずれない）。
+ * - 読み上げ: 自動で進んでいる間は aria-live を off にし、止まっている間（利用者が操作したあと）は polite。
+ * - 場面の点は role="tablist"（← → Home End で移る）。再生・一時停止のボタンを常に置く。
  * - 動きを減らす設定では自動で進めず、場面は動かさずに切り替える。
- * - JavaScript が動く前（サーバーの HTML）は場面 1 と、全場面の説明の一覧を出す。
+ * - JavaScript が動く前（サーバーの HTML）は最初の場面と、全場面の説明の一覧を出す。
  */
 export function ScreenStage({
   stage,
@@ -71,11 +96,14 @@ export function ScreenStage({
   active,
   onSelect,
   onSceneChange,
-  interval = 4500,
+  interval,
   loops = 2,
   priority = false,
   showCaption = true,
   enlarge = true,
+  startScene = 0,
+  aspect,
+  lead = 0,
   className,
 }: ScreenStageProps) {
   const t = labels[lang];
@@ -87,8 +115,8 @@ export function ScreenStage({
   const dotsRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const [idx, setIdx] = useState(0);
-  const cur = Math.min(Math.max(controlled ? active! : idx, 0), Math.max(n - 1, 0));
+  const [idx, setIdx] = useState(() => clampN(startScene, 0, Math.max(n - 1, 0)));
+  const cur = clampN(controlled ? active! : idx, 0, Math.max(n - 1, 0));
 
   const [enhanced, setEnhanced] = useState(false);
   const [reduced, setReduced] = useState(false);
@@ -104,6 +132,37 @@ export function ScreenStage({
   const canPlay = autoplay && !controlled && n > 1;
   const playing = canPlay && !userPaused && !done;
   const running = playing && enhanced && visible && pageVisible && !hover && !focusIn && !dialogOpen;
+  const held = playing && !running && (hover || focusIn);
+
+  // 画面に見せている場面（lead があると cur より遅れて替わる）
+  const [lagged, setLagged] = useState(cur);
+  useEffect(() => {
+    if (!lead || reduced) return setLagged(cur);
+    const tm = window.setTimeout(() => setLagged(cur), lead);
+    return () => window.clearTimeout(tm);
+  }, [cur, lead, reduced]);
+  const view = lead && !reduced ? clampN(lagged, 0, Math.max(n - 1, 0)) : cur;
+
+  // ---- 場面の移り方（どこから来たか）。描画のたびに計算し直さないよう ref に持つ ----
+  const frame = frameAspect(stage, aspect ?? stageMeta[stage.id as StageKey]?.aspect);
+  const move = useRef({ cur: view, from: view });
+  if (move.current.cur !== view) move.current = { cur: view, from: move.current.cur };
+  const from = move.current.from;
+  const scenes = stage.scenes;
+  const sameSrc = from !== view && sceneSrc(stage, scenes[from]) === sceneSrc(stage, scenes[view]);
+  const ra = fitRect(stage, scenes[from]?.rect ?? { x: 0, y: 0, w: 100, h: 100 }, frame);
+  const rb = fitRect(stage, scenes[view]?.rect ?? { x: 0, y: 0, w: 100, h: 100 }, frame);
+  const pan = from === view ? 900 : sameSrc ? panDuration(stage, ra, rb) : 500;
+  const longJump = sameSrc && !reduced && isLongJump(stage, ra, rb);
+  // 遠くへ飛ぶときは、まず両方が入る範囲まで引き（移動時間の 45%）、それから寄る（55%）
+  const [viaDone, setViaDone] = useState(-1);
+  const via = longJump && viaDone !== view ? unionPct(stage, ra, rb) : undefined;
+  const panMs = longJump ? Math.round(pan * (via ? 0.45 : 0.55)) : pan;
+  useEffect(() => {
+    if (!longJump) return;
+    const tm = window.setTimeout(() => setViaDone(view), Math.round(pan * 0.45));
+    return () => window.clearTimeout(tm);
+  }, [view, longJump, pan]);
 
   // 動きを減らす設定・タブの表示・画面に入っているか
   useEffect(() => {
@@ -133,15 +192,16 @@ export function ScreenStage({
   }, []);
 
   // タイマー。場面が替わるたびに 1 場面ぶん待ち直す
+  const hold = (interval ?? holdFor(scenes[cur]?.caption[lang], lang)) + (advances.current === 0 ? 1000 : 0);
   useEffect(() => {
     if (!running) return;
     const timer = window.setTimeout(() => {
       advances.current += 1;
       setIdx((i) => (i + 1) % n);
       if (advances.current >= loops * n - 1) setDone(true);
-    }, interval);
+    }, hold);
     return () => window.clearTimeout(timer);
-  }, [running, idx, interval, loops, n]);
+  }, [running, idx, hold, loops, n]);
 
   const lastReported = useRef(-1);
   useEffect(() => {
@@ -173,8 +233,12 @@ export function ScreenStage({
       setDone(false);
       setUserPaused(false);
       setIdx(0);
-    } else setUserPaused((p) => !p);
-    // 押したあとはポインターが上にあっても進める（押した意図を優先する）
+    } else if (running) setUserPaused(true);
+    else {
+      // ポインターや焦点で止まっているときも、押したら進める（押した意図を優先する）
+      setUserPaused(false);
+      setFocusIn(false);
+    }
     setHover(false);
   };
 
@@ -196,9 +260,10 @@ export function ScreenStage({
     if (!rootRef.current?.contains(e.relatedTarget as Node | null)) setFocusIn(false);
   };
 
-  const scene = stage.scenes[cur];
+  const scene = scenes[view];
   const fullSrc = largestSrc(stage, sceneSrc(stage, scene));
-  const playLabel = done ? t.replay : playing ? t.pause : t.play;
+  const playLabel = done ? t.replay : running ? t.pause : held ? t.held : t.play;
+  const showDots = enhanced && n > 1;
 
   return (
     <figure
@@ -207,6 +272,7 @@ export function ScreenStage({
       data-enhanced={enhanced ? "" : undefined}
       data-reduced={reduced ? "" : undefined}
       data-orient={stage.height > stage.width ? "portrait" : undefined}
+      data-scene={cur}
       onPointerEnter={(e) => e.pointerType === "mouse" && setHover(true)}
       onPointerLeave={() => setHover(false)}
       onFocusCapture={onFocusCapture}
@@ -216,26 +282,40 @@ export function ScreenStage({
         <StageView
           stage={stage}
           lang={lang}
-          active={cur}
+          active={view}
           priority={priority}
           id={viewId}
-          role={enhanced && n > 1 ? "tabpanel" : undefined}
-          label={enhanced && n > 1 ? fmt(t.scene, cur + 1, n) : undefined}
+          role={showDots ? "tabpanel" : undefined}
+          label={showDots ? fmt(t.scene, cur + 1, n) : undefined}
+          aspect={aspect}
+          via={via}
+          panMs={panMs}
         />
+        {enlarge && (
+          <a
+            className="stage-enlarge"
+            href={fullSrc}
+            target="_blank"
+            rel="noopener"
+            aria-label={t.enlarge}
+            onClick={(e) => {
+              if (openDialog()) e.preventDefault();
+            }}
+          >
+            <ExpandGlyph />
+            <span className="stage-enlarge-text" aria-hidden="true">
+              {t.enlarge}
+            </span>
+          </a>
+        )}
       </div>
 
-      {(showCaption || enlarge || (enhanced && n > 1)) && (
+      {(showCaption || showDots) && (
         <figcaption className="stage-bar">
-          {showCaption && (
-            <p className="stage-caption" aria-live={enhanced ? "polite" : undefined}>
-              {scene?.caption[lang]}
-            </p>
-          )}
-          <div className="stage-controls">
-            {enhanced && n > 1 && (
-              <>
+          {showDots && (
+            <div className="stage-controls">
               <div className="stage-dots" role="tablist" aria-label={t.dots} ref={dotsRef} onKeyDown={onDotsKey}>
-                {stage.scenes.map((s, i) => (
+                {scenes.map((s, i) => (
                   <button
                     key={i}
                     type="button"
@@ -250,35 +330,47 @@ export function ScreenStage({
                 ))}
               </div>
               {canPlay && (
-                <button type="button" className="stage-play" data-stage-play="" aria-label={playLabel} title={playLabel} onClick={togglePlay}>
-                  {done ? <ReplayGlyph /> : playing ? <PauseGlyph /> : <PlayGlyph />}
+                <button
+                  type="button"
+                  className="stage-play"
+                  data-stage-play=""
+                  data-state={held ? "held" : undefined}
+                  aria-label={playLabel}
+                  title={playLabel}
+                  onClick={togglePlay}
+                >
+                  {done ? <ReplayGlyph /> : running ? <PauseGlyph /> : <PlayGlyph />}
                 </button>
               )}
-              </>
-            )}
-            {enlarge && (
-              <a
-                className="stage-enlarge"
-                href={fullSrc}
-                target="_blank"
-                rel="noopener"
-                title={t.enlarge}
-                onClick={(e) => {
-                  if (openDialog()) e.preventDefault();
-                }}
-              >
-                <ExpandGlyph />
-                <span className="stage-enlarge-text">{t.enlarge}</span>
-              </a>
-            )}
-          </div>
+            </div>
+          )}
+          {showCaption && (
+            <>
+              <p className="stage-caption stage-capstack" aria-hidden={enhanced ? true : undefined}>
+                {enhanced ? (
+                  scenes.map((s, i) => (
+                    <span key={i} className="stage-capline" data-on={i === view ? "" : undefined}>
+                      {s.caption[lang]}
+                    </span>
+                  ))
+                ) : (
+                  <span>{scene?.caption[lang]}</span>
+                )}
+              </p>
+              {enhanced && (
+                <p className="visually-hidden" aria-live={running ? "off" : "polite"}>
+                  {scene?.caption[lang]}
+                </p>
+              )}
+            </>
+          )}
         </figcaption>
       )}
 
       {/* JavaScript が動かないときの説明の一覧（動いたら CSS で隠す） */}
       {n > 1 && (
         <ol className="stage-captions" aria-label={t.captions}>
-          {stage.scenes.map((s, i) => (
+          {scenes.map((s, i) => (
             <li key={i}>{s.caption[lang]}</li>
           ))}
         </ol>
@@ -287,7 +379,7 @@ export function ScreenStage({
       {enlarge && (
         <dialog
           ref={dialogRef}
-          className="stage-dialog"
+          className="stage-dialog theme-dark"
           aria-label={stage.alt[lang]}
           onClose={() => setDialogOpen(false)}
           onClick={(e) => {
@@ -295,12 +387,21 @@ export function ScreenStage({
           }}
         >
           <form method="dialog" className="stage-dialog-bar">
-            <button type="submit" className="btn btn-secondary btn-sm" autoFocus>
+            {showCaption && scene && <p className="stage-dialog-caption">{scene.caption[lang]}</p>}
+            <button type="submit" className="stage-dialog-close" autoFocus>
               <CloseGlyph />
               {t.close}
             </button>
           </form>
-          {dialogOpen && <img src={fullSrc} alt={stage.alt[lang]} width={stage.width} height={stage.height} decoding="async" />}
+          {dialogOpen && (
+            <img
+              src={fullSrc}
+              alt={sceneSrc(stage, scene) === stage.src ? stage.alt[lang] : scene?.caption[lang] ?? stage.alt[lang]}
+              width={stage.width}
+              height={stage.height}
+              decoding="async"
+            />
+          )}
         </dialog>
       )}
     </figure>

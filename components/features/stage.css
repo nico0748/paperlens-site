@@ -2,8 +2,13 @@
  * ScreenStage（実際の画面写真を、場面ごとに拡大して見せる枠）。トップページと機能のページの両方で使う。
  * 接頭辞は stage-。色は globals.css の役割の変数で、.theme-dark / .theme-light に合わせて変わる。
  * 動かすのは transform と opacity だけ。
+ *
+ * 時間の決まり（--pan-dur は ScreenStage が場面の移動ごとに 700〜1300ms で決める）:
+ * - 拡大・移動: var(--pan-dur) cubic-bezier(0.65, 0, 0.35, 1)（ゆっくり出て、ゆっくり止まる）
+ * - 画像の切り替え: 入ってくる層だけを上で 350ms フェードイン。出ていく層はその間は不透明のまま下に残す
+ * - 囲み・点: 移動が終わる 150ms 前から、180ms ずつずらして出す。点の波紋は 1 回
  */
-.stage { position: relative; margin: 0; min-width: 0; }
+.stage { position: relative; margin: 0; min-width: 0; --ease-pan: cubic-bezier(0.65, 0, 0.35, 1); --fade: 350ms; }
 .stage[data-orient="portrait"] { width: 100%; max-width: 420px; margin-inline: auto; }
 
 .stage-frame {
@@ -14,32 +19,38 @@
 
 .stage-view {
   position: relative; overflow: hidden; border-radius: 8px; background: #1f1f25;
-  /* 縦横比は元画像と同じ（style で指定）。拡大していない層がちょうど収まる */
+  /* 縦横比は style で指定。拡大していない層がちょうど収まる */
   isolation: isolate;
+  --pan-dur: 1100ms;
 }
 .stage-layer {
   position: absolute; inset: 0 auto auto 0; width: 100%; height: auto;
-  transform-origin: 0 0; opacity: 0; backface-visibility: hidden;
+  transform-origin: 0 0; opacity: 0; z-index: 1; backface-visibility: hidden;
 }
-.stage-layer[data-on] { opacity: 1; z-index: 1; }
+.stage-layer[data-on] { opacity: 1; z-index: 2; }
 .stage-layer img { display: block; width: 100%; height: 100%; user-select: none; }
 .stage[data-enhanced] .stage-layer {
-  transition: transform 900ms var(--ease-out-expo), opacity 500ms ease;
+  /* 出ていく層: フェードが終わるまで不透明のまま下に残し、それから消して次の位置へ移す */
+  transition: opacity 0s linear var(--fade), transform 0s linear var(--fade);
   will-change: transform, opacity;
+}
+.stage[data-enhanced] .stage-layer[data-on] {
+  transition: opacity var(--fade) ease-out, transform var(--pan-dur) var(--ease-pan);
 }
 
 /* ---- 囲み・点・下線・吹き出し（拡大しない面に、表示範囲に対する % で置く） ---- */
-.stage-callouts { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; }
+.stage-callouts { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; }
 .stage-callouts[data-on] { opacity: 1; }
 .stage-co { position: absolute; display: block; }
 .stage-co-box {
-  border: 2px solid var(--marker); border-radius: 6px; background: rgb(255 224 131 / 0.1);
+  border: 2px solid var(--marker); border-radius: 6px; background: rgb(255 224 131 / 0.08);
   box-shadow: 0 0 0 3px rgb(18 21 46 / 0.35), 0 0 22px rgb(255 224 131 / 0.3);
 }
 .stage-co-underline { height: 3px; margin-top: 2px; border-radius: 2px; background: var(--marker); box-shadow: 0 0 0 2px rgb(18 21 46 / 0.4); }
+/* 点は輪（中の UI を隠さない） */
 .stage-co-dot {
-  width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--marker);
-  box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgb(18 21 46 / 0.35);
+  width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: transparent;
+  box-shadow: inset 0 0 0 3px var(--marker), 0 0 0 2px rgb(18 21 46 / 0.55), inset 0 0 0 5px rgb(18 21 46 / 0.35);
 }
 .stage-co-anchor { width: 0; height: 0; }
 .stage-chip {
@@ -59,17 +70,27 @@
 .stage-co-dot .stage-chip-right { left: auto; right: -6px; translate: none; }
 .stage-chip-inline.stage-chip-right { right: 0; translate: 0 0; }
 
+/* 代わりの画面の場面: 「画面は準備中」の札（左上） */
+.stage-badge {
+  position: absolute; z-index: 4; top: 10px; left: 10px; padding: 3px 9px; border-radius: 6px;
+  background: rgb(18 21 46 / 0.82); color: var(--on-dark-2); box-shadow: inset 0 0 0 1px rgb(189 194 255 / 0.3);
+  font-family: var(--font-ui); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.5; pointer-events: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .stage[data-enhanced] .stage-callouts { transition: opacity 180ms ease; }
-  /* 新しい場面の印は、拡大が落ち着いてから出す */
-  .stage[data-enhanced] .stage-callouts[data-on] { transition: opacity 300ms ease 650ms; }
-  .stage[data-enhanced] .stage-co { transform: scale(0.9); transition: transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .stage[data-enhanced] .stage-callouts[data-on] .stage-co { transform: none; transition-delay: calc(650ms + min(var(--i, 0), 4) * 120ms); }
-  .stage[data-enhanced] .stage-callouts[data-on] .stage-co-dot { animation: stage-pulse 1.4s ease-out 2; animation-delay: calc(900ms + min(var(--i, 0), 4) * 120ms); }
-  @keyframes stage-pulse {
-    0% { box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgb(18 21 46 / 0.35), 0 0 0 6px rgb(255 224 131 / 0.6); }
-    100% { box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgb(18 21 46 / 0.35), 0 0 0 20px rgb(255 224 131 / 0); }
+  .stage[data-enhanced] .stage-callouts { transition: opacity 150ms ease; }
+  /* 新しい場面の印は、移動が終わる少し前から出す */
+  .stage[data-enhanced] .stage-callouts[data-on] { transition: opacity 220ms ease calc(var(--pan-dur) - 150ms); }
+  .stage[data-enhanced] .stage-co { transform: scale(0.97); transition: transform 260ms cubic-bezier(0.2, 0, 0, 1); }
+  .stage[data-enhanced] .stage-callouts[data-on] .stage-co { transform: none; transition-delay: calc(var(--pan-dur) - 150ms + min(var(--i, 0), 4) * 180ms); }
+  .stage[data-enhanced] .stage-callouts[data-on] .stage-co-dot {
+    animation: stage-pulse 1.6s ease-out 1 both; animation-delay: calc(var(--pan-dur) - 150ms + min(var(--i, 0), 4) * 180ms);
   }
+  @keyframes stage-pulse {
+    0% { box-shadow: inset 0 0 0 3px var(--marker), 0 0 0 2px rgb(18 21 46 / 0.55), inset 0 0 0 5px rgb(18 21 46 / 0.35), 0 0 0 2px rgb(255 224 131 / 0.6); }
+    100% { box-shadow: inset 0 0 0 3px var(--marker), 0 0 0 2px rgb(18 21 46 / 0.55), inset 0 0 0 5px rgb(18 21 46 / 0.35), 0 0 0 14px rgb(255 224 131 / 0); }
+  }
+  .stage-capline { transition: opacity 220ms ease; }
 }
 /* 動きを減らす設定: その場で切り替える（待ち時間も無くす） */
 .stage[data-reduced] .stage-layer,
@@ -77,26 +98,26 @@
 .stage[data-reduced] .stage-co { transition: none !important; transition-delay: 0s !important; animation: none !important; }
 .stage[data-reduced] .stage-co { transform: none !important; }
 
-/* ---- 画面を拡大（写真に重ねず、操作の列に置く） ---- */
+/* ---- 画面を拡大（枠の右下に重ねる小さな札。押せる範囲は 44px） ---- */
 .stage-enlarge {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; margin-left: 4px; padding: 0 14px;
-  border: 1px solid var(--c-border-strong); border-radius: var(--radius-full); color: var(--c-text); text-decoration: none;
-  font-family: var(--font-ui); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.02em; white-space: nowrap;
+  position: absolute; z-index: 5; right: 14px; bottom: 14px;
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px 0 8px; border-radius: 8px;
+  background: rgb(18 21 46 / 0.8); color: #fff; text-decoration: none; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28), 0 4px 14px -4px rgb(0 0 0 / 0.5);
+  font-family: var(--font-ui); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap;
+  opacity: 0.88; transition: opacity var(--dur-base, 160ms), background-color var(--dur-base, 160ms);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
-.stage-enlarge:hover { color: var(--c-text); background: var(--c-surface-2); border-color: var(--c-text); }
+.stage-enlarge::before { content: ""; position: absolute; inset: -7px; }
+.stage-enlarge:hover, .stage-enlarge:focus-visible { opacity: 1; color: #fff; background: rgb(18 21 46 / 0.95); }
+.stage-enlarge:focus-visible { outline: 3px solid var(--marker-strong); outline-offset: 2px; }
 
-/* ---- 説明文・場面の点・再生 ---- */
-.stage-bar { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px 16px; margin-top: 12px; }
-.stage-caption {
-  flex: 1 1 18em; margin: 0; padding-top: 10px; min-height: calc(2 * 1.65em + 10px);
-  color: var(--c-text-2); font-size: var(--fs-ui); line-height: 1.65;
-}
-:lang(ja) .stage-caption { word-break: auto-phrase; }
-.stage-controls { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+/* ---- 場面の点・再生と説明文 ---- */
+.stage-bar { display: grid; gap: 2px; margin-top: 8px; }
+.stage-controls { display: flex; align-items: center; justify-content: space-between; gap: 4px; min-height: 44px; }
 .stage-controls:empty { display: none; }
-.stage-dots { display: flex; align-items: center; }
+.stage-dots { display: flex; align-items: center; margin-left: -12px; }
 .stage-dot {
-  position: relative; width: 26px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer;
+  position: relative; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer;
   border-radius: var(--radius-sm);
 }
 .stage-dot::before {
@@ -104,39 +125,68 @@
   background: var(--c-border-strong); transition: width var(--dur-base) var(--ease-standard), margin var(--dur-base) var(--ease-standard), background-color var(--dur-base);
 }
 .stage-dot:hover::before { background: var(--c-text-2); }
-.stage-dot[aria-selected="true"]::before { width: 20px; margin-left: -10px; background: var(--c-accent); }
-.stage-dot:focus-visible { outline-offset: -2px; }
+.stage-dot[aria-selected="true"]::before { width: 22px; margin-left: -11px; background: var(--c-accent); }
+.stage-dot:focus-visible { outline-offset: -4px; }
 .stage-play {
-  display: inline-grid; place-items: center; width: 44px; height: 44px; margin-left: 4px; padding: 0;
-  border: 1px solid var(--c-border-strong); border-radius: 50%; background: transparent; color: var(--c-text); cursor: pointer;
+  display: inline-grid; place-items: center; width: 44px; height: 44px; margin-right: -10px; padding: 0;
+  border: 0; border-radius: 50%; background: transparent; color: var(--c-text-2); cursor: pointer;
 }
-.stage-play:hover { background: var(--c-surface-2); border-color: var(--c-text); }
+.stage-play:hover { background: var(--c-surface-2); color: var(--c-text); }
+/* ポインターや焦点で止まっている間（再生の意図は残っている） */
+.stage-play[data-state="held"] { color: var(--c-text-3); }
+
+/* 説明文: すべての場面の説明を同じ場所に重ね、いちばん長い説明の高さを先に取っておく（場面が替わっても下がずれない） */
+.stage-caption { margin: 0; color: var(--c-text-2); font-size: var(--fs-ui); line-height: 1.65; }
+.stage-capstack { display: grid; }
+.stage-capline { grid-area: 1 / 1; visibility: hidden; opacity: 0; }
+.stage-capline[data-on] { visibility: visible; opacity: 1; }
+:lang(ja) .stage-caption { word-break: auto-phrase; }
 
 /* JavaScript が動かないときだけ見せる説明の一覧 */
 .stage-captions { margin: 12px 0 0; padding-left: 1.5em; color: var(--c-text-2); font-size: var(--fs-ui); line-height: 1.7; }
 .stage-captions li + li { margin-top: 4px; }
 .stage[data-enhanced] .stage-captions { display: none; }
+.stage:not([data-enhanced]):has(.stage-captions) .stage-caption { display: none; }
 
-/* ---- 拡大表示（<dialog>） ---- */
+/* ---- 拡大表示（<dialog>）。紺地で、閉じるボタンは白 ---- */
 .stage-dialog {
   width: min(96vw, 1600px); max-width: none; max-height: 94vh; padding: 0; border: 0; border-radius: var(--radius-shot);
   background: #141318; color: var(--on-dark); box-shadow: 0 30px 80px rgb(0 0 0 / 0.5); overflow: auto;
 }
-.stage-dialog::backdrop { background: rgb(18 21 46 / 0.82); }
-.stage-dialog-bar { position: sticky; top: 0; z-index: 1; display: flex; justify-content: flex-end; padding: 8px; background: rgb(20 19 24 / 0.9); }
+.stage-dialog::backdrop { background: rgb(18 21 46 / 0.86); }
+.stage-dialog-bar {
+  position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 16px; padding: 8px 8px 8px 16px;
+  background: rgb(20 19 24 / 0.94); box-shadow: 0 1px 0 rgb(255 255 255 / 0.12);
+}
+.stage-dialog-caption { flex: 1; margin: 0; color: var(--on-dark-2); font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.6; }
+.stage-dialog-close {
+  display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 44px; margin-left: auto; padding: 0 16px; border-radius: var(--radius-full);
+  border: 1px solid rgb(255 255 255 / 0.6); background: transparent; color: #fff; cursor: pointer;
+  font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 700;
+}
+.stage-dialog-close:hover { background: rgb(255 255 255 / 0.12); border-color: #fff; }
+.stage-dialog-close:focus-visible { outline: 3px solid var(--marker-strong); outline-offset: 2px; }
 .stage-dialog img { display: block; width: 100%; height: auto; }
+
+/* ---- 静止画（StageStill）: 狭い画面では寄せた範囲に切り替える ---- */
+.stage-still-narrow { display: none; }
+@media (max-width: 1000px) {
+  .stage-still[data-has-narrow] .stage-still-wide { display: none; }
+  .stage-still[data-has-narrow] .stage-still-narrow { display: block; }
+}
 
 @media (max-width: 600px) {
   .stage-frame { padding: 4px; border-radius: 10px; }
   .stage-view { border-radius: 7px; }
-  .stage-enlarge { padding: 0; width: 44px; }
+  .stage-enlarge { right: 10px; bottom: 10px; width: 32px; height: 32px; padding: 0; justify-content: center; }
   .stage-enlarge-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .stage-chip { font-size: 0.6875rem; padding: 2px 7px; }
-  .stage-caption { flex-basis: 100%; min-height: calc(3 * 1.65em + 10px); font-size: var(--fs-sm); }
+  .stage-caption { font-size: var(--fs-sm); }
+  .stage-co-dot { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+  .stage-badge { top: 6px; left: 6px; }
 }
 
 @media print {
   .stage-controls, .stage-enlarge, .stage-dialog { display: none !important; }
   .stage[data-enhanced] .stage-captions { display: block; }
 }
-.stage:not([data-enhanced]):has(.stage-captions) .stage-caption { display: none; }

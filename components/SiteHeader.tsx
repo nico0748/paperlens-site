@@ -17,7 +17,10 @@ async function currentUser() {
   }
 }
 
-/** DADS のヘッダーコンテナに沿う: 左にロゴ、中央にナビゲーション、右に言語の切り替えとログイン */
+/**
+ * DADS のヘッダーコンテナに沿う: 左にロゴ、中央にナビゲーション、右に言語の切り替えとログイン。
+ * 「共有データ」は初めての人には意味が分からないので、ヘッダーには置かずフッターからだけ辿る。
+ */
 export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const user = await currentUser();
   const { common, nav, featureNav } = dict;
@@ -45,7 +48,6 @@ export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionar
             />
             <Link href={`/${lang}#privacy`}>{nav.privacy}</Link>
             <Link href={`/${lang}#download`}>{nav.start}</Link>
-            <Link href={`/${lang}/shared`}>{nav.shared}</Link>
           </nav>
           <div className="header-tools">
             <a href={site.repo} className="header-icon-link">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { ArrowRightIcon, PanelRightIcon } from "@/components/icons";
+import { ArrowRightIcon } from "@/components/icons";
 import { FeatureCard } from "@/components/features/FeatureCard";
 import { ribbonConfig } from "@/components/features/data";
 import { getFeaturesDictionary } from "@/components/features/dict";
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/features">
   };
 }
 
-/** 機能の一覧。5 つの機能のカード（画面写真つき）と、画面の見取り図（左端のアイコン・右側のタブ） */
+/** 機能の一覧。5 つの機能のカード（機能ごとに違う画面の切り抜き）と、画面の見取り図（左端のアイコン・右側のタブ） */
 export default async function FeaturesIndex({ params }: PageProps<"/[lang]/features">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
@@ -104,14 +104,9 @@ export default async function FeaturesIndex({ params }: PageProps<"/[lang]/featu
               <h3 className="fp-h3">{t.tabsTitle}</h3>
               <ul className="fp-ribbon fp-tabs" role="list">
                 {t.tabs.map((tab) => (
-                  <li key={tab.label} className="fp-ribbon-item">
-                    <span className="fp-ribbon-icon fp-ribbon-icon-tab">
-                      <PanelRightIcon size={20} />
-                    </span>
-                    <div>
-                      <p className="fp-ribbon-label">{tab.label}</p>
-                      <p className="fp-ribbon-body">{tab.body}</p>
-                    </div>
+                  <li key={tab.label} className="fp-ribbon-item fp-tab-item">
+                    <span className="fp-tab-chip">{tab.label}</span>
+                    <p className="fp-ribbon-body">{tab.body}</p>
                   </li>
                 ))}
               </ul>

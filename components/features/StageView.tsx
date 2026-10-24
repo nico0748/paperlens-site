@@ -1,17 +1,30 @@
 import type { CSSProperties } from "react";
-import type { Callout, Stage } from "@/lib/stage-types";
-import { stageMeta, type StageKey } from "@/lib/scenes";
+import type { Callout, Scene, Stage } from "@/lib/stage-types";
+import { stageMeta, stages, type StageKey } from "@/lib/scenes";
 import { calloutBox, fitRect, frameAspect, layerTransform, sceneSrc, srcSetFor, type ViewRect } from "./stage-geometry";
 
 type Lang = "ja" | "en";
 
+const placeholderLabel = { ja: "画面は準備中", en: "Screen coming soon" } as const;
+
+/** 場面 i が「合う画面がまだ無く、近い画面で代わりに見せている」場面か（lib/scenes.ts の stageMeta.placeholders） */
+export function isPlaceholder(stage: Stage, i: number) {
+  const key = stage.id as StageKey;
+  const list = stageMeta[key]?.placeholders;
+  if (!list?.length) return false;
+  // 場面を絞り込んだ Stage（トップページなど）でも、元の場面の番号で調べる（場面のオブジェクトは同じもの）
+  const orig = stages[key]?.scenes.indexOf(stage.scenes[i]) ?? -1;
+  return list.includes(orig >= 0 ? orig : i);
+}
+
 /**
  * 画面写真の中身（枠の内側）。画像の層と、場面ごとの囲み・点・下線・吹き出しを描く。
  * フックを使わないので、サーバーでもクライアントでも使える。
- * - 画像は src ごとに 1 枚の層。表示中の場面の src の層だけ不透明にする（src が替わるとクロスフェード）。
- * - 層は transform（scale + translate）だけで動かす。表示していない層は「次にその層を使う場面」の位置に置いておくので、
- *   出てくるときはフェードだけで、急に動かない。
+ * - 画像は src ごとに 1 枚の層。src が替わるときは、入ってくる層だけを上に重ねてフェードインする
+ *   （出ていく層は下で不透明のまま残し、フェードが終わってから消す。半透明どうしが重なって灰色にならない）。
+ * - 層は transform（scale + translate）だけで動かす。表示していない層は「次にその層を使う場面」の位置に置いておく。
  * - 囲みなどは拡大しない別の面に、表示範囲に対する % で置く（線の太さと文字の大きさが拡大で変わらない）。
+ * - 代わりの画面の場面（stageMeta.placeholders）では、吹き出しを出さず「画面は準備中」の札を出す（違う UI を囲まない）。
  */
 export function StageView({
   stage,
@@ -23,6 +36,9 @@ export function StageView({
   role,
   label,
   aspect,
+  via,
+  panMs,
+  alt,
 }: {
   stage: Stage;
   lang: Lang;
@@ -34,6 +50,12 @@ export function StageView({
   label?: string;
   /** 枠の縦横比（"16/10" など）。省略時は lib/scenes.ts の stageMeta、それも無ければ画像の縦横比 */
   aspect?: string;
+  /** 遠くへ飛ぶときに、いったん見せる範囲（0〜100）。表示中の層だけに効く */
+  via?: Scene["rect"];
+  /** 拡大・移動にかける時間（ms）。CSS の --pan-dur */
+  panMs?: number;
+  /** 表示中の画像の代替テキスト（省略時は、基本の画像なら stage.alt、別の画像なら場面の説明） */
+  alt?: string;
 }) {
   const scenes = stage.scenes;
   const n = scenes.length;
@@ -42,12 +64,15 @@ export function StageView({
   const rects = scenes.map((s) => fitRect(stage, s.rect, frame));
   const srcs = Array.from(new Set([stage.src, ...scenes.map((s) => sceneSrc(stage, s))]));
   const activeSrc = sceneSrc(stage, scenes[cur]);
+  const activeAlt = alt ?? (activeSrc === stage.src ? stage.alt[lang] : scenes[cur]?.caption[lang] ?? stage.alt[lang]);
+  const placeholder = isPlaceholder(stage, cur);
   // 拡大する分だけ大きい画像を選ばせる（枠に対する倍率の最大）
   const maxK = rects.reduce((m, r) => Math.max(m, stage.width / r.w), 1);
-  const imgSizes = sizes ?? `(max-width: 1000px) ${Math.round(100 * Math.min(maxK, 3))}vw, ${Math.round(720 * Math.min(maxK, 3))}px`;
+  const imgSizes = sizes ?? `(max-width: 1000px) ${Math.round(100 * Math.min(maxK, 3))}vw, ${Math.round(760 * Math.min(maxK, 3))}px`;
 
   /** 層 src の置き場所: 表示中ならその場面、そうでなければ次にその層を使う場面 */
   const rectFor = (src: string): ViewRect => {
+    if (via && src === activeSrc) return fitRect(stage, via, frame);
     for (let d = 0; d < n; d++) {
       const j = (cur + d) % n;
       if (sceneSrc(stage, scenes[j]) === src) return rects[j];
@@ -61,9 +86,9 @@ export function StageView({
       id={id}
       role={role}
       aria-label={label}
-      style={{ aspectRatio: String(Math.round(frame * 10000) / 10000) }}
+      style={{ aspectRatio: String(Math.round(frame * 10000) / 10000), ...(panMs ? { "--pan-dur": `${panMs}ms` } : null) } as CSSProperties}
     >
-      {srcs.map((src, li) => {
+      {srcs.map((src) => {
         const { k, transform } = layerTransform(stage, rectFor(src));
         const on = src === activeSrc;
         const isBase = src === stage.src;
@@ -81,22 +106,25 @@ export function StageView({
               sizes={set ? imgSizes : undefined}
               width={stage.width}
               height={stage.height}
-              alt={li === 0 ? stage.alt[lang] : ""}
-              loading={priority && isBase ? "eager" : "lazy"}
-              fetchPriority={priority && isBase ? "high" : undefined}
+              alt={on ? activeAlt : ""}
+              loading={priority && (isBase || on) ? "eager" : "lazy"}
+              fetchPriority={priority && on ? "high" : undefined}
               decoding="async"
               draggable={false}
             />
           </div>
         );
       })}
-      {scenes.map((s, si) => (
-        <div key={si} className="stage-callouts" data-on={si === cur ? "" : undefined} aria-hidden="true">
-          {s.callouts.map((c, ci) => (
-            <CalloutMark key={ci} c={c} pos={calloutBox(stage, rects[si], c)} lang={lang} i={ci} />
-          ))}
-        </div>
-      ))}
+      {scenes.map((s, si) =>
+        isPlaceholder(stage, si) ? null : (
+          <div key={si} className="stage-callouts" data-on={si === cur && !via ? "" : undefined} aria-hidden="true">
+            {s.callouts.map((c, ci) => (
+              <CalloutMark key={ci} c={c} pos={calloutBox(stage, rects[si], c)} lang={lang} i={ci} />
+            ))}
+          </div>
+        ),
+      )}
+      {placeholder && <span className="stage-badge">{placeholderLabel[lang]}</span>}
     </div>
   );
 }

@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { ArrowRightIcon, GitHubIcon, TerminalIcon } from "@/components/icons";
+import { ArrowDownIcon, ArrowRightIcon, GitHubIcon, TerminalIcon } from "@/components/icons";
+import { BothWays } from "@/components/features/BothWays";
 import { McpStage } from "@/components/features/McpStage";
-import { ScreenStage } from "@/components/features/ScreenStage";
-import { ScrollStage } from "@/components/features/ScrollStage";
+import { PanelTabs } from "@/components/features/PanelTabs";
+import { ScrollStage, type ScrollStep } from "@/components/features/ScrollStage";
+import { StageStill } from "@/components/features/StageStill";
 import { FeatureCard } from "@/components/features/FeatureCard";
-import { featureConfig, isFeatureSlug, neighbors } from "@/components/features/data";
+import { cropStage, featureConfig, isFeatureSlug, otherFeatures } from "@/components/features/data";
+import type { Stage } from "@/lib/stage-types";
 import { getFeaturesDictionary } from "@/components/features/dict";
 import { stageFor } from "@/components/features/stages";
 import { hasLocale, locales } from "@/lib/i18n";
@@ -44,10 +47,21 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/features/[
   };
 }
 
+/** 章ごとの手順と、その章で使う場面だけの Stage（場面の番号は章の中で振り直す。場面のオブジェクトは元のまま） */
+function chapterStage(stage: Stage, steps: ScrollStep[]) {
+  const used: number[] = [];
+  for (const s of steps) if (!used.includes(s.scene)) used.push(s.scene);
+  return {
+    stage: { ...stage, scenes: used.map((i) => stage.scenes[Math.min(i, stage.scenes.length - 1)]) },
+    steps: steps.map((s) => ({ ...s, scene: used.indexOf(s.scene) })),
+  };
+}
+
 /**
  * 機能の詳細ページ。
- * パンくず → ヒーロー（紺、動く画面写真）→ 使い方の流れ（スクロールで場面が替わる）→ こんなときに（淡）
- * → Claude からもできる → 関連する機能 → 締め（紺）と前後の機能。
+ * パンくず → ヒーロー（紺。静止画。MCP だけは会話と動く画面）→ 使い方の流れ（スクロールで場面が替わる。章に分けるページもある）
+ * → ページごとの図（両方向・タブ・ツール表）→ こんなときに・注意（淡）→ Claude からもできる → ほかの機能 → 締め（紺）。
+ * 動く画面は「使い方の流れ」に 1 つだけ置く（ヒーローでも同じ場面を流すと、トップページと合わせて 3 回同じものを見ることになる）。
  */
 export default async function FeaturePage({ params }: PageProps<"/[lang]/features/[slug]">) {
   const { lang, slug } = await params;
@@ -57,12 +71,21 @@ export default async function FeaturePage({ params }: PageProps<"/[lang]/feature
   const cfg = featureConfig[slug];
   const stage = stageFor(slug);
   const Icon = cfg.icon;
-  const { prev, next } = neighbors(slug);
-  const steps = p.steps.map((s, i) => ({ ...s, scene: cfg.stepScenes[i] ?? i, id: cfg.stepAnchors?.[i] }));
+  const steps: ScrollStep[] = p.steps.map((s, i) => ({ ...s, scene: cfg.stepScenes[i] ?? i, id: cfg.stepAnchors?.[i] }));
+  // 章（無ければ 1 章）
+  const chapters = (p.chapters ?? [{ id: "", title: "", count: steps.length }]).reduce<{ id: string; title: string; steps: ScrollStep[] }[]>(
+    (acc, c) => {
+      const from = acc.reduce((n, x) => n + x.steps.length, 0);
+      acc.push({ id: c.id, title: c.title, steps: steps.slice(from, from + c.count) });
+      return acc;
+    },
+    [],
+  );
+  const hero = cfg.hero ? cropStage(slug, cfg.hero, { ja: p.heroAlt, en: p.heroAlt }) : null;
 
   return (
     <>
-      <section className="fp-hero theme-dark" aria-labelledby="fp-title">
+      <section className="fp-hero theme-dark" aria-labelledby="fp-title" data-slug={slug}>
         <div className="fp-hero-art" aria-hidden="true" />
         <div className="container">
           <Breadcrumb
@@ -100,49 +123,97 @@ export default async function FeaturePage({ params }: PageProps<"/[lang]/feature
               {slug === "mcp" ? (
                 <McpStage stage={stage} lang={lang} priority />
               ) : (
-                <ScreenStage stage={stage} lang={lang} autoplay priority />
+                hero && (
+                  <>
+                    <StageStill
+                      stage={hero}
+                      lang={lang}
+                      scene={0}
+                      aspect={cfg.hero?.aspect}
+                      narrowAspect={cfg.hero?.narrowAspect}
+                      priority
+                      className="fp-hero-still"
+                    />
+                    <a href="#fp-steps-title" className="fp-hero-jump">
+                      {t.ui.stepsJump}
+                      <ArrowDownIcon size={16} />
+                    </a>
+                  </>
+                )
               )}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="fp-section fp-steps" aria-labelledby="fp-steps-title">
+      <section className="fp-section fp-steps" data-layout={cfg.layout} aria-labelledby="fp-steps-title">
         <div className="container">
           <h2 id="fp-steps-title" className="fp-h2" data-fp-reveal>
             {t.ui.stepsTitle}
           </h2>
-          <ScrollStage stage={stage} lang={lang} steps={steps} stepLabel={t.ui.stepLabel} />
+          {chapters.map((c) => {
+            const ch = cfg.layout === "text" ? { stage, steps: c.steps } : chapterStage(stage, c.steps);
+            return (
+              <div key={c.id || "all"} className="fp-chapter">
+                {c.title && (
+                  <h3 id={c.id} className="fp-chapter-title" data-fp-reveal>
+                    {c.title}
+                  </h3>
+                )}
+                <ScrollStage
+                  stage={ch.stage}
+                  lang={lang}
+                  steps={ch.steps}
+                  stepLabel={t.ui.stepLabel}
+                  layout={cfg.layout}
+                  stillAspect={cfg.stillAspect}
+                />
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      <section className="fp-section fp-tint" aria-labelledby="fp-cases-title">
-        <div className="container">
-          <h2 id="fp-cases-title" className="fp-h2" data-fp-reveal>
-            {t.ui.casesTitle}
-          </h2>
-          <ul className="fp-cases" role="list">
-            {p.cases.map((c, i) => (
-              <li key={c} className="fp-case" data-fp-reveal style={{ "--i": i } as React.CSSProperties}>
-                {c}
-              </li>
-            ))}
-          </ul>
-          {p.notes.length > 0 && (
-            <aside className="fp-notes" aria-label={t.ui.notesTitle} data-fp-reveal>
-              <p className="fp-notes-title">{t.ui.notesTitle}</p>
-              <ul role="list">
-                {p.notes.map((n) => (
-                  <li key={n}>{n}</li>
-                ))}
-              </ul>
-            </aside>
-          )}
-        </div>
-      </section>
+      {slug === "slides-link" && p.signature && (
+        <section className="fp-section fp-signature" aria-labelledby="fp-sig-title">
+          <div className="container">
+            <h2 id="fp-sig-title" className="fp-h2" data-fp-reveal>
+              {p.signature.title}
+            </h2>
+            {p.signature.lead && (
+              <p className="fp-section-lead" data-fp-reveal>
+                {p.signature.lead}
+              </p>
+            )}
+            <BothWays t={p.signature} lang={lang} />
+          </div>
+        </section>
+      )}
 
-      {slug === "mcp" ? (
-        <section className="fp-section" aria-labelledby="fp-tools-title">
+      {slug === "supplement" && p.signature && (
+        <section className="fp-section fp-signature" aria-labelledby="fp-sig-title">
+          <div className="container">
+            <h2 id="fp-sig-title" className="fp-h2" data-fp-reveal>
+              {p.signature.title}
+            </h2>
+            <PanelTabs
+              t={p.signature}
+              lang={lang}
+              initial={2}
+              soon={t.ui.soon}
+              shots={[
+                undefined,
+                undefined,
+                cropStage(slug, { shot: "glossary", rect: { x: 34.76, y: 8.5, w: 65.24, h: 50 } }, { ja: "", en: "" }),
+                cropStage(slug, { shot: "equation", rect: { x: 34.76, y: 8.5, w: 65.24, h: 50 } }, { ja: "", en: "" }),
+              ]}
+            />
+          </div>
+        </section>
+      )}
+
+      {slug === "mcp" && (
+        <section className="fp-section fp-signature" aria-labelledby="fp-tools-title">
           <div className="container">
             <h2 id="fp-tools-title" className="fp-h2" data-fp-reveal>
               {t.ui.toolsTitle}
@@ -191,39 +262,65 @@ export default async function FeaturePage({ params }: PageProps<"/[lang]/feature
             </dl>
           </div>
         </section>
-      ) : (
-        <section className="fp-section fp-mcp" aria-labelledby="fp-mcp-title">
-          <div className="container fp-mcp-inner" data-fp-reveal>
-            <div>
-              <p className="fp-kicker-sm">{t.ui.mcpKicker}</p>
-              <h2 id="fp-mcp-title" className="fp-h3">
-                {t.ui.mcpTitle}
-              </h2>
-              <p className="fp-mcp-line">{p.mcpLine}</p>
-              <Link href={featureHref(lang, "mcp")} className="fp-more">
-                {t.ui.mcpMore}
-                <ArrowRightIcon size={18} />
-              </Link>
-            </div>
-            <ul className="fp-tools" role="list">
-              {cfg.tools.map((tool) => (
-                <li key={tool}>
-                  <code>{tool}</code>
+      )}
+
+      <section className="fp-section fp-tint fp-good" aria-labelledby="fp-cases-title">
+        <div className="container fp-good-grid">
+          <div>
+            <h2 id="fp-cases-title" className="fp-h3" data-fp-reveal>
+              {t.ui.casesTitle}
+            </h2>
+            <ul className="fp-cases" role="list">
+              {p.cases.map((c, i) => (
+                <li key={c} className="fp-case" data-fp-reveal style={{ "--i": i } as React.CSSProperties}>
+                  {c}
                 </li>
               ))}
             </ul>
           </div>
-        </section>
-      )}
+          <div className="fp-good-side">
+            {p.notes.length > 0 && (
+              <aside className="fp-notes" aria-label={t.ui.notesTitle} data-fp-reveal>
+                <p className="fp-notes-title">{t.ui.notesTitle}</p>
+                <ul role="list">
+                  {p.notes.map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+              </aside>
+            )}
+            {slug !== "mcp" && (
+              <aside className="fp-mcp-inner" aria-labelledby="fp-mcp-title" data-fp-reveal>
+                <p className="fp-kicker-sm">{t.ui.mcpKicker}</p>
+                <h2 id="fp-mcp-title" className="fp-h4">
+                  {t.ui.mcpTitle}
+                </h2>
+                <p className="fp-mcp-line">{p.mcpLine}</p>
+                <ul className="fp-tools" role="list">
+                  {cfg.tools.map((tool) => (
+                    <li key={tool}>
+                      <code>{tool}</code>
+                    </li>
+                  ))}
+                </ul>
+                <Link href={featureHref(lang, "mcp")} className="fp-more">
+                  {t.ui.mcpMore}
+                  <ArrowRightIcon size={18} />
+                </Link>
+              </aside>
+            )}
+          </div>
+        </div>
+      </section>
 
-      <section className="fp-section fp-related" aria-labelledby="fp-related-title">
+      <section className="fp-section fp-others" aria-labelledby="fp-others-title">
         <div className="container">
-          <h2 id="fp-related-title" className="fp-h2" data-fp-reveal>
-            {t.ui.relatedTitle}
+          <h2 id="fp-others-title" className="fp-h2" data-fp-reveal>
+            {t.ui.othersTitle}
           </h2>
-          <ul className="fp-card-grid" role="list">
-            {cfg.related.map((r, i) => (
-              <FeatureCard key={r} slug={r} lang={lang} i={i} />
+          <ul className="fp-card-grid fp-card-grid-others" role="list">
+            {otherFeatures(slug).map((r, i) => (
+              <FeatureCard key={r} slug={r} lang={lang} thumb compact i={i} />
             ))}
           </ul>
         </div>
@@ -246,22 +343,6 @@ export default async function FeaturePage({ params }: PageProps<"/[lang]/feature
               {t.ui.ctaSecondary}
             </a>
           </div>
-          <nav className="fp-pager" aria-label={t.ui.pagerLabel}>
-            <Link href={featureHref(lang, prev)} className="fp-pager-link fp-pager-prev" rel="prev">
-              <span className="fp-pager-dir">
-                <ArrowRightIcon size={16} className="fp-flip" />
-                {t.ui.prev}
-              </span>
-              <span className="fp-pager-title">{t.pages[prev].title}</span>
-            </Link>
-            <Link href={featureHref(lang, next)} className="fp-pager-link fp-pager-next" rel="next">
-              <span className="fp-pager-dir">
-                {t.ui.next}
-                <ArrowRightIcon size={16} />
-              </span>
-              <span className="fp-pager-title">{t.pages[next].title}</span>
-            </Link>
-          </nav>
         </div>
       </section>
     </>

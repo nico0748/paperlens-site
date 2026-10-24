@@ -1,41 +1,36 @@
 import type { Dictionary } from "@/lib/i18n";
-import { PanelRightIcon, PresentationIcon, WaypointsIcon } from "../icons";
+import { ArrowDownIcon, PanelRightIcon, PresentationIcon, WaypointsIcon } from "../icons";
 
 const ICONS = [PresentationIcon, PanelRightIcon, WaypointsIcon];
 
-/** 使い方（白）。輪講・ひとりで読む・あとで見返すの 3 場面を、同じ形のカードで並べる */
-export function UseCases({ t, kicker }: { t: Dictionary["uses"]; kicker: string }) {
+/**
+ * 使う場面（白、ヒーローの写真のすぐ下）。輪講・ひとりで読む・あとで見返すの 3 つを、短いカードで横に並べる。
+ * 各カードは、その場面で使う機能の行（#f-slides など）へ下りるリンクで終わる。
+ */
+export function UseCases({ t }: { t: Dictionary["uses"] }) {
   return (
-    <section id="uses" className="lp-section theme-light" aria-labelledby="uses-title">
+    <section id="uses" className="lp-section lp-uses-section theme-light" aria-labelledby="uses-title">
       <div className="container">
-        <header className="lp-section-head" data-reveal>
-          <p className="lp-kicker">{kicker}</p>
-          <h2 id="uses-title" className="lp-h2">
-            {t.title}
-          </h2>
-          <p className="lp-section-lead">{t.lead}</p>
-        </header>
+        <h2 id="uses-title" className="lp-h2 lp-h2-sm lp-center" data-reveal>
+          {t.title}
+        </h2>
         <ul className="lp-uses" role="list">
           {t.items.map((item, i) => {
             const Icon = ICONS[i % ICONS.length];
             return (
-              <li key={item.title} className="lp-card lp-use" data-reveal style={{ "--i": i } as React.CSSProperties}>
-                <div className="lp-card-head">
-                  <span className="lp-icon-tile" aria-hidden="true">
-                    <Icon size={22} />
+              <li key={item.scene} className="lp-use" data-reveal style={{ "--i": i } as React.CSSProperties}>
+                <p className="lp-use-scene">
+                  <span className="lp-icon-tile lp-icon-tile-sm" aria-hidden="true">
+                    <Icon size={20} />
                   </span>
-                  <p className="lp-card-kicker">{item.kicker}</p>
-                </div>
-                <h3 className="lp-h3">{item.title}</h3>
-                <p className="lp-use-story">{item.story}</p>
-                <div className="lp-use-foot">
-                  <p className="lp-use-label">{t.usesLabel}</p>
-                  <ul className="lp-use-chips" role="list">
-                    {item.uses.map((u) => (
-                      <li key={u}>{u}</li>
-                    ))}
-                  </ul>
-                </div>
+                  {item.scene}
+                </p>
+                <h3 className="lp-use-title">{item.title}</h3>
+                <p className="lp-use-body">{item.body}</p>
+                <a href={`#${item.target}`} className="lp-more lp-use-link">
+                  {item.link}
+                  <ArrowDownIcon size={16} />
+                </a>
               </li>
             );
           })}

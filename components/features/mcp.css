@@ -7,7 +7,7 @@
 .mcp-chat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
 .mcp-stage[data-enhanced] .mcp-chat-list { gap: 0; }
 .mcp-stage[data-enhanced] .mcp-turn { grid-area: 1 / 1; }
-.mcp-turn { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.mcp-turn { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; align-content: start; }
 .mcp-turn p { margin: 0; }
 .mcp-bubble {
   max-width: 88%; padding: 7px 12px; border-radius: 14px; font-family: var(--font-ui); font-size: var(--fs-sm); line-height: 1.6;
@@ -19,10 +19,11 @@
 .mcp-tool code { font-size: var(--fs-xs); }
 .mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] { visibility: hidden; }
 .mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] > * { opacity: 0; }
-@media (prefers-reduced-motion: no-preference) {
-  .mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] > * { transform: translate3d(0, 6px, 0); }
-  .mcp-stage[data-enhanced] .mcp-turn > * { transition: opacity 350ms ease, transform 450ms var(--ease-out-expo); }
-  .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] > :nth-child(2) { transition-delay: 300ms; }
-  .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] > :nth-child(3) { transition-delay: 600ms; }
-}
 .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] .mcp-tool code { box-shadow: 0 0 0 2px var(--marker); }
+/* 発言 0ms → ツール名 400ms → （画面が 700ms で動き出す）→ 結果は画面が止まるころ（1100ms） */
+@media (prefers-reduced-motion: no-preference) {
+  .mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] > * { transform: translate3d(0, 6px, 0); transition: opacity 150ms ease, transform 0s 150ms; }
+  .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] > * { transition: opacity 300ms ease, transform 400ms cubic-bezier(0.2, 0, 0, 1); }
+  .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] > :nth-child(2) { transition-delay: 400ms; }
+  .mcp-stage[data-enhanced] .mcp-turn[data-state="current"] > :nth-child(3) { transition-delay: 1100ms; }
+}

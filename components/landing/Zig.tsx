@@ -8,35 +8,33 @@ type Props = {
   /** 画面写真を置く側。文はその反対側 */
   media: "left" | "right";
   icons: React.ReactNode[];
+  /** 使う場面（「輪講で」など）。機能名の前に置く */
+  scene?: string;
   kicker: string;
   title: string;
   body: string;
   bullets: string[];
-  note?: string;
   cta: { href: string; label: string };
-  /** 論文一覧のような縦長の画面写真のとき、写真の列を狭くする */
-  compact?: boolean;
-  /** 最初の行の上に置く、まとまりの見出し（「できること」） */
-  intro?: React.ReactNode;
+  /** 文より写真を小さくしたいとき（MCP の行） */
+  className?: string;
   children: React.ReactNode;
 };
 
 /**
  * 機能を 1 つずつ紹介する行。文と画面写真を左右に置き、行ごとに左右を入れ替える。
- * 文と写真はそれぞれ自分の側から滑り込む（data-reveal="x"、--dx は CSS で側ごとに決める）。
+ * 小見出しは「場面｜機能」。文と写真はそれぞれ自分の側から滑り込む（data-reveal="x"、--dx は CSS で側ごとに決める）。
  * JavaScript が動かないとき・動きを減らす設定のときは、最初から見えている。
  */
-export function Zig({ id, tone, media, icons, kicker, title, body, bullets, note, cta, compact, intro, children }: Props) {
+export function Zig({ id, tone, media, icons, scene, kicker, title, body, bullets, cta, className, children }: Props) {
   const tint = tone === "tint" ? " lp-tint" : "";
   return (
     <section
       id={id}
-      className={`lp-section lp-zig theme-light${tint}${compact ? " lp-zig-compact" : ""}`}
+      className={`lp-section lp-zig theme-light${tint}${className ? ` ${className}` : ""}`}
       data-media={media}
       aria-labelledby={`${id}-title`}
     >
       <div className="container">
-        {intro}
         <div className="lp-zig-grid">
           <div className="lp-zig-text" data-reveal="x">
             <p className="lp-kicker lp-kicker-icon">
@@ -47,18 +45,25 @@ export function Zig({ id, tone, media, icons, kicker, title, body, bullets, note
                   </span>
                 ))}
               </span>
-              {kicker}
+              {scene && (
+                <>
+                  <span className="lp-kicker-scene">{scene}</span>
+                  <span className="lp-kicker-sep" aria-hidden="true" />
+                </>
+              )}
+              <span>{kicker}</span>
             </p>
-            <h3 id={`${id}-title`} className="lp-h2 lp-zig-title">
+            <h2 id={`${id}-title`} className="lp-h2 lp-zig-title">
               {title}
-            </h3>
+            </h2>
             <p className="lp-zig-body">{body}</p>
-            <ul className="lp-points">
-              {bullets.map((b) => (
-                <li key={b}>{b}</li>
-              ))}
-            </ul>
-            {note && <p className="lp-zig-note">{note}</p>}
+            {bullets.length > 0 && (
+              <ul className="lp-points">
+                {bullets.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
+            )}
             <div className="lp-zig-cta">
               <Link href={cta.href} className="btn btn-secondary">
                 {cta.label}

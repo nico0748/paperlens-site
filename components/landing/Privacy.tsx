@@ -1,20 +1,16 @@
 import type { Dictionary } from "@/lib/i18n";
 import { ShieldIcon, VaultIcon } from "../icons";
 
-/** プライバシー（淡）。見出しと本文のあと、Claude に送るものとデータの置き場所を 2 枚で並べる */
-export function Privacy({ t, kicker }: { t: Dictionary["privacy"]; kicker: string }) {
+/** プライバシー（白）。見出しと 1〜2 行の本文のあと、Claude に送るものとデータの置き場所を 2 枚で並べる */
+export function Privacy({ t }: { t: Dictionary["privacy"] }) {
   const cards = [
-    { Icon: ShieldIcon, title: t.sendTitle, body: t.detail },
-    { Icon: VaultIcon, title: t.vaultTitle, body: t.vault },
+    { Icon: ShieldIcon, title: t.sendTitle, body: [t.detail, t.apiNote] },
+    { Icon: VaultIcon, title: t.vaultTitle, body: [t.vault] },
   ];
   return (
-    <section id="privacy" className="lp-section lp-tint theme-light" aria-labelledby="privacy-title">
+    <section id="privacy" className="lp-section theme-light" aria-labelledby="privacy-title">
       <div className="container">
-        <header className="lp-section-head" data-reveal>
-          <span className="lp-icon-tile lp-icon-tile-lg" aria-hidden="true">
-            <ShieldIcon size={28} />
-          </span>
-          <p className="lp-kicker">{kicker}</p>
+        <header className="lp-section-head lp-section-head-tight" data-reveal>
           <h2 id="privacy-title" className="lp-h2">
             {t.title}
           </h2>
@@ -29,7 +25,11 @@ export function Privacy({ t, kicker }: { t: Dictionary["privacy"]; kicker: strin
                 </span>
                 <h3 className="lp-h4">{title}</h3>
               </div>
-              <p>{body}</p>
+              {body.map((p, j) => (
+                <p key={j} className={j > 0 ? "lp-privacy-note" : undefined}>
+                  {p}
+                </p>
+              ))}
             </li>
           ))}
         </ul>

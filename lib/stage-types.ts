@@ -21,6 +21,11 @@ export type Scene = {
   caption: L10n;
   /** 別の画像に切り替えるとき（省略時は Stage.src） */
   src?: string;
+  /**
+   * 狭い画面（1000px 以下）の静止画で使う範囲（任意）。無ければ吹き出しを囲む範囲から決める
+   * （components/features/stage-geometry.ts の stillRect）。
+   */
+  mobileRect?: { x: number; y: number; w: number; h: number };
 };
 
 export type Stage = {

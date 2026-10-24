@@ -97,3 +97,62 @@ export function largestSrc(stage: Stage, src: string) {
   }
   return best;
 }
+
+/**
+ * 場面 a から b へ動く時間（ms）。拡大率の差（log2）と、中心の移動距離（画像の幅に対する割合）で伸ばす。
+ * clamp(700, 700 + 350·|log2(k1/k0)| + 400·d, 1300)
+ */
+export function panDuration(stage: Pick<Stage, "width" | "height">, a: ViewRect, b: ViewRect) {
+  const ka = stage.width / a.w;
+  const kb = stage.width / b.w;
+  const d = Math.hypot(a.x + a.w / 2 - (b.x + b.w / 2), a.y + a.h / 2 - (b.y + b.h / 2)) / stage.width;
+  return Math.round(clamp(700 + 350 * Math.abs(Math.log2(kb / ka)) + 400 * d, 700, 1300));
+}
+
+/** 拡大したまま遠くへ飛ぶ移動か（いったん両方が入る範囲まで引いてから寄る） */
+export function isLongJump(stage: Pick<Stage, "width" | "height">, a: ViewRect, b: ViewRect) {
+  const d = Math.hypot(a.x + a.w / 2 - (b.x + b.w / 2), a.y + a.h / 2 - (b.y + b.h / 2)) / stage.width;
+  return d > 0.35 && stage.width / a.w > 1.3 && stage.width / b.w > 1.3;
+}
+
+/** 2 つの範囲を両方含む範囲（元画像の px）を、rect（0〜100）で返す */
+export function unionPct(stage: Pick<Stage, "width" | "height">, a: ViewRect, b: ViewRect): Scene["rect"] {
+  const x0 = Math.min(a.x, b.x);
+  const y0 = Math.min(a.y, b.y);
+  const x1 = Math.max(a.x + a.w, b.x + b.w);
+  const y1 = Math.max(a.y + a.h, b.y + b.h);
+  return { x: (x0 / stage.width) * 100, y: (y0 / stage.height) * 100, w: ((x1 - x0) / stage.width) * 100, h: ((y1 - y0) / stage.height) * 100 };
+}
+
+/**
+ * 狭い画面の静止画で見せる範囲（0〜100）。scene.mobileRect があればそれ。
+ * 無ければ、場面がほぼ全体を見せている（幅 60% 超）ときだけ、吹き出しを囲む範囲に余白を足して寄せる
+ * （幅は画像の 38% 以上に保つ。寄せすぎると何の画面か分からなくなる）。
+ */
+export function stillRect(scene: Scene, minW = 38): Scene["rect"] {
+  if (scene.mobileRect && minW < 100) return scene.mobileRect;
+  const r = scene.rect;
+  const cs = scene.callouts;
+  if ((r.w <= 60 && minW < 100) || cs.length === 0) return r;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const c of cs) {
+    const w = c.kind === "dot" || c.kind === "label" ? 0 : c.w ?? 0;
+    const h = c.kind === "box" ? c.h ?? 0 : 0;
+    x0 = Math.min(x0, c.x);
+    y0 = Math.min(y0, c.y);
+    x1 = Math.max(x1, c.x + w);
+    y1 = Math.max(y1, c.y + h);
+  }
+  const pad = 6;
+  x0 = Math.max(0, x0 - pad);
+  y0 = Math.max(0, y0 - pad);
+  x1 = Math.min(100, x1 + pad);
+  y1 = Math.min(100, y1 + pad);
+  let w = x1 - x0;
+  if (w < minW) {
+    const cx = (x0 + x1) / 2;
+    x0 = clamp(cx - minW / 2, 0, 100 - minW);
+    w = minW;
+  }
+  return { x: x0, y: y0, w, h: y1 - y0 };
+}

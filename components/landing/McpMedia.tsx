@@ -1,38 +1,37 @@
-"use client";
+import { CheckIcon } from "../icons";
+import { Crop, shot } from "./Crop";
 
-import { useState } from "react";
-import type { Stage } from "@/lib/stage-types";
-import { ScreenStage } from "@/components/features/ScreenStage";
+/** 頼みごとの結果として見せる画面の切り抜き（chat の i 番目 = CROPS[i]） */
+const CROPS = [
+  { ...shot("equation"), rect: { x: 36.5, y: 33.5, w: 61.5, h: 20 } },
+  { ...shot("glossary"), rect: { x: 36, y: 71.2, w: 62, h: 16.2 } },
+  { ...shot("slides-linked"), rect: { x: 5, y: 41, w: 82, h: 23 } },
+];
 
 type Props = {
-  stage: Stage;
-  lang: "ja" | "en";
   label: string;
-  chat: { ask: string; tool: string }[];
+  chat: { ask: string; result: string; alt: string }[];
 };
 
 /**
- * MCP の行の画面。上に実際の画面（Claude が書き込んだ結果）、下に Claude への頼み方の例を 3 つ。
- * 画面の場面が替わると、対応する頼み方の例に印が付く。印は飾りで、読み上げには影響しない。
- * lib/scenes.ts の mcp の場面は「登録 → 全文の対訳 → 式の解説 → メモ → 画面で確かめる」。例はその 2〜4 番目に当たる。
- * Claude の画面は描かない（他社の画面やロゴを真似しない）。
+ * MCP の行の画面。Claude への頼みごと（右の吹き出し）と、その結果がアプリに入った画面の切り抜きを 3 組。
+ * Claude の画面は描かない（他社の画面やロゴを真似しない）。ツール名は詳細ページに任せる。
  */
-export function McpMedia({ stage, lang, label, chat }: Props) {
-  const [active, setActive] = useState(-1);
+export function McpMedia({ label, chat }: Props) {
   return (
-    <div className="lp-mcp">
-      <ScreenStage stage={stage} lang={lang} onSceneChange={(i) => setActive(i - 1)} />
-      <ol className="lp-chat" aria-label={label}>
-        {chat.map((c, i) => (
-          <li key={c.tool} className="lp-chat-item" data-on={i === active ? "" : undefined}>
-            <p className="lp-chat-ask">{c.ask}</p>
-            <p className="lp-chat-tool">
-              <span aria-hidden="true">→ </span>
-              <code>{c.tool}</code>
+    <ol className="lp-chat" aria-label={label}>
+      {chat.map((c, i) => (
+        <li key={c.ask} className="lp-chat-item" data-reveal style={{ "--i": i + 1 } as React.CSSProperties}>
+          <p className="lp-chat-ask">{c.ask}</p>
+          <div className="lp-chat-result">
+            <p className="lp-chat-done">
+              <CheckIcon size={16} />
+              {c.result}
             </p>
-          </li>
-        ))}
-      </ol>
-    </div>
+            {CROPS[i] && <Crop {...CROPS[i]} sizes="(max-width: 1100px) 160vw, 1100px" alt={c.alt} />}
+          </div>
+        </li>
+      ))}
+    </ol>
   );
 }

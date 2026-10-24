@@ -326,6 +326,8 @@ pre {
   .site-nav .nav-feature { min-height: 52px; border-bottom: 0; padding: 6px 4px; }
   .site-nav .nav-features-index { margin-top: 0; border: 0; min-height: 48px; padding: 0 4px; }
   .header-tools { margin: 16px 0 0; flex-wrap: wrap; gap: 12px; }
+  /* ナビのリンクと左端をそろえる */
+  .header-tools .header-icon-link, .header-tools .lang-button { padding-left: 4px; padding-right: 4px; }
   .header-tools .btn { flex: 1 1 100%; margin-left: 0; }
   /* メニューの中ではスクロールで切れないよう、言語の一覧はその場に開く */
   .lang-selector { flex: 1 1 100%; order: -1; }
