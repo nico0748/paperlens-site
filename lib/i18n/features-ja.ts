@@ -7,8 +7,11 @@
 export type FeatureSlugKey = "slides-link" | "supplement" | "wordbook-graph" | "mcp" | "library-search";
 
 export type FeatureStep = { title: string; body: string; ui?: string[] };
-/** 手順を章に分けるとき（単語帳とグラフ、論文一覧と検索）。count 個ずつ順に区切る */
-export type FeatureChapter = { id: string; title: string; count: number };
+/**
+ * 手順を章に分けるとき（スライドと論文、単語帳とグラフ、論文一覧と検索）。count 個ずつ順に区切る。
+ * lead: 章の見出しの下の短い説明（任意）。章で使う画面は components/features/data.tsx の chapterStages。
+ */
+export type FeatureChapter = { id: string; title: string; count: number; lead?: string };
 /** ページごとの図（slides-link: 両方向の図、supplement: タブの切り替え）の文言 */
 export type FeatureSignature = { title: string; lead?: string; items: { label: string; body: string }[] };
 export type FeaturePage = {
@@ -53,7 +56,7 @@ export const featuresJa = {
       { key: "search", label: "検索", body: "論文の題名と、マーカーに付けた訳・メモ、用語、数式を探します。対訳と PDF の本文は探しません。" },
       { key: "lists", label: "リスト（用語・数式）", body: "すべての論文の用語と数式を、単語帳と数式帳で引きます。" },
       { key: "graph", label: "グラフ", body: "論文と用語のつながりを、線で見渡します。" },
-      { key: "slides", label: "発表スライドと論文の対応", body: "スライドを論文の左に並べ、囲みと線でつなぎます。" },
+      { key: "slides", label: "発表スライドと論文の対応", body: "スライドを論文の左に並べ、囲みと線でつなぎます。「発表」で、そのまま発表もできます。" },
       { key: "settings", label: "設定", body: "Claude の API キー、保管庫の場所、MCP の登録方法を決めます。" },
       { key: "help", label: "ヘルプ", body: "使い方、よくある質問、キーボード操作を引けます。" },
     ],
@@ -82,7 +85,6 @@ export const featuresJa = {
     toolsNames: "ツール",
     promptsTitle: "全文を訳すプロンプト",
     othersTitle: "ほかの機能",
-    soon: "画面は準備中",
     ctaTitle: "次の輪講で、試してみてください。",
     ctaBody: "配布用のアプリは、まだありません。いまは GitHub のソースから起動します。",
     ctaPrimary: "ソースから動かす",
@@ -105,10 +107,12 @@ export const featuresJa = {
   ],
 
   /**
-   * MCP のページの会話の例。やり取り k は lib/scenes.ts の mcp の、本物の画面の場面（placeholders を除く）の k 番目に当たる。
-   * 場面: 0 数式タブ（add_equation）/ 1 用語タブ（add_term）/ 2 スライドと論文の線（link_slide_markup）
+   * MCP のページの会話の例。やり取り k は lib/scenes.ts の mcp の k 番目の場面に当たる。
+   * 場面: 0 対訳タブ（translate_paper → set_translations）/ 1 数式タブ（add_equation）/ 2 用語タブ（add_term）/ 3 スライドと論文の線（link_slide_markup）
+   * prompt: ツールの前に使うプロンプト（あれば）。会話では「→ プロンプト → ツール」と並べる。
    */
   mcpChat: [
+    { user: "この論文を全文訳して。", prompt: "translate_paper", tool: "set_translations", result: "対訳タブに、1 文ずつ訳を入れました。" },
     { user: "式 (11) を解説して。", tool: "add_equation", result: "TeX と、記号ごとの意味を数式タブに入れました。" },
     { user: "この用語も調べて入れておいて。", tool: "add_term", result: "用語タブに入れました。画面の「編集」で直せます。" },
     { user: "Markup-02.01 を式 (1)(2) の箇所とリンクして。", tool: "link_slide_markup", result: "リンクしました。スライドと論文が同じ色の線で結ばれています。" },
@@ -118,11 +122,11 @@ export const featuresJa = {
     "slides-link": {
       metaTitle: "スライドと論文をつなぐ",
       metaDescription:
-        "スライドの一部を囲み、論文の文・図・数式と線で結びます。どちらから押しても、もう一方の該当箇所へ移ります。輪講の準備と発表に使えます。",
+        "スライドの一部を囲み、論文の文・図・数式と線で結びます。どちらから押しても、もう一方の該当箇所へ移ります。「発表」では、スライドと論文を別の窓に映し、手元に台本を出します。",
       appLabel: "発表スライドと論文の対応",
       title: "スライドと論文をつなぐ",
       lead: "スライドの一部を囲み、論文の文・図・数式と線で結びます。どちらから押しても、もう一方の該当箇所へ移ります。",
-      cardLine: "スライドの囲みと論文の箇所を、色の線で結びます。",
+      cardLine: "スライドの囲みと論文の箇所を線で結び、そのまま発表できます。",
       heroAlt: "左のスライドで囲んだグループ Markup-02.01 から、右の論文の文と数式へ色の線が伸びている PaperLens の画面。",
       steps: [
         {
@@ -145,16 +149,44 @@ export const featuresJa = {
           ui: ["選んだ線だけ"],
         },
         {
-          title: "そのまま発表する",
-          body: "「全画面」（P）で、スライドと論文を線ごと映します。質問が出たら、グループを押して原文を見せます。",
-          ui: ["全画面 P"],
+          title: "「発表」を押す",
+          body: "準備ができたら、右上の「発表」（P）を押します。線が多くて見づらいときは、「選んだ線だけ」で、選んでいるグループの線だけを表示できます。",
+          ui: ["発表 P", "選んだ線だけ"],
+        },
+        {
+          title: "発表の窓と台本に分かれる",
+          body: "スライドと論文を線ごと映す窓が、別に開いて画面いっぱいに広がります。外部ディスプレイがあれば、そちらに出ます。元の窓は台本になります。",
+          ui: ["発表中"],
+        },
+        {
+          title: "聞き手には、スライドと論文を映す",
+          body: "発表の窓には、スライドと論文が並び、囲みと論文の箇所が線で結ばれています。",
+        },
+        {
+          title: "台本を見ながら話す",
+          body: "台本には、スライドの順に、各グループのメモとリンクした論文の箇所が並びます。今映しているスライドには「表示中」の印が付きます。",
+          ui: ["表示中"],
+        },
+        {
+          title: "台本から、発表の窓を動かす",
+          body: "台本でスライドを押すと、発表の窓がそのスライドへ移ります。グループを押すと、論文の該当箇所を映します。← → でスライドを送れます。「発表を終える」か P で終わります。",
+          ui: ["← →", "発表を終える"],
+        },
+      ],
+      chapters: [
+        { id: "link", title: "つないで、行き来する", count: 5 },
+        {
+          id: "present",
+          title: "発表する",
+          count: 4,
+          lead: "輪講の発表は、2 つの窓で進めます。聞き手は発表の窓を見て、自分は台本を見ます。質問が出たら、台本でグループを押します。映している論文が、根拠の箇所まで動きます。",
         },
       ],
       cases: [
         "スライドの要約が、原文とずれていないか確かめたい",
         "質疑で「論文ではどう書いてある？」と聞かれた",
+        "発表中も、手元でメモと根拠を見ながら話したい",
         "先輩のスライドを手がかりに、論文を読みたい",
-        "図の出典ページを、すぐ示したい",
       ],
       signature: {
         title: "どちらからでも、もう一方へ。",
@@ -164,7 +196,10 @@ export const featuresJa = {
           { label: "論文 → スライド", body: "論文の余白にある色の印を押すと、スライドのそのページが開きます。" },
         ],
       },
-      notes: ["PPTX を取り込むには、LibreOffice か Keynote が要ります。どちらも無いときは、PDF に書き出してから取り込んでください。"],
+      notes: [
+        "PPTX を取り込むには、LibreOffice か Keynote が要ります。どちらも無いときは、PDF に書き出してから取り込んでください。",
+        "ブラウザで開いているときなど、別の窓を開けないときは、今の画面を画面いっぱいに広げます（Esc か P で戻ります）。",
+      ],
       mcpLine: "囲みとリンクは、Claude に頼んで付けることもできます。",
     },
 

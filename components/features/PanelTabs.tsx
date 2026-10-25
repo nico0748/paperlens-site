@@ -7,7 +7,7 @@ import { StageStill } from "./StageStill";
 
 /**
  * 補足情報のページの図: アプリと同じ並びのタブ（対訳・訳・用語・数式）を切り替えると、そのタブの説明と実際の画面が出る。
- * 画面写真が無いタブ（対訳・訳）は「画面は準備中」と書いた枠にする（違う画面で代用しない）。
+ * 画面写真が無いタブ（訳）は、説明の文だけにする（違う画面で代用しない・空の枠も置かない）。
  * ← → Home End でタブを移る（WAI-ARIA のタブの作法）。
  */
 export function PanelTabs({
@@ -15,14 +15,12 @@ export function PanelTabs({
   lang,
   shots,
   initial = 0,
-  soon,
 }: {
   t: FeatureSignature;
   lang: "ja" | "en";
   /** タブ i の画面（無ければ undefined） */
   shots: (Stage | undefined)[];
   initial?: number;
-  soon: string;
 }) {
   const [cur, setCur] = useState(initial);
   const uid = useId();
@@ -68,16 +66,11 @@ export function PanelTabs({
             aria-labelledby={`${uid}-t${i}`}
             hidden={i !== cur}
             className="fp-ptab-panel"
+            data-noshot={shot ? undefined : ""}
             tabIndex={0}
           >
             <p className="fp-ptab-body">{it.body}</p>
-            {shot ? (
-              <StageStill stage={shot} lang={lang} scene={0} aspect="16/9" narrow={false} alt={it.body} />
-            ) : (
-              <div className="fp-ptab-soon">
-                <span>{soon}</span>
-              </div>
-            )}
+            {shot && <StageStill stage={shot} lang={lang} scene={0} aspect="16/9" narrow={false} alt={it.body} />}
           </div>
         );
       })}

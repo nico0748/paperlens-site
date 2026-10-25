@@ -246,6 +246,19 @@
 .lp-step-body { margin: 0; font-size: 0.9375rem; line-height: 1.75; color: var(--on-dark-2); }
 .lp-step-body code { overflow-wrap: anywhere; }
 .lp-pre { margin: 0; padding: 14px 16px; font-size: 0.75rem; background: rgb(0 0 0 / 0.28); box-shadow: inset 0 0 0 1px rgb(189 194 255 / 0.14); white-space: pre; }
+/* 初めて起動したときの画面の案内（ツアー）。文と小さな画面を横に並べる（狭い画面では縦） */
+.lp-tour {
+  max-width: 1152px; margin: 20px auto 0; padding: 22px 22px 14px; border-radius: var(--radius-card);
+  background: rgb(189 194 255 / 0.06); box-shadow: inset 0 0 0 1px rgb(189 194 255 / 0.18);
+}
+.lp-tour[data-has-stage] { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px 32px; align-items: center; }
+.lp-tour:not([data-has-stage]) { padding-bottom: 22px; }
+.lp-tour-text { display: grid; gap: 10px; align-content: center; }
+.lp-tour-text p { margin: 0; font-size: 0.9375rem; line-height: 1.75; color: var(--on-dark-2); }
+.lp-tour-title { margin: 0; font-size: var(--fs-h4); line-height: 1.5; color: var(--on-dark); }
+.lp-tour-replay { display: flex; gap: 8px; align-items: flex-start; }
+.lp-tour-replay svg { flex: none; margin-top: 0.3em; color: var(--marker); }
+.lp-tour-stage { min-width: 0; }
 .lp-start-foot { max-width: 880px; margin: 32px auto 0; display: grid; justify-items: center; gap: 20px; text-align: center; }
 .lp-start-foot p { margin: 0; font-family: var(--font-ui); font-size: var(--fs-sm); color: var(--on-dark-2); }
 .site-footer { border-top: 1px solid var(--c-line); }
@@ -264,6 +277,8 @@
   .lp-zig[data-media] .lp-zig-text, .lp-zig[data-media] .lp-zig-media { --dx: 0px; }
   .lp-zig-text { max-width: none; }
   .lp-steps { grid-template-columns: minmax(0, 1fr); max-width: 680px; }
+  .lp-tour { max-width: 680px; }
+  .lp-tour[data-has-stage] { grid-template-columns: minmax(0, 1fr); }
   .lp-tri { gap: 40px; }
   .lp-tri-link { width: 28px; right: calc(100% + 6px); }
 }
@@ -303,6 +318,7 @@
   .lp-section-lead, .lp-hero-lead { font-size: 1.0625rem; }
   .lp-index-card .lp-icon-tile { width: 38px; height: 38px; border-radius: 10px; }
   .lp-step { padding: 18px 16px 20px; }
+  .lp-tour { padding: 18px 16px 10px; }
   .lp-tri-node { font-size: 1rem; padding: 8px 18px; min-height: 48px; }
 }
 

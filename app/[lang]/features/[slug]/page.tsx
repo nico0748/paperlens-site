@@ -9,7 +9,7 @@ import { PanelTabs } from "@/components/features/PanelTabs";
 import { ScrollStage, type ScrollStep } from "@/components/features/ScrollStage";
 import { StageStill } from "@/components/features/StageStill";
 import { FeatureCard } from "@/components/features/FeatureCard";
-import { cropStage, featureConfig, isFeatureSlug, otherFeatures } from "@/components/features/data";
+import { TRANSLATION_SHOT, cropStage, featureConfig, hasShot, isFeatureSlug, otherFeatures, stageByKey } from "@/components/features/data";
 import type { Stage } from "@/lib/stage-types";
 import { getFeaturesDictionary } from "@/components/features/dict";
 import { stageFor } from "@/components/features/stages";
@@ -72,15 +72,15 @@ export default async function FeaturePage({ params }: PageProps<"/[lang]/feature
   const stage = stageFor(slug);
   const Icon = cfg.icon;
   const steps: ScrollStep[] = p.steps.map((s, i) => ({ ...s, scene: cfg.stepScenes[i] ?? i, id: cfg.stepAnchors?.[i] }));
-  // 章（無ければ 1 章）
-  const chapters = (p.chapters ?? [{ id: "", title: "", count: steps.length }]).reduce<{ id: string; title: string; steps: ScrollStep[] }[]>(
-    (acc, c) => {
-      const from = acc.reduce((n, x) => n + x.steps.length, 0);
-      acc.push({ id: c.id, title: c.title, steps: steps.slice(from, from + c.count) });
-      return acc;
-    },
-    [],
-  );
+  // 章（無ければ 1 章）。章ごとに使う Stage を決める（chapterStages。無い章・まだ無い Stage は stages[slug]）
+  type Chapter = { id: string; title: string; lead?: string; own?: Stage; steps: ScrollStep[] };
+  const chapters = (p.chapters ?? [{ id: "", title: "", count: steps.length }]).reduce<Chapter[]>((acc, c) => {
+    const from = acc.reduce((n, x) => n + x.steps.length, 0);
+    const key = cfg.chapterStages?.[c.id];
+    const own = key ? stageByKey(key) : undefined;
+    acc.push({ id: c.id, title: c.title, lead: "lead" in c ? c.lead : undefined, own, steps: steps.slice(from, from + c.count) });
+    return acc;
+  }, []);
   const hero = cfg.hero ? cropStage(slug, cfg.hero, { ja: p.heroAlt, en: p.heroAlt }) : null;
 
   return (
@@ -152,20 +152,27 @@ export default async function FeaturePage({ params }: PageProps<"/[lang]/feature
             {t.ui.stepsTitle}
           </h2>
           {chapters.map((c) => {
-            const ch = cfg.layout === "text" ? { stage, steps: c.steps } : chapterStage(stage, c.steps);
+            // 別の Stage を使う章は、その Stage の場面をそのまま使う（場面の番号は stepScenes のまま）
+            const missing = !!cfg.chapterStages?.[c.id] && !c.own;
+            const ch = cfg.layout === "text" || missing ? { stage, steps: c.steps } : c.own ? { stage: c.own, steps: c.steps } : chapterStage(stage, c.steps);
             return (
-              <div key={c.id || "all"} className="fp-chapter">
+              <div key={c.id || "all"} className="fp-chapter" data-own={c.own ? "" : undefined}>
                 {c.title && (
                   <h3 id={c.id} className="fp-chapter-title" data-fp-reveal>
                     {c.title}
                   </h3>
+                )}
+                {c.lead && (
+                  <p className="fp-chapter-lead" data-fp-reveal>
+                    {c.lead}
+                  </p>
                 )}
                 <ScrollStage
                   stage={ch.stage}
                   lang={lang}
                   steps={ch.steps}
                   stepLabel={t.ui.stepLabel}
-                  layout={cfg.layout}
+                  layout={missing ? "text" : cfg.layout}
                   stillAspect={cfg.stillAspect}
                 />
               </div>
@@ -199,10 +206,12 @@ export default async function FeaturePage({ params }: PageProps<"/[lang]/feature
             <PanelTabs
               t={p.signature}
               lang={lang}
-              initial={2}
-              soon={t.ui.soon}
+              initial={hasShot(TRANSLATION_SHOT) ? 0 : 2}
               shots={[
-                undefined,
+                // 対訳タブ: 左の PDF で選んでいる文と、右の対訳のカード（原文と訳）。訳タブの画面は無いので、説明の文だけ
+                hasShot(TRANSLATION_SHOT)
+                  ? cropStage(slug, { shot: TRANSLATION_SHOT, rect: { x: 26.2, y: 15.5, w: 73.8, h: 66.3 } }, { ja: "", en: "" })
+                  : undefined,
                 undefined,
                 cropStage(slug, { shot: "glossary", rect: { x: 34.76, y: 8.5, w: 65.24, h: 50 } }, { ja: "", en: "" }),
                 cropStage(slug, { shot: "equation", rect: { x: 34.76, y: 8.5, w: 65.24, h: 50 } }, { ja: "", en: "" }),

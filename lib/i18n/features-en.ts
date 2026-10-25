@@ -23,7 +23,7 @@ export const featuresEn: FeaturesDictionary = {
       { key: "search", label: "Search", body: "Searches paper titles and what you've written down: highlight translations and notes, terms, equations. It doesn't search the PDF text or the side-by-side translation." },
       { key: "lists", label: "Lists (terms & equations)", body: "Look up terms and equations from all your papers in the wordbook and equation book." },
       { key: "graph", label: "Graph", body: "See how papers and terms connect." },
-      { key: "slides", label: "Slides & paper", body: "Put slides beside the paper and link them with boxes and lines." },
+      { key: "slides", label: "Slides & paper", body: "Put slides beside the paper and link them with boxes and lines. Then present straight from it with 発表 (Present)." },
       { key: "settings", label: "Settings", body: "Set your Claude API key, vault location, and MCP setup." },
       { key: "help", label: "Help", body: "Guides, FAQ, and keyboard shortcuts." },
     ],
@@ -52,7 +52,6 @@ export const featuresEn: FeaturesDictionary = {
     toolsNames: "Tools",
     promptsTitle: "Prompt for full translation",
     othersTitle: "Other features",
-    soon: "Screen coming soon",
     ctaTitle: "Try it at your next journal club.",
     ctaBody: "There's no installer yet, and the app's interface is in Japanese for now. You run PaperLens from the source on GitHub.",
     ctaPrimary: "Run from source",
@@ -75,6 +74,7 @@ export const featuresEn: FeaturesDictionary = {
   ],
 
   mcpChat: [
+    { user: "Translate this whole paper.", prompt: "translate_paper", tool: "set_translations", result: "Done. The Side-by-side tab now has a translation for each sentence." },
     { user: "Explain equation (11).", tool: "add_equation", result: "Added the TeX and each symbol's meaning to the Equations tab." },
     { user: "Look up this term and add it, too.", tool: "add_term", result: "It's in the Terms tab. Use \"Edit\" in the app to change it." },
     { user: "Link Markup-02.01 to where equations (1) and (2) are.", tool: "link_slide_markup", result: "Linked. A line in the group's color now joins the slide and the paper." },
@@ -84,11 +84,11 @@ export const featuresEn: FeaturesDictionary = {
     "slides-link": {
       metaTitle: "Linking slides to the paper",
       metaDescription:
-        "Box part of a slide and join it to a sentence, figure, or equation in the paper. Click either end, and you land on the other. Built for preparing and presenting at journal club.",
+        "Box part of a slide and join it to a sentence, figure, or equation in the paper. Click either end, and you land on the other. To present, 発表 (Present) puts the slides and paper in their own window and gives you a script.",
       appLabel: "Slides & paper",
       title: "Linking slides to the paper",
       lead: "Box part of a slide and join it to a sentence, figure, or equation in the paper. Click either end, and you land on the other.",
-      cardLine: "Join boxes on your slides to passages in the paper with colored lines.",
+      cardLine: "Join boxes on your slides to passages in the paper, then present from it.",
       heroAlt: "PaperLens with colored lines running from the group Markup-02.01 on a slide to a sentence and an equation in the paper.",
       steps: [
         {
@@ -111,16 +111,44 @@ export const featuresEn: FeaturesDictionary = {
           ui: ["選んだ線だけ (Selected lines only)"],
         },
         {
-          title: "Present from it",
-          body: "Press \"Full screen\" (P) to show slides and paper, lines included. When a question comes up, click the group and show the original text.",
-          ui: ["全画面 (Full screen) P"],
+          title: "Press 発表 (Present)",
+          body: "When you're ready, press 発表 (Present, P) at the top right. If there are too many lines, 選んだ線だけ (Selected lines only) shows just the lines of the selected group.",
+          ui: ["発表 (Present) P", "選んだ線だけ (Selected lines only)"],
+        },
+        {
+          title: "A window to show, a script to read",
+          body: "The slides and paper, lines included, open in a separate window that fills the screen. If an external display is connected, the window goes there. Your original window becomes the script.",
+          ui: ["発表中 (Presenting)"],
+        },
+        {
+          title: "The audience sees slides and paper",
+          body: "The presentation window shows the slides next to the paper, with lines joining each box to its passage.",
+        },
+        {
+          title: "Talk from the script",
+          body: "The script lists your slides in order, with each group's memo and the passages it links to. The slide on screen is marked 表示中 (Showing).",
+          ui: ["表示中 (Showing)"],
+        },
+        {
+          title: "Steer the presentation from the script",
+          body: "Click a slide in the script, and the presentation window moves to it. Click a group, and it shows the linked passage in the paper. ← and → change slides. 発表を終える (End presentation) or P ends it.",
+          ui: ["← →", "発表を終える (End presentation)"],
+        },
+      ],
+      chapters: [
+        { id: "link", title: "Link and go back and forth", count: 5 },
+        {
+          id: "present",
+          title: "Present",
+          count: 4,
+          lead: "At journal club, you present with two windows. The audience watches the presentation window, and you read the script. When a question comes up, click the group in the script. The paper on screen moves to the passage behind it.",
         },
       ],
       cases: [
         "Checking that a slide's summary matches the paper",
         "Answering \"what does the paper actually say?\"",
+        "Keeping your memos and sources in front of you while you talk",
         "Reading a paper with someone else's slides as a guide",
-        "Pointing to where a figure came from",
       ],
       signature: {
         title: "Either end takes you to the other.",
@@ -130,7 +158,10 @@ export const featuresEn: FeaturesDictionary = {
           { label: "Paper → slide", body: "Click the colored marker in the paper's margin, and that slide opens." },
         ],
       },
-      notes: ["Importing PPTX needs LibreOffice or Keynote. Without either, export to PDF first and import that."],
+      notes: [
+        "Importing PPTX needs LibreOffice or Keynote. Without either, export to PDF first and import that.",
+        "If a separate window can't open (in a browser, for example), the current view fills the screen instead. Press Esc or P to go back.",
+      ],
       mcpLine: "Claude can also draw the groups and links for you.",
     },
 

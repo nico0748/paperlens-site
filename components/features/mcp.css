@@ -15,7 +15,7 @@
 .mcp-user { justify-self: end; border-bottom-right-radius: 4px; background: var(--indigo-700); color: #fff; }
 .theme-dark .mcp-user { background: var(--indigo-200); color: var(--ink); }
 .mcp-claude { justify-self: start; border-bottom-left-radius: 4px; background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-light); }
-.mcp-tool { justify-self: start; display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-ui); font-size: var(--fs-xs); color: var(--c-text-3); }
+.mcp-tool { justify-self: start; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; font-family: var(--font-ui); font-size: var(--fs-xs); color: var(--c-text-3); }
 .mcp-tool code { font-size: var(--fs-xs); }
 .mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] { visibility: hidden; }
 .mcp-stage[data-enhanced] .mcp-turn[data-state="hidden"] > * { opacity: 0; }

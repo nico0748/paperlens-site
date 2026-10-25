@@ -70,12 +70,6 @@
 .stage-co-dot .stage-chip-right { left: auto; right: -6px; translate: none; }
 .stage-chip-inline.stage-chip-right { right: 0; translate: 0 0; }
 
-/* 代わりの画面の場面: 「画面は準備中」の札（左上） */
-.stage-badge {
-  position: absolute; z-index: 4; top: 10px; left: 10px; padding: 3px 9px; border-radius: 6px;
-  background: rgb(18 21 46 / 0.82); color: var(--on-dark-2); box-shadow: inset 0 0 0 1px rgb(189 194 255 / 0.3);
-  font-family: var(--font-ui); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.5; pointer-events: none;
-}
 
 @media (prefers-reduced-motion: no-preference) {
   .stage[data-enhanced] .stage-callouts { transition: opacity 150ms ease; }
@@ -183,7 +177,6 @@
   .stage-chip { font-size: 0.6875rem; padding: 2px 7px; }
   .stage-caption { font-size: var(--fs-sm); }
   .stage-co-dot { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
-  .stage-badge { top: 6px; left: 6px; }
 }
 
 @media print {

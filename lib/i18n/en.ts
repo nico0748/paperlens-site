@@ -35,7 +35,7 @@ export const en: Dictionary = {
     toggle: "Open the feature list",
     index: "All features",
     items: {
-      "slides-link": { label: "Slides & paper", sub: "Box a slide, link it to the source" },
+      "slides-link": { label: "Slides & paper", sub: "Box, link to the source, present" },
       supplement: { label: "Companion panel", sub: "Translation, terms, equations" },
       "wordbook-graph": { label: "Wordbook & graph", sub: "Look up across papers" },
       mcp: { label: "Using Claude (MCP)", sub: "What you ask for lands in the app" },
@@ -60,7 +60,7 @@ export const en: Dictionary = {
       {
         scene: "At journal club",
         title: "When someone asks, show them the source",
-        body: "Asked \"where does the paper say that?\" Click the box on the slide, and the paper scrolls to that passage.",
+        body: "Asked \"where does the paper say that?\" Click the box on the slide, and the paper scrolls to that passage. While presenting, you do it from the script in front of you.",
         target: "f-slides",
         link: "See slides & paper",
       },
@@ -89,7 +89,7 @@ export const en: Dictionary = {
       "slides-link": {
         label: "Slides & paper",
         app: "In the app: 発表スライドと論文の対応 (slides and paper)",
-        desc: "Box parts of a slide and link them to sentences, figures, and equations.",
+        desc: "Box parts of a slide and link them to sentences, figures, and equations. Then present straight from it.",
       },
       supplement: {
         label: "Companion panel",
@@ -120,7 +120,7 @@ export const en: Dictionary = {
       kicker: "Slides & paper",
       title: "Check each slide against the original text.",
       body: "Box part of a slide to make a group, then pick a sentence, figure, or equation in the paper: a line in the group's color joins them. Click the group to jump to the paper; click the marker in the paper to jump back.",
-      bullets: ["Import slides as PDF or PPTX", "Replace the slides, and your boxes stay", "Lines stay visible in full screen, ready to present"],
+      bullets: ["Import slides as PDF or PPTX", "Replace the slides, and your boxes stay", "発表 (Present) shows slides and paper in their own window, with a script for you"],
       cta: "More on slides & paper",
     },
     supplement: {
@@ -159,6 +159,11 @@ export const en: Dictionary = {
       cta: "More on using Claude",
       chatLabel: "Example requests to Claude and what they add to the app",
       chat: [
+        {
+          ask: "Translate this whole paper",
+          result: "Each sentence now has a translation in the Side-by-side tab",
+          alt: "The Side-by-side tab, with a Japanese translation under each English sentence of the paper.",
+        },
         {
           ask: "Explain equation (11)",
           result: "Added to the Equations tab, in TeX, with what it does",
@@ -211,6 +216,11 @@ export const en: Dictionary = {
       },
     ],
     codeLabel: "Commands",
+    tour: {
+      title: "The first time you launch it, a tour (画面の案内) shows you around",
+      body: "Seven short steps show where things are on the screen. Use ← → to move, and Esc to close it.",
+      replay: "Replay it any time from Help with 画面の案内（ツアー）をもう一度見る (Show the tour again).",
+    },
     note: "The repository still uses its old name, LogiXiv.",
     readme: ["Full instructions are in the ", "README", "."],
     github: "View on GitHub",
