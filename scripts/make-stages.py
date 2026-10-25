@@ -1,6 +1,9 @@
 """ScreenStage 用の画像と場面データを作る。
 
-    python3 -I scripts/make-stages.py <shots-in フォルダ> <ref フォルダ> [確認用の出力フォルダ]
+    python3 -I scripts/make-stages.py <shots-in フォルダ> <shots-in2 フォルダ> <ref フォルダ> [確認用の出力フォルダ]
+
+shots-in2 は 2 回目に撮った画面: 10・12・13・14 = 初回の案内（7 枚中 3・5・6・7 枚目。1・2・4 枚目は
+読解ノートの説明なので使わない）、16 = 発表中の 2 画面、17 = 発表の窓、18 = 台本、19 = 対訳タブ（新しいツールバー）。
 
 作るもの
 - public/screenshots/stages/<frame>.webp（2400w）と <frame>-800.webp（800w）
@@ -9,14 +12,16 @@
 - 確認用の出力フォルダを渡すと、場面ごとの拡大範囲と吹き出しを描いた PNG をそこへ出す
 
 決まりごと
-- 1 つの Stage の中の画像（Stage.src と各 Scene.src）は、どれもアプリの窓全体を同じ大きさ
-  （2934×1836 から縮小）に切り出してある。だから割合の座標は、場面で画像を替えてもずれない。
+- 1 つの Stage の中の画像（Stage.src と各 Scene.src）は、どれも同じ大きさにしてある。ふつうはアプリの窓全体
+  （2934×1836 から縮小）。発表（present）だけは 2:1 の台紙（2934×1467）に、2 画面・発表の窓・台本を載せる。
+  だから割合の座標は、場面で画像を替えてもずれない。
 - 座標はここでは切り出した窓のピクセルで書き、lib/scenes.ts には 0〜100 の割合で書き出す。
-- 拡大範囲（rect）は、枠の縦横比（横長は 16:10、論文一覧は 3:4）に広げてから書き出す。
+- 拡大範囲（rect）は、枠の縦横比（横長は 16:10、発表は 2:1、論文一覧は 3:4）に広げてから書き出す。
 - 吹き出し: box は (x, y) が左上で w, h が大きさ。dot は (x, y) が中心。underline は (x, y) が
   線の左端で w が長さ。label は (x, y) が吹き出しの左上。
-- 実際の画面を切り出して縮小するだけで、UI は描き足さない。発表者名はぼかし、1 枚目の
-  「検索」のツールチップは消す（scripts/make-screenshots.py と同じ処理）。
+- 実際の画面を切り出して縮小するだけで、UI は描き足さない。発表者名（「発表者：…」）と論文の連絡先メール
+  （k.tokuda…）は、見えるところをすべてぼかす。1 枚目の「検索」のツールチップは消す
+  （scripts/make-screenshots.py と同じ処理）。
 """
 import json
 import sys
@@ -26,8 +31,9 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 SHOTS = Path(sys.argv[1])
-REF = Path(sys.argv[2])
-DEBUG = Path(sys.argv[3]) if len(sys.argv) > 3 else None
+SHOTS2 = Path(sys.argv[2])
+REF = Path(sys.argv[3])
+DEBUG = Path(sys.argv[4]) if len(sys.argv) > 4 else None
 
 OUT = ROOT / "public/screenshots/stages"
 OG = ROOT / "public/og"
@@ -36,6 +42,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 OG.mkdir(parents=True, exist_ok=True)
 
 CW, CH = 2934, 1836  # 窓の切り出しの大きさ（Retina の実ピクセル）
+PW, PH = 2934, 1467  # 発表（present）の台紙の大きさ（2:1）
 BIG, SMALL = 2400, 800
 BG = (31, 31, 37)
 NAVY = (42, 46, 80)  # --navy-900
@@ -47,12 +54,30 @@ def blur(im, box, r=9):
     im.paste(im.crop(box).filter(ImageFilter.GaussianBlur(r)), box[:2])
 
 
+def rounded(im, r):
+    mask = Image.new("L", im.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, im.width - 1, im.height - 1), r, fill=255)
+    out = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    out.paste(im, (0, 0), mask)
+    return out
+
+
+def widen(im, w):
+    """幅が w に足りない画像の右端を、いちばん右の列を伸ばして埋める（黒い縦線を出さない）。"""
+    if im.width >= w:
+        return im
+    out = Image.new("RGB", (w, im.height))
+    out.paste(im, (0, 0))
+    out.paste(im.crop((im.width - 1, 0, im.width, im.height)).resize((w - im.width, im.height)), (im.width, 0))
+    return out
+
+
 def window(path, top, fix=None):
     """スクリーンショットから窓を切り出す。top は窓の上端（上の黒い帯の下）から 2px 下。"""
     im = Image.open(path).convert("RGB")
     if fix:
         fix(im)
-    return im.crop((0, top, CW, top + CH))
+    return widen(im, CW).crop((0, top, CW, top + CH))
 
 
 def fix_shot1(im):
@@ -70,6 +95,90 @@ def fix_shot2(im):
 def fix_ref_slides(im):
     blur(im, (235, 935, 480, 985))  # 発表者名
     blur(im, (1740, 935, 1950, 960), 6)  # 論文の連絡先メール
+
+
+# --- 2 回目の画面（shots-in2）
+
+def fix_tour10(im):
+    blur(im, (404, 1394, 824, 1450), 12)  # 論文の連絡先メール
+
+
+def fix_tour12(im):
+    blur(im, (298, 956, 562, 994), 7)  # 論文の連絡先メール
+    blur(im, (1930, 1226, 2394, 1278), 12)  # 対訳の脚注に出た同じメール
+
+
+def fix_tour13(im):
+    blur(im, (408, 1396, 830, 1452), 12)  # 論文の連絡先メール
+
+
+def tour_help():
+    """案内の 7 枚目（14.png）は半分の解像度で撮ってある。窓の左上（左 5px は壁紙と窓の縁）から切り出して 2 倍にし、
+    ほかの案内の画面と同じ大きさ・同じ位置（左のリボンの境目が x=110）にそろえる。メールは案内の札に隠れている。"""
+    im = Image.open(SHOTS2 / "14.png").convert("RGB")
+    return im.crop((5, 15, 5 + CW // 2, 15 + CH // 2)).resize((CW, CH), Image.LANCZOS)
+
+
+def fix_present(im):
+    """発表の窓（16.png の左の画面と 17.png）。表紙のスライドの発表者名。"""
+    blur(im, (78, 376, 262, 406), 6)
+
+
+# 17.png（発表の窓 1914×1080）を 2:1 の台紙に載せるときの切り出し: 上を 123px 落として 1914×957、それを 1.53 倍
+P17_TOP, P17_K = 123, PW / 1914
+
+
+def p17(*v):
+    """17.png の座標（x, y, x, y, …）を台紙の座標にする。"""
+    return tuple(round((a if i % 2 == 0 else a - P17_TOP) * P17_K) for i, a in enumerate(v))
+
+
+def present_window():
+    im = Image.open(SHOTS2 / "17.png").convert("RGB")
+    fix_present(im)
+    return im.crop((0, P17_TOP, 1914, P17_TOP + 957)).resize((PW, PH), Image.LANCZOS)
+
+
+def present_script():
+    """台本（18.png）。窓の上（タブとツールバー）からグループのメモまでを 2:1 で切り出す（等倍）。"""
+    return Image.open(SHOTS2 / "18.png").convert("RGB").crop((0, 0, PW, PH))
+
+
+# 2 画面（16.png）: 左 = 外部ディスプレイの発表の窓（1920×1080）、右 = ノートの画面の台本の窓（1470×923）。
+# 同じ倍率で縮め、下をそろえて台紙に並べる。
+DUAL_LEFT = (0, 0, 1920, 1080)
+DUAL_RIGHT = (1920, 223, 3390, 1146)
+DUAL_M, DUAL_GAP = 56, 64
+DUAL_K = (PW - 2 * DUAL_M - DUAL_GAP) / ((DUAL_LEFT[2] - DUAL_LEFT[0]) + (DUAL_RIGHT[2] - DUAL_RIGHT[0]))
+
+
+def dual_layout():
+    lw, lh = round(1920 * DUAL_K), round(1080 * DUAL_K)
+    rw, rh = round(1470 * DUAL_K), round(923 * DUAL_K)
+    base = (PH + lh) // 2  # 下の線
+    left = (DUAL_M, base - lh, DUAL_M + lw, base)
+    right = (PW - DUAL_M - rw, base - rh, PW - DUAL_M, base)
+    return left, right
+
+
+DUAL_L, DUAL_R = dual_layout()
+
+
+def present_dual():
+    im = Image.open(SHOTS2 / "16.png").convert("RGB")
+    fix_present(im)
+    blur(im, (1098, 373, 1236, 394), 4)  # 論文の連絡先メール（表紙のページ）
+    cv = Image.new("RGBA", (PW, PH), NAVY + (255,))
+    for src_box, (x0, y0, x1, y1) in ((DUAL_LEFT, DUAL_L), (DUAL_RIGHT, DUAL_R)):
+        scr = im.crop(src_box).resize((x1 - x0, y1 - y0), Image.LANCZOS)
+        sh = Image.new("RGBA", (PW, PH), (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rounded_rectangle((x0 - 4, y0 + 14, x1 + 4, y1 + 26), 18, fill=(0, 0, 0, 130))
+        cv.alpha_composite(sh.filter(ImageFilter.GaussianBlur(18)))
+        ring = Image.new("RGBA", (x1 - x0 + 12, y1 - y0 + 12), (0, 0, 0, 0))
+        ImageDraw.Draw(ring).rounded_rectangle((0, 0, ring.width - 1, ring.height - 1), 18, fill=(14, 14, 18, 255))
+        cv.alpha_composite(ring, (x0 - 6, y0 - 6))
+        cv.alpha_composite(rounded(scr, 12), (x0, y0))
+    return cv.convert("RGB")
 
 
 FRAMES = {
@@ -92,6 +201,23 @@ FRAMES = {
                  {"ja": "すべての論文の用語を集めた単語帳。", "en": "The wordbook, with terms from every paper."}),
     "library": (lambda: Image.open(REF / "app-paper-list.png").convert("RGB").crop((0, 0, 636, 1330)),
                 {"ja": "左の論文一覧。検索欄、並べ替え、BibTeX の書き出しがある。", "en": "The paper list on the left, with search, sorting, and BibTeX export."}),
+    # --- 2 回目の画面
+    "translation": (lambda: window(SHOTS2 / "19.png", 4),
+                    {"ja": "補足情報の対訳タブ。選んだ文の英語の原文と日本語の訳が並んでいる。", "en": "The 対訳 (Side by side) tab in 補足情報 (Companion): the selected sentence's English original above its Japanese translation."}),
+    "tour-select": (lambda: window(SHOTS2 / "10.png", 14, fix_tour10),
+                    {"ja": "初回の案内。論文の上に「文を選んで記録する」の説明が出ている。", "en": "The first-launch tour: a card titled 文を選んで記録する (Select sentences to save them) over the paper."}),
+    "tour-translation": (lambda: window(SHOTS2 / "12.png", 8, fix_tour12),
+                         {"ja": "初回の案内が対訳タブを光らせ、「対訳で読む」の説明を出している。", "en": "The tour highlights the 対訳 (Side by side) tab with a card titled 対訳で読む (Read side by side)."}),
+    "tour-slides": (lambda: window(SHOTS2 / "13.png", 18, fix_tour13),
+                    {"ja": "初回の案内が左端のスライドのボタンを光らせ、「スライドと論文を対応させる」の説明を出している。", "en": "The tour highlights the slides button on the left edge with a card titled スライドと論文を対応させる (Match slides to the paper)."}),
+    "tour-help": (tour_help,
+                  {"ja": "初回の案内の最後。左下の設定とヘルプを光らせている。", "en": "The last step of the tour, highlighting Settings and Help at the bottom left."}),
+    "present-dual": (present_dual,
+                     {"ja": "発表中の 2 つの画面。左の画面にスライドと論文が線でつながって映り、右の窓に台本が出ている。", "en": "Presenting on two screens: the slides and paper, joined by lines, on the left; the script in the window on the right."}),
+    "present-window": (present_window,
+                       {"ja": "発表の窓。左のスライドのグループから、右の論文の文と数式へ赤い線が伸びている。", "en": "The presentation window: red lines run from a group on the slide at left to a sentence and equations in the paper at right."}),
+    "present-script": (present_script,
+                       {"ja": "台本。スライド 5 / 48 を表示中で、グループ Markup-05.01 のメモが出ている。", "en": "The script, on slide 5 of 48, showing the memo for group Markup-05.01."}),
 }
 
 frames, sizes = {}, {}
@@ -154,12 +280,28 @@ def scene(frame, rect, callouts, caption, mobile=None):
 HERO_RECT = (112, 318, 2934, 1729)          # 2:1。左のリボンを外し、スライドと論文の見出しから 2 枚目のスライドの下まで
 HERO_MOBILE_RECT = (190, 29, 2600, 1836)    # 4:3。グループの左端から論文の右上の印まで（両端が入る最小の幅）
 
+def pad(x0, y0, x1, y1, d):
+    return (x0 - d, y0 - d, x1 + d, y1 + d)
+
+
 # 何度も使う位置（slides-linked の窓のピクセル）
 GROUP = (206, 820, 586, 1422)               # スライドのグループ Markup-02.01
 PASSAGE = (2095, 780, 2505, 980)            # 論文側: 式 (1)(2) の囲み（四隅の印にかからない外側）
 MARK_TOP = (2440, 688, 2516, 764)           # 論文側の色の印（右上の文の先頭）
 MARK_LOW = (2100, 1180, 2176, 1256)         # 論文側の色の印（左下の文の先頭）
 PAPER_SIDE = (1382, 330, 2934, 1300)        # 線が論文に入るところ（×1.89）
+
+# translation（19.png の窓）のピクセル
+TAB_TAIYAKU = (1472, 404, 1602, 484)        # 補足情報の「対訳」タブ
+TR_CARD = (1484, 899, 2887, 1467)           # 選んでいる文のカード（原文・訳・操作）
+TR_PROGRESS = (1478, 504, 2884, 568)        # 訳の進み具合「249 / 254 文」
+SELECTED_LINES = (2446, 112, 2722, 192)     # ツールバーの「選んだ線だけ」
+PRESENT_BTN = (2760, 112, 2906, 192)        # ツールバーの「発表」
+
+# present-script（18.png の窓）のピクセル
+SCRIPT_MEMO = (424, 430, 2648, 1278)        # グループのメモ（スライドの主張・論文の根拠）
+SLIDE_PAGER = (384, 114, 812, 186)          # ‹ スライド 5 / 48 ›
+END_PRESENT = (2638, 114, 2902, 186)        # × 発表を終える
 
 STAGES = {
     # トップ用。スライドと論文が線で結ばれた画面（ヒーローの画像と同じ画面）から始める
@@ -201,10 +343,11 @@ STAGES = {
                   L("グループを押すと論文の該当箇所へ、論文側の色の印を押すとスライドへ移ります。",
                     "Click a group to jump to the passage; click the colored marker in the paper to jump to the slide."),
                   mobile=(1300, 600, 2934, 1421)),
-            scene("slides-linked", (1640, 150, 2934, 960),
-                  [box(2012, 206, 2306, 290, L("選んだ線だけ", "選んだ線だけ (Selected lines)")), box(2333, 208, 2507, 292, L("全画面 P", "全画面 (Full screen) P"))],
-                  L("「全画面」（P）で、スライドと論文を線ごと映して発表できます。「選んだ線だけ」で、選んでいるグループの線だけを表示します。",
-                    "全画面 (Full screen, P) presents the slides and paper, lines included. 選んだ線だけ (Selected lines) shows only the selected group's lines.")),
+            # 新しいツールバー（19.png）。右の欄は補足情報だが、見せるのはツールバーの右端
+            scene("translation", (1800, 40, 2934, 750),
+                  [box(*SELECTED_LINES, L("選んだ線だけ", "選んだ線だけ (Selected lines)")), box(*PRESENT_BTN, L("発表 P", "発表 (Present) P"))],
+                  L("「発表」（P）で、スライドと論文を線ごと別の画面に映して発表できます。",
+                    "Press 発表 (Present, P) to show the slides and paper, lines included, on a separate screen for your talk.")),
         ],
     },
     # E-2 補足情報（場面 i = 詳細ページの手順 i）
@@ -221,10 +364,10 @@ STAGES = {
             scene("equation", (1000, 555, 2934, 1764), [box(1083, 996, 2851, 1197, L("TeX", "TeX")), underline(1083, 1379, 2851), box(1083, 1418, 2854, 1759)],
                   L("式を選んで「数式にする」を押すと、Claude が TeX に書き起こし、式の役割と記号ごとの意味を添えます。",
                     "Select an equation and choose 数式にする (Make equation). Claude transcribes it into TeX and explains what it does and what each symbol means.")),
-            # 仮: 対訳タブの画面がまだ無い。吹き出しは付けない（ページ側で「画面は準備中」を出す）
-            scene("equation", (1020, 330, 2100, 1005), [],
-                  L("Claude に頼んだ全文の訳は、対訳タブに 1 文ずつ並びます。",
-                    "The full translation you ask Claude for fills the 対訳 (Side by side) tab, one sentence at a time.")),
+            scene("translation", (1440, 300, 2934, 1500),
+                  [box(*TAB_TAIYAKU, L("対訳", "対訳 (Side by side)")), box(*TR_CARD)],
+                  L("Claude に頼んだ全文の訳は、対訳タブに原文と 1 文ずつ並びます。",
+                    "The full translation you ask Claude for fills the 対訳 (Side by side) tab, each sentence under its original.")),
             scene("equation", FULL, [box(210, 1450, 560, 1614), box(2740, 206, 2912, 292)],
                   L("スライドの画面でも［論文｜補足情報］に切り替えられます。式や用語の場所を押すと、論文がそこへ動きます。",
                     "The slides view can switch to [paper | 補足情報] too. Click where an equation or term appears, and the paper moves there."),
@@ -261,6 +404,10 @@ STAGES = {
     "mcp": {
         "base": "equation", "aspect": 16 / 10,
         "scenes": [
+            # set_translations（プロンプト translate_paper）
+            scene("translation", (1440, 360, 2934, 1490), [box(*TR_PROGRESS), box(*TR_CARD)],
+                  L("「全文を訳して」と頼むと、Claude が 1 文ずつ訳して、対訳タブに入れます。",
+                    "Ask \"Translate the whole paper,\" and Claude translates it sentence by sentence into the 対訳 (Side by side) tab.")),
             # add_equation
             scene("equation", (1000, 330, 2934, 1539), [underline(1458, 482, 1632), box(1083, 626, 2851, 987)],
                   L("「式 (11) を解説して」と頼むと、Claude が TeX に書き起こし、数式タブに登録します。",
@@ -297,15 +444,64 @@ STAGES = {
                     "検索 (Search) on the left edge looks through paper titles and what you've written down: highlight translations and notes, terms, and equations.")),
         ],
     },
+    # 発表（2:1 の台紙）。0 = 2 画面、1 = 発表の窓、2〜3 = 台本
+    "present": {
+        "base": "present-dual", "aspect": 2,
+        "scenes": [
+            scene("present-dual", pad(DUAL_L[0], DUAL_L[1], DUAL_R[2], DUAL_L[3], 24),
+                  [box(*pad(*DUAL_L, 14), L("発表の窓", "Presentation window")), box(*pad(*DUAL_R, 14), L("台本", "Script"))],
+                  L("「発表」（P）を押すと、スライドと論文が別の画面に映り、手元の窓には台本が出ます。",
+                    "Press 発表 (Present, P), and the slides and paper go to another screen while your own window shows a script.")),
+            scene("present-window", p17(20, 250, 1500, 990),
+                  [box(*p17(46, 564, 252, 882)), box(*p17(1072, 318, 1462, 482)), box(*p17(1082, 760, 1448, 858))],
+                  L("発表の窓には、スライドと論文が線でつながったまま映ります。",
+                    "The presentation window shows the slides and paper with their link lines in place."),
+                  mobile=p17(230, 300, 1470, 925)),
+            scene("present-script", (360, 230, 2670, 1290),
+                  [box(430, 362, 850, 418), box(*SCRIPT_MEMO)],
+                  L("台本にはスライドごとにグループのメモが並び、押すと発表の窓がそのスライドへ移ります。",
+                    "The script lists each slide's group memos; click one, and the presentation window moves to that slide."),
+                  mobile=(360, 230, 1700, 900)),
+            scene("present-script", (20, 10, 2914, 1457),
+                  # 囲みが上端に近く、札が対象の文字に重なるので札は付けない（キャプションで名前を出す）
+                  [box(*SLIDE_PAGER), box(*END_PRESENT)],
+                  L("← → でスライドを送り、「発表を終える」か P で元の画面に戻ります。",
+                    "Use ← and → to change slides; 発表を終える (End presentation) or P takes you back."),
+                  mobile=(100, 70, 1000, 520)),
+        ],
+    },
+    # 初回の案内（7 枚中 3・5・6・7 枚目。場面ごとに画像を替える。どれも窓全体を同じ大きさに切り出してある）
+    "tour": {
+        "base": "tour-select", "aspect": 16 / 10,
+        "scenes": [
+            scene("tour-select", (640, 860, 2380, 1836), [box(1056, 1163, 1958, 1764)],
+                  L("初めて起動すると、画面の案内が始まります。",
+                    "The first time you launch PaperLens, a guided tour of the screen begins."),
+                  mobile=(1030, 1140, 1985, 1790)),
+            scene("tour-translation", (880, 0, 2340, 900), [box(1872, 0, 2058, 142)],
+                  L("対訳タブを示し、原文と訳を 1 文ずつ並べて読めることを説明します。",
+                    "It points to the 対訳 (Side by side) tab and explains reading each sentence next to its translation."),
+                  mobile=(940, 0, 2080, 770)),
+            scene("tour-slides", (0, 60, 1500, 900), [box(0, 343, 124, 486)],
+                  L("スライドのボタンを示し、スライドの一部を論文にリンクできることを説明します。",
+                    "It points to the slides button and explains linking parts of a slide to the paper."),
+                  mobile=(0, 140, 1050, 700)),
+            scene("tour-help", (0, 1000, 1560, 1836), [box(0, 1624, 122, 1836)],
+                  L("最後に左下の設定とヘルプを示し、この案内もヘルプから見直せることを伝えます。",
+                    "Finally, it shows 設定 (Settings) and ヘルプ (Help) at the bottom left, where you can replay the tour."),
+                  mobile=(0, 1130, 1060, 1836)),
+        ],
+    },
 }
 
 # 場面に合う画面がまだ無く、近い画面で代わりに見せている場面（0 始まり）。吹き出しは付けない。撮り直したら差し替える。
-PLACEHOLDERS = {
-    "supplement": {3: "対訳タブを開いた補足情報"},
-}
+# いまは無い（supplement の対訳タブは 19.png で本物に差し替えた）。
+PLACEHOLDERS = {}
 
-# Stage を始める場面（いちばん機能が伝わる場面）。0 始まり
-STRONGEST = {"hero": 0, "slides-link": 2, "supplement": 2, "wordbook-graph": 4, "mcp": 0, "library-search": 1}
+# Stage を始める場面（いちばん機能が伝わる場面）。0 始まり。mcp は 0 に set_translations を足したので、前と同じ add_equation の 1
+STRONGEST = {"hero": 0, "slides-link": 2, "supplement": 2, "wordbook-graph": 4, "mcp": 1, "library-search": 1, "present": 0, "tour": 0}
+
+ASPECTS = {16 / 10: "16/10", 3 / 4: "3/4", 2: "2/1"}
 
 
 def fit(rect, frame, aspect):
@@ -396,7 +592,7 @@ def write_ts(data):
     keys = list(STAGES)
     meta = {}
     for k, st in STAGES.items():
-        m = {"aspect": "3/4" if st["aspect"] < 1 else "16/10"}
+        m = {"aspect": ASPECTS[st["aspect"]]}
         if k == "mcp":
             m["pairWithChat"] = True
         if k in PLACEHOLDERS:
@@ -429,7 +625,7 @@ def write_ts(data):
         " * - placeholders: 合う画面がまだ無く、近い画面で代わりに見せている場面の番号（0 始まり）。吹き出しは付けていない。",
         " * - strongestScene: 機能がいちばん伝わる場面の番号（0 始まり）。Stage はここから始める。",
         " */",
-        "export const stageMeta: Record<StageKey, { aspect: \"16/10\" | \"3/4\"; pairWithChat?: boolean; placeholders?: number[]; strongestScene: number }> = "
+        "export const stageMeta: Record<StageKey, { aspect: \"16/10\" | \"3/4\" | \"2/1\"; pairWithChat?: boolean; placeholders?: number[]; strongestScene: number }> = "
         + "{\n" + "\n".join(f"  {json.dumps(k)}: {json.dumps(v)}," for k, v in meta.items()) + "\n};",
         "",
     ]
@@ -546,14 +742,6 @@ def make_hero():
 
 
 # ---------------------------------------------------------------- OGP 画像
-
-def rounded(im, r):
-    mask = Image.new("L", im.size, 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, im.width - 1, im.height - 1), r, fill=255)
-    out = Image.new("RGBA", im.size, (0, 0, 0, 0))
-    out.paste(im, (0, 0), mask)
-    return out
-
 
 def og_canvas(card, pos):
     W, H = 1200, 630

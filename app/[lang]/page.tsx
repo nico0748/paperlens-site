@@ -11,6 +11,7 @@ import { Start } from "@/components/landing/Start";
 import { Motion } from "@/components/landing/Motion";
 import { ScreenStage } from "@/components/features/ScreenStage";
 import { getDictionary, hasLocale } from "@/lib/i18n";
+import { stageByKey } from "@/components/features/data";
 import { stageMeta, stages, type StageKey } from "@/lib/scenes";
 import { featureHref, type FeatureSlug } from "@/lib/site";
 import type { Stage } from "@/lib/stage-types";
@@ -24,7 +25,7 @@ import type { Stage } from "@/lib/stage-types";
 function topStage(key: StageKey): Stage {
   const stage = stages[key];
   const meta = stageMeta[key];
-  const skip = new Set(meta?.placeholders ?? []);
+  const skip = new Set((meta as { placeholders?: number[] } | undefined)?.placeholders ?? []);
   const order = stage.scenes.map((_, i) => i);
   const strongest = meta?.strongestScene ?? 0;
   if (strongest > 0 && strongest < order.length) order.unshift(...order.splice(strongest, 1));
@@ -32,6 +33,16 @@ function topStage(key: StageKey): Stage {
     .filter((i) => !skip.has(i) && !(stage.scenes[i].rect.w >= 99 && stage.scenes[i].rect.h >= 99))
     .map((i) => stage.scenes[i]);
   return { ...stage, scenes: scenes.length ? scenes : stage.scenes };
+}
+
+/**
+ * はじめ方の、画面の案内（ツアー）の小さな Stage。枠が小さいので、どの幅でも吹き出しのまわりに寄せた範囲
+ * （場面の mobileRect）で見せる（案内の文が読める大きさになる）。まだ場面が無ければ undefined。
+ */
+function tourStage(): Stage | undefined {
+  const stage = stageByKey("tour");
+  if (!stage) return undefined;
+  return { ...stage, scenes: stage.scenes.map((s) => (s.mobileRect ? { ...s, rect: s.mobileRect } : s)) };
 }
 
 /**
@@ -74,7 +85,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       </Zig>
 
       <Privacy t={dict.privacy} />
-      <Start t={dict.start} />
+      <Start t={dict.start} lang={lang} tour={tourStage()} />
       <Motion />
     </>
   );

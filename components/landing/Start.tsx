@@ -1,6 +1,8 @@
 import type { Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
-import { DownloadIcon, GitHubIcon } from "../icons";
+import type { Stage } from "@/lib/stage-types";
+import { ScreenStage } from "../features/ScreenStage";
+import { CircleHelpIcon, DownloadIcon, GitHubIcon } from "../icons";
 
 /** 文中の `code` を <code> にする */
 function withCode(text: string) {
@@ -9,10 +11,12 @@ function withCode(text: string) {
 
 /**
  * はじめ方（紺、ページの締めを兼ねる）。配布用のアプリはまだ無いので、ソースから動かす手順を 3 段で見せる。
- * 広い画面では 3 列、狭い画面では縦に並べる。最後に GitHub とソースの ZIP。
+ * 広い画面では 3 列、狭い画面では縦に並べる。その下に、初めて起動したときの画面の案内（ツアー）を短く
+ * （文と、ツアーの吹き出しを映した小さな ScreenStage。説明は文が兼ねるので、場面の説明文は出さない）。
+ * 最後に GitHub とソースの ZIP。
  * id は #download のまま（ヒーローや詳細ページの「ソースから動かす」がここを指す）。
  */
-export function Start({ t }: { t: Dictionary["start"] }) {
+export function Start({ t, lang, tour }: { t: Dictionary["start"]; lang: "ja" | "en"; tour?: Stage }) {
   return (
     <section id="download" className="lp-section lp-start theme-dark" aria-labelledby="download-title">
       <div className="lp-section-art" aria-hidden="true" />
@@ -43,6 +47,18 @@ export function Start({ t }: { t: Dictionary["start"] }) {
             </li>
           ))}
         </ol>
+
+        <div className="lp-tour" data-reveal data-has-stage={tour ? "" : undefined}>
+          <div className="lp-tour-text">
+            <h3 className="lp-tour-title">{t.tour.title}</h3>
+            <p>{t.tour.body}</p>
+            <p className="lp-tour-replay">
+              <CircleHelpIcon size={16} />
+              <span>{t.tour.replay}</span>
+            </p>
+          </div>
+          {tour && <ScreenStage stage={tour} lang={lang} showCaption={false} className="lp-tour-stage" />}
+        </div>
 
         <div className="lp-start-foot" data-reveal>
           <div className="lp-cta lp-cta-center">

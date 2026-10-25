@@ -40,8 +40,13 @@ export type StepLayout = "sticky" | "stills" | "text";
 export type FeatureConfig = {
   icon: (p: { size?: number }) => ReactNode;
   tools: string[];
-  /** 手順 i で見せる場面の番号（lib/scenes.ts の stages[slug].scenes の番号） */
+  /**
+   * 手順 i で見せる場面の番号（lib/scenes.ts の stages[slug].scenes の番号）。
+   * chapterStages で別の Stage を使う章では、その Stage の場面の番号。
+   */
   stepScenes: number[];
+  /** 章 id → その章で使う Stage（lib/scenes.ts の stages のキー）。無い章は stages[slug] */
+  chapterStages?: Record<string, string>;
   /** 手順 i の li に付ける id（一覧のページからのリンク先） */
   stepAnchors?: Record<number, string>;
   layout: StepLayout;
@@ -57,7 +62,10 @@ export const featureConfig: Record<FeatureSlug, FeatureConfig> = {
   "slides-link": {
     icon: PresentationIcon,
     tools: ["import_slides", "add_slide_markup", "link_slide_markup", "get_slide_markups", "read_slide_text", "set_slide_markup_memo"],
-    stepScenes: [0, 1, 2, 3, 4],
+    // 章「つないで、行き来する」: slides-link の場面 0〜4 ／ 章「発表する」: present の場面 0〜3
+    // （0 二つの画面 / 1 発表の窓の線 / 2 台本のメモ / 3 台本の見出しと「発表を終える」）
+    stepScenes: [0, 1, 2, 3, 4, 0, 1, 2, 3],
+    chapterStages: { present: "present" },
     layout: "sticky",
     // 全体（グループから論文へ線が伸びている）。狭い画面ではグループと線
     hero: { shot: "slides-linked", rect: { x: 3.82, y: 3.94, w: 96.18, h: 96.06 }, narrow: { x: 2.5, y: 36, w: 64, h: 50 } },
@@ -101,6 +109,21 @@ export const featureConfig: Record<FeatureSlug, FeatureConfig> = {
 };
 
 const SHOT_DIR = "/screenshots/stages/";
+
+/**
+ * lib/scenes.ts の Stage をキーで引く（無ければ undefined）。
+ * 場面のデータは別の作業で増えるので、キーの型に縛らずに引けるようにしておく。
+ */
+export function stageByKey(key: string): Stage | undefined {
+  return (stages as Record<string, Stage | undefined>)[key];
+}
+
+/** 対訳タブの本物の画面（lib/scenes.ts のどこかの場面が使っていれば true） */
+export const TRANSLATION_SHOT = "translation";
+export function hasShot(shot: string) {
+  const src = `/screenshots/stages/${shot}.webp`;
+  return Object.values(stages).some((s) => s.src === src || s.scenes.some((x) => x.src === src));
+}
 
 /** 切り抜きを、場面 1 つだけの Stage にする（StageView / StageStill にそのまま渡せる） */
 export function cropStage(slug: FeatureSlug, crop: Crop, alt: { ja: string; en: string }): Stage {

@@ -33,6 +33,8 @@ export function FeatureCard({
   const Icon = cfg.icon;
   const H = headingLevel === 2 ? "h2" : "h3";
   const crop = cfg.thumb;
+  // MCP のカードの吹き出し: 絵（数式タブ）に合うやり取り（「式 (11) を解説して」→ add_equation）
+  const bubble = slug === "mcp" ? (t.mcpChat.find((c) => c.tool === "add_equation") ?? t.mcpChat[0]) : undefined;
   return (
     <li className={["fp-card", compact ? "fp-card-compact" : ""].join(" ")} data-fp-reveal style={{ "--i": i } as React.CSSProperties}>
       {thumb && (
@@ -49,10 +51,10 @@ export function FeatureCard({
               sizes={compact ? "(max-width: 600px) 92vw, (max-width: 1000px) 46vw, 300px" : "(max-width: 600px) 92vw, (max-width: 1000px) 46vw, 560px"}
             />
           )}
-          {slug === "mcp" && (
+          {bubble && (
             <span className="fp-card-bubble">
-              <span>{t.mcpChat[0].user}</span>
-              <code>{t.mcpChat[0].tool}</code>
+              <span>{bubble.user}</span>
+              <code>{bubble.tool}</code>
             </span>
           )}
         </div>

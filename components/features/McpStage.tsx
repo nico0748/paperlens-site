@@ -8,14 +8,15 @@ import { featuresJa } from "@/lib/i18n/features-ja";
 import { ScreenStage } from "./ScreenStage";
 import { isPlaceholder } from "./StageView";
 
-export type McpExchange = { user: string; tool: string; result: string };
+/** prompt: ツールの前に使うプロンプト（全文の対訳の translate_paper など）。あれば「→ プロンプト → ツール」と並べる */
+export type McpExchange = { user: string; tool: string; result: string; prompt?: string };
 
 /** 会話のあと、画面が動き出すまで（ms）。利用者の発言 → 0ms、ツール名 → 400ms、画面 → 700ms、結果 → 画面が止まるころ */
 const LEAD = 700;
 
 /**
  * Claude との会話の例（CSS で描いた会話）と、その結果が入るアプリの画面を上下に並べる。
- * - 画面は、本物の画面がある場面だけを使う（stageMeta.placeholders の場面は外す）。やり取り k ⇔ その k 番目の場面。
+ * - やり取り k ⇔ k 番目の場面（0 全文の対訳 / 1 数式 / 2 用語 / 3 スライドと論文の線）。代わりの画面の場面（stageMeta.placeholders）があれば外す。
  * - 場面が替わると、まず会話が替わり（発言 → ツール名）、少し遅れて画面が動き、結果の吹き出しは画面が止まるころに出る。
  * - やり取りは全部 DOM にあり、同じ場所に重ねて今の 1 つだけを見せる（高さは最も高いやり取りに合うのでずれない）。
  * - 動きを減らす設定でも 1 つずつ見せる（自動では進まず、場面の点で切り替える）。
@@ -64,6 +65,12 @@ export function McpStage({
                 {l.user}
               </p>
               <p className="mcp-tool">
+                {l.prompt && (
+                  <>
+                    <span aria-hidden="true">→ </span>
+                    <code>{l.prompt}</code>
+                  </>
+                )}
                 <span aria-hidden="true">→ </span>
                 <code>{l.tool}</code>
               </p>

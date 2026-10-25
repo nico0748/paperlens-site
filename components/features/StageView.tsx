@@ -5,12 +5,13 @@ import { calloutBox, fitRect, frameAspect, layerTransform, sceneSrc, srcSetFor, 
 
 type Lang = "ja" | "en";
 
-const placeholderLabel = { ja: "画面は準備中", en: "Screen coming soon" } as const;
-
-/** 場面 i が「合う画面がまだ無く、近い画面で代わりに見せている」場面か（lib/scenes.ts の stageMeta.placeholders） */
+/**
+ * 場面 i が「合う画面がまだ無く、近い画面で代わりに見せている」場面か（lib/scenes.ts の stageMeta.placeholders）。
+ * いまはどの Stage にも無い。あれば吹き出しを出さない（違う UI を囲まない）。
+ */
 export function isPlaceholder(stage: Stage, i: number) {
   const key = stage.id as StageKey;
-  const list = stageMeta[key]?.placeholders;
+  const list = (stageMeta[key] as { placeholders?: number[] } | undefined)?.placeholders;
   if (!list?.length) return false;
   // 場面を絞り込んだ Stage（トップページなど）でも、元の場面の番号で調べる（場面のオブジェクトは同じもの）
   const orig = stages[key]?.scenes.indexOf(stage.scenes[i]) ?? -1;
@@ -24,7 +25,7 @@ export function isPlaceholder(stage: Stage, i: number) {
  *   （出ていく層は下で不透明のまま残し、フェードが終わってから消す。半透明どうしが重なって灰色にならない）。
  * - 層は transform（scale + translate）だけで動かす。表示していない層は「次にその層を使う場面」の位置に置いておく。
  * - 囲みなどは拡大しない別の面に、表示範囲に対する % で置く（線の太さと文字の大きさが拡大で変わらない）。
- * - 代わりの画面の場面（stageMeta.placeholders）では、吹き出しを出さず「画面は準備中」の札を出す（違う UI を囲まない）。
+ * - 代わりの画面の場面（stageMeta.placeholders）では、吹き出しを出さない（違う UI を囲まない）。
  */
 export function StageView({
   stage,
@@ -65,7 +66,6 @@ export function StageView({
   const srcs = Array.from(new Set([stage.src, ...scenes.map((s) => sceneSrc(stage, s))]));
   const activeSrc = sceneSrc(stage, scenes[cur]);
   const activeAlt = alt ?? (activeSrc === stage.src ? stage.alt[lang] : scenes[cur]?.caption[lang] ?? stage.alt[lang]);
-  const placeholder = isPlaceholder(stage, cur);
   // 拡大する分だけ大きい画像を選ばせる（枠に対する倍率の最大）
   const maxK = rects.reduce((m, r) => Math.max(m, stage.width / r.w), 1);
   const imgSizes = sizes ?? `(max-width: 1000px) ${Math.round(100 * Math.min(maxK, 3))}vw, ${Math.round(760 * Math.min(maxK, 3))}px`;
@@ -124,7 +124,6 @@ export function StageView({
           </div>
         ),
       )}
-      {placeholder && <span className="stage-badge">{placeholderLabel[lang]}</span>}
     </div>
   );
 }

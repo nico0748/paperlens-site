@@ -9,7 +9,7 @@
  */
 import type { Stage } from "./stage-types";
 
-export type StageKey = "hero" | "slides-link" | "supplement" | "wordbook-graph" | "mcp" | "library-search";
+export type StageKey = "hero" | "slides-link" | "supplement" | "wordbook-graph" | "mcp" | "library-search" | "present" | "tour";
 
 export const stages: Record<StageKey, Stage> = {
   hero: {
@@ -121,26 +121,27 @@ export const stages: Record<StageKey, Stage> = {
         mobileRect: { x: 44.31, y: 27.23, w: 55.69, h: 55.62 },
       },
       {
-        rect: { x: 55.83, y: 8.17, w: 44.17, h: 44.12 },
+        rect: { x: 61.28, y: 2.18, w: 38.72, h: 38.67 },
         callouts: [
           {
             kind: "box",
-            x: 68.58,
-            y: 11.22,
-            w: 10.02,
-            h: 4.58,
+            x: 83.37,
+            y: 6.1,
+            w: 9.41,
+            h: 4.36,
             text: { ja: "選んだ線だけ", en: "選んだ線だけ (Selected lines)" },
           },
           {
             kind: "box",
-            x: 79.52,
-            y: 11.33,
-            w: 5.93,
-            h: 4.58,
-            text: { ja: "全画面 P", en: "全画面 (Full screen) P" },
+            x: 94.07,
+            y: 6.1,
+            w: 4.98,
+            h: 4.36,
+            text: { ja: "発表 P", en: "発表 (Present) P" },
           },
         ],
-        caption: { ja: "「全画面」（P）で、スライドと論文を線ごと映して発表できます。「選んだ線だけ」で、選んでいるグループの線だけを表示します。", en: "全画面 (Full screen, P) presents the slides and paper, lines included. 選んだ線だけ (Selected lines) shows only the selected group's lines." },
+        caption: { ja: "「発表」（P）で、スライドと論文を線ごと別の画面に映して発表できます。", en: "Press 発表 (Present, P) to show the slides and paper, lines included, on a separate screen for your talk." },
+        src: "/screenshots/stages/translation.webp",
       },
     ],
   },
@@ -187,9 +188,20 @@ export const stages: Record<StageKey, Stage> = {
         caption: { ja: "式を選んで「数式にする」を押すと、Claude が TeX に書き起こし、式の役割と記号ごとの意味を添えます。", en: "Select an equation and choose 数式にする (Make equation). Claude transcribes it into TeX and explains what it does and what each symbol means." },
       },
       {
-        rect: { x: 34.76, y: 17.97, w: 36.81, h: 36.76 },
-        callouts: [],
-        caption: { ja: "Claude に頼んだ全文の訳は、対訳タブに 1 文ずつ並びます。", en: "The full translation you ask Claude for fills the 対訳 (Side by side) tab, one sentence at a time." },
+        rect: { x: 34.56, y: 16.34, w: 65.44, h: 65.36 },
+        callouts: [
+          {
+            kind: "box",
+            x: 50.17,
+            y: 22,
+            w: 4.43,
+            h: 4.36,
+            text: { ja: "対訳", en: "対訳 (Side by side)" },
+          },
+          { kind: "box", x: 50.58, y: 48.97, w: 47.82, h: 30.94 },
+        ],
+        caption: { ja: "Claude に頼んだ全文の訳は、対訳タブに原文と 1 文ずつ並びます。", en: "The full translation you ask Claude for fills the 対訳 (Side by side) tab, each sentence under its original." },
+        src: "/screenshots/stages/translation.webp",
       },
       {
         rect: { x: 0, y: 0, w: 100, h: 100 },
@@ -287,6 +299,15 @@ export const stages: Record<StageKey, Stage> = {
     alt: { ja: "論文の隣の補足情報で、数式タブに式 (11) の TeX と記号の意味が出ている。", en: "The Equations tab beside the paper shows equation (11) in TeX with each symbol explained." },
     scenes: [
       {
+        rect: { x: 38.38, y: 19.61, w: 61.62, h: 61.55 },
+        callouts: [
+          { kind: "box", x: 50.37, y: 27.45, w: 47.92, h: 3.49 },
+          { kind: "box", x: 50.58, y: 48.97, w: 47.82, h: 30.94 },
+        ],
+        caption: { ja: "「全文を訳して」と頼むと、Claude が 1 文ずつ訳して、対訳タブに入れます。", en: "Ask \"Translate the whole paper,\" and Claude translates it sentence by sentence into the 対訳 (Side by side) tab." },
+        src: "/screenshots/stages/translation.webp",
+      },
+      {
         rect: { x: 34.07, y: 17.97, w: 65.93, h: 65.85 },
         callouts: [
           { kind: "underline", x: 49.69, y: 26.25, w: 5.93 },
@@ -360,6 +381,114 @@ export const stages: Record<StageKey, Stage> = {
       },
     ],
   },
+  present: {
+    id: "present",
+    src: "/screenshots/stages/present-dual.webp",
+    srcSet: "/screenshots/stages/present-dual-800.webp 800w, /screenshots/stages/present-dual.webp 2400w",
+    width: 2400,
+    height: 1200,
+    alt: { ja: "発表中の 2 つの画面。左の画面にスライドと論文が線でつながって映り、右の窓に台本が出ている。", en: "Presenting on two screens: the slides and paper, joined by lines, on the left; the script in the window on the right." },
+    scenes: [
+      {
+        rect: { x: 1.09, y: 1.09, w: 97.82, h: 97.82 },
+        callouts: [
+          {
+            kind: "box",
+            x: 1.43,
+            y: 19.09,
+            w: 54.19,
+            h: 61.83,
+            text: { ja: "発表の窓", en: "Presentation window" },
+          },
+          {
+            kind: "box",
+            x: 56.85,
+            y: 27.81,
+            w: 41.72,
+            h: 53.1,
+            text: { ja: "台本", en: "Script" },
+          },
+        ],
+        caption: { ja: "「発表」（P）を押すと、スライドと論文が別の画面に映り、手元の窓には台本が出ます。", en: "Press 発表 (Present, P), and the slides and paper go to another screen while your own window shows a script." },
+      },
+      {
+        rect: { x: 1.06, y: 13.29, w: 77.3, h: 77.3 },
+        callouts: [
+          { kind: "box", x: 2.42, y: 46.08, w: 10.74, h: 33.2 },
+          { kind: "box", x: 56, y: 20.38, w: 20.38, h: 17.11 },
+          { kind: "box", x: 56.54, y: 66.53, w: 19.12, h: 10.29 },
+        ],
+        caption: { ja: "発表の窓には、スライドと論文が線でつながったまま映ります。", en: "The presentation window shows the slides and paper with their link lines in place." },
+        src: "/screenshots/stages/present-window.webp",
+        mobileRect: { x: 11.76, y: 18.47, w: 65.3, h: 65.3 },
+      },
+      {
+        rect: { x: 12.27, y: 12.44, w: 78.73, h: 78.73 },
+        callouts: [
+          { kind: "box", x: 14.66, y: 24.68, w: 14.31, h: 3.82 },
+          { kind: "box", x: 14.45, y: 29.31, w: 75.8, h: 57.81 },
+        ],
+        caption: { ja: "台本にはスライドごとにグループのメモが並び、押すと発表の窓がそのスライドへ移ります。", en: "The script lists each slide's group memos; click one, and the presentation window moves to that slide." },
+        src: "/screenshots/stages/present-script.webp",
+        mobileRect: { x: 12.27, y: 15.68, w: 45.67, h: 45.67 },
+      },
+      {
+        rect: { x: 0.68, y: 0.68, w: 98.64, h: 98.64 },
+        callouts: [
+          { kind: "box", x: 13.09, y: 7.77, w: 14.59, h: 4.91 },
+          { kind: "box", x: 89.91, y: 7.77, w: 9, h: 4.91 },
+        ],
+        caption: { ja: "← → でスライドを送り、「発表を終える」か P で元の画面に戻ります。", en: "Use ← and → to change slides; 発表を終える (End presentation) or P takes you back." },
+        src: "/screenshots/stages/present-script.webp",
+        mobileRect: { x: 3.41, y: 4.77, w: 30.67, h: 30.67 },
+      },
+    ],
+  },
+  tour: {
+    id: "tour",
+    src: "/screenshots/stages/tour-select.webp",
+    srcSet: "/screenshots/stages/tour-select-800.webp 800w, /screenshots/stages/tour-select.webp 2400w",
+    width: 2400,
+    height: 1502,
+    alt: { ja: "初回の案内。論文の上に「文を選んで記録する」の説明が出ている。", en: "The first-launch tour: a card titled 文を選んで記録する (Select sentences to save them) over the paper." },
+    scenes: [
+      {
+        rect: { x: 21.81, y: 40.77, w: 59.3, h: 59.23 },
+        callouts: [
+          { kind: "box", x: 35.99, y: 63.34, w: 30.74, h: 32.73 },
+        ],
+        caption: { ja: "初めて起動すると、画面の案内が始まります。", en: "The first time you launch PaperLens, a guided tour of the screen begins." },
+        mobileRect: { x: 33.66, y: 62.09, w: 35.45, h: 35.4 },
+      },
+      {
+        rect: { x: 29.99, y: 0, w: 49.76, h: 49.7 },
+        callouts: [
+          { kind: "box", x: 63.8, y: 0, w: 6.34, h: 7.73 },
+        ],
+        caption: { ja: "対訳タブを示し、原文と訳を 1 文ずつ並べて読めることを説明します。", en: "It points to the 対訳 (Side by side) tab and explains reading each sentence next to its translation." },
+        src: "/screenshots/stages/tour-translation.webp",
+        mobileRect: { x: 30.47, y: 0, w: 41.99, h: 41.94 },
+      },
+      {
+        rect: { x: 0, y: 0.61, w: 51.12, h: 51.06 },
+        callouts: [
+          { kind: "box", x: 0, y: 18.68, w: 4.23, h: 7.79 },
+        ],
+        caption: { ja: "スライドのボタンを示し、スライドの一部を論文にリンクできることを説明します。", en: "It points to the slides button and explains linking parts of a slide to the paper." },
+        src: "/screenshots/stages/tour-slides.webp",
+        mobileRect: { x: 0, y: 5, w: 35.79, h: 35.74 },
+      },
+      {
+        rect: { x: 0, y: 46.9, w: 53.17, h: 53.1 },
+        callouts: [
+          { kind: "box", x: 0, y: 88.45, w: 4.16, h: 11.55 },
+        ],
+        caption: { ja: "最後に左下の設定とヘルプを示し、この案内もヘルプから見直せることを伝えます。", en: "Finally, it shows 設定 (Settings) and ヘルプ (Help) at the bottom left, where you can replay the tour." },
+        src: "/screenshots/stages/tour-help.webp",
+        mobileRect: { x: 0, y: 61.55, w: 38.5, h: 38.45 },
+      },
+    ],
+  },
 };
 
 /**
@@ -369,11 +498,13 @@ export const stages: Record<StageKey, Stage> = {
  * - placeholders: 合う画面がまだ無く、近い画面で代わりに見せている場面の番号（0 始まり）。吹き出しは付けていない。
  * - strongestScene: 機能がいちばん伝わる場面の番号（0 始まり）。Stage はここから始める。
  */
-export const stageMeta: Record<StageKey, { aspect: "16/10" | "3/4"; pairWithChat?: boolean; placeholders?: number[]; strongestScene: number }> = {
+export const stageMeta: Record<StageKey, { aspect: "16/10" | "3/4" | "2/1"; pairWithChat?: boolean; placeholders?: number[]; strongestScene: number }> = {
   "hero": {"aspect": "16/10", "strongestScene": 0},
   "slides-link": {"aspect": "16/10", "strongestScene": 2},
-  "supplement": {"aspect": "16/10", "placeholders": [3], "strongestScene": 2},
+  "supplement": {"aspect": "16/10", "strongestScene": 2},
   "wordbook-graph": {"aspect": "16/10", "strongestScene": 4},
-  "mcp": {"aspect": "16/10", "pairWithChat": true, "strongestScene": 0},
+  "mcp": {"aspect": "16/10", "pairWithChat": true, "strongestScene": 1},
   "library-search": {"aspect": "3/4", "strongestScene": 1},
+  "present": {"aspect": "2/1", "strongestScene": 0},
+  "tour": {"aspect": "16/10", "strongestScene": 0},
 };
