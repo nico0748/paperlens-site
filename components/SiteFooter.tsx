@@ -1,22 +1,22 @@
 import Link from "next/link";
 import { fill, type Dictionary, type Locale } from "@/lib/i18n";
-import { site } from "@/lib/site";
+import { featureHref, featureSlugs, site } from "@/lib/site";
 import { ArrowUpIcon } from "./icons";
 
 export function SiteFooter({ lang, dict }: { lang: Locale; dict: Dictionary }) {
-  const { footer: t, nav, common } = dict;
+  const { footer: t, nav, common, featureNav } = dict;
   const columns = [
     {
-      title: t.product,
+      title: t.features,
       links: [
-        { href: `/${lang}#features`, label: nav.features },
-        { href: `/${lang}#download`, label: nav.download },
-        { href: site.releases, label: t.releases },
+        ...featureSlugs.map((slug) => ({ href: featureHref(lang, slug), label: featureNav.items[slug].label })),
+        { href: featureHref(lang), label: featureNav.index },
       ],
     },
     {
       title: t.resources,
       links: [
+        { href: `/${lang}#download`, label: t.start },
         { href: `${site.repo}#readme`, label: t.readme },
         { href: `/${lang}/shared#zip-format`, label: t.zipFormat },
         { href: `/${lang}/shared`, label: nav.shared },
@@ -26,6 +26,7 @@ export function SiteFooter({ lang, dict }: { lang: Locale; dict: Dictionary }) {
       title: t.community,
       links: [
         { href: site.repo, label: t.source },
+        { href: site.releases, label: t.releases },
         { href: site.issues, label: t.issues },
       ],
     },
@@ -41,6 +42,7 @@ export function SiteFooter({ lang, dict }: { lang: Locale; dict: Dictionary }) {
               {site.name}
             </Link>
             <p>{t.tagline}</p>
+            <p className="footer-formats">{t.formats}</p>
           </div>
           {columns.map((col) => (
             <nav key={col.title} className="footer-col" aria-label={col.title}>

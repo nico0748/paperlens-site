@@ -1,12 +1,13 @@
 /**
  * 日本語の文言。英語（en.ts）はこの形に合わせる（型 Dictionary で揃っているかを確かめる）。
- * "{name}" の形の部分は fill() で値を入れる。
+ * "{name}" の形の部分は fill() で値を入れる。文中の `code` はコードとして表示する。
+ * トップページの文言は critique/copy-v3.md と v3-copy-r1.md に沿う（読解ノート・テンプレート・読解の段階には触れない）。
  */
 export const ja = {
   meta: {
-    title: "PaperLens — 1 文ずつ対訳で読む、ローカルファーストな論文リーダー",
+    title: "PaperLens — スライドと論文をつなぐ、輪講のための論文リーダー",
     description:
-      "PaperLens は、論文 PDF を 1 文ずつ対訳で読めるローカルファーストな論文リーダーです。訳・用語・数式・読解ノートを、Markdown の保管庫に残します。",
+      "PaperLens は、発表スライドと論文をつなぐオープンソースの論文リーダーです。スライドで囲んだ部分から、原文へすぐ移れます。用語・数式・対訳を論文の隣にまとめ、Claude（MCP）からも操作できます。",
   },
 
   common: {
@@ -26,198 +27,212 @@ export const ja = {
   nav: {
     features: "機能",
     privacy: "プライバシー",
-    download: "ダウンロード",
+    start: "はじめ方",
     shared: "共有データ",
     github: "GitHub",
   },
 
+  /** 機能の詳細ページへのメニュー（ヘッダーの「機能」・フッター・トップページの各行で使う） */
+  featureNav: {
+    label: "機能",
+    toggle: "機能の一覧を開く",
+    index: "機能の一覧",
+    items: {
+      "slides-link": { label: "スライドと論文", sub: "囲んで、原文とつなぐ" },
+      supplement: { label: "補足情報", sub: "対訳・訳・用語・数式" },
+      "wordbook-graph": { label: "単語帳とグラフ", sub: "論文をまたいで引く" },
+      mcp: { label: "Claude から使う（MCP）", sub: "頼んだ結果がアプリに入る" },
+      "library-search": { label: "論文一覧と検索", sub: "取り込んで、一覧から開く" },
+    },
+  },
+
   hero: {
-    eyebrow: "PC の中で動く論文リーダー",
-    catch: ["論文を、一文ずつ対訳で読む。", "分かったことは、手元のノートに残す。"],
-    lead: "PDF を文ごとに区切り、原文と訳を並べて表示します。全文の翻訳は Claude に任せられます。訳・用語・数式・読解ノートは、Markdown のファイルとして保存します。",
-    download: "使ってみる",
+    eyebrow: "輪講と精読のための論文リーダー",
+    catch: ["スライドから、原文へ。", "原文から、スライドへ。"],
+    lead: "スライドの一部を囲んで論文とつなぐと、押すだけで根拠の一文を開けます。用語・数式・対訳も、論文の隣にまとめておけます。",
+    primary: "ソースから動かす",
     github: "GitHub で見る",
+    trustLabel: "PaperLens の特長",
+    trust: ["論文は手元のフォルダに保存", "Obsidian で開ける保管庫", "Claude から使える（MCP）"],
+    alt: "PaperLens の画面。左の発表スライドで囲んだ部分から、右の論文の文と数式へ、赤い線が伸びている。",
   },
 
-  shot: {
-    alt: "Mac で開いた PaperLens。左に発表スライド、右に論文の PDF が並び、論文には色分けしたマーカーと囲みが付いている。",
-  },
-
-  stack: {
-    title: "使い慣れた形式や道具と、そのままつながります。",
+  /** 使う場面（ヒーローのすぐ下の 3 枚）。target は機能の行の id */
+  uses: {
+    title: "こんな場面で使います",
     items: [
-      { name: "Markdown", desc: "ノートはふつうのテキスト" },
-      { name: "Obsidian", desc: "保管庫をそのまま開ける" },
-      { name: "GROBID", desc: "文の区切りを抽出する" },
-      { name: "KaTeX", desc: "TeX の数式を表示する" },
-      { name: "MCP", desc: "Claude から操作できる" },
-      { name: "PDF / PPTX", desc: "論文とスライドを読み込む" },
+      {
+        scene: "輪講で",
+        title: "質問されても、原文をすぐ見せられる",
+        body: "「それは論文のどこ？」と聞かれたら、スライドで囲んだ部分を押すだけ。論文がその箇所まで動きます。",
+        target: "f-slides",
+        link: "スライドと論文を見る",
+      },
+      {
+        scene: "ひとりで読む",
+        title: "知らない語や式でも、手を止めずに読める",
+        body: "語は選んで調べ、式は TeX に書き起こして記号の意味を確かめます。結果は論文の隣に残ります。",
+        target: "f-supplement",
+        link: "補足情報を見る",
+      },
+      {
+        scene: "あとで見返す",
+        title: "調べた用語が、論文どうしをつなぐ",
+        body: "前に調べた用語は、単語帳から引けます。グラフでは、同じ用語を使う論文どうしが線でつながります。",
+        target: "f-lists",
+        link: "単語帳とグラフを見る",
+      },
     ],
+  },
+
+  /** アイコンで見る機能（#features）。app はアプリの画面での表記 */
+  index: {
+    title: "アイコンで見る、PaperLens の機能",
+    lead: "5 つの機能を、アイコンと 1 行で。押すと、機能ごとのページへ移ります。",
+    all: "機能の一覧を見る",
+    items: {
+      "slides-link": {
+        label: "スライドと論文",
+        app: "アプリでは「発表スライドと論文の対応」",
+        desc: "スライドを囲み、論文の文・図・数式と線でつなぎます。",
+      },
+      supplement: {
+        label: "補足情報",
+        app: "論文の右のタブ: 対訳・訳・用語・数式",
+        desc: "Claude に頼んだ訳と、調べた用語・数式を論文の隣に並べます。",
+      },
+      "wordbook-graph": {
+        label: "単語帳とグラフ",
+        app: "アプリでは「リスト（用語・数式）」「グラフ」",
+        desc: "すべての論文の用語と数式を引き、同じ用語を使う論文をたどります。",
+      },
+      mcp: {
+        label: "Claude から使う（MCP）",
+        app: "Claude Desktop・Claude Code から",
+        desc: "Claude に頼んだ訳・用語・数式・メモが、アプリに入ります。",
+      },
+      "library-search": {
+        label: "論文一覧と検索",
+        app: "アプリでは「論文一覧」「検索」",
+        desc: "PDF や arXiv の番号から取り込みます。題名や、書き留めたメモ・用語・数式も探せます。",
+      },
+    },
   },
 
   features: {
-    title: "読む。書き留める。つなぐ。",
-    lead: "論文を読む作業が、1 つのアプリで完結します。",
-    blocks: [
-      {
-        kicker: "01 — 読む",
-        title: "1 文ずつ、原文と訳を並べる",
-        body: [
-          "取り込んだ PDF を 1 文ずつに分けます。右側には原文と訳が並びます。",
-          "PDF 上の枠をクリックすると、その文の訳へ移ります。訳をクリックすると、PDF の該当箇所へ戻ります。",
-        ],
-        points: [
-          "文の区切りと位置は GROBID で抽出します",
-          "GROBID が無くても、簡易解析で動きます（精度は下がります）",
-          "全文の翻訳は、MCP 経由で Claude に任せられます。翻訳 API のキーは不要です",
-        ],
-      },
-      {
-        kicker: "02 — 書き留める",
-        title: "読解ノートを、テンプレートから自動で作る",
-        body: [
-          "論文を取り込むと、テンプレートから読解ノート（note.md）が作られます。",
-          "ノートには、読解の段階ごとに記入欄があります。読むのを中断しても、どこまで理解したかが残ります。",
-        ],
-        points: ["読解の段階（未読〜まとめ済み）を記録します", "Obsidian で書き換えても、すぐアプリに反映されます"],
-      },
-      {
-        kicker: "03 — つなぐ",
-        title: "発表スライドと論文をつなぐ",
-        body: [
-          "論文紹介のスライド（PDF または PPTX）を、論文の左に並べて表示できます。",
-          "スライドの一部を四角で囲み、根拠となる論文の文・図・数式と色付きの線で結びます。",
-        ],
-        points: ["スライド・論文・補足情報のうち、2 つを並べて表示します", "囲みとリンクは、Claude から MCP でも付けられます"],
-      },
-    ],
-    linkShotAlt: "スライドの囲みから論文の数式と文へ、赤い線が引かれている画面。",
-    gallery: {
-      title: "読んだ論文が、用語と数式の辞書になります。",
-      items: [
-        { alt: "数式タブ。式 (11) を KaTeX で表示し、TeX の原文、解説、記号ごとの意味が並んでいる。", caption: "TeX で記録し、記号ごとの意味も書き添えられます。" },
-        { alt: "用語タブ。スロー特徴分析とリカレンスプロットの説明、この論文での使われ方、関連する用語が並んでいる。", caption: "意味と、その論文での使われ方を記録します。" },
-        { alt: "単語帳。すべての論文の用語を、論文・ページ順に一覧している。", caption: "すべての論文の用語を、1 か所で調べられます。" },
-        { alt: "グラフ。論文と用語が線で結ばれ、選んだ FORCE 学習の説明が右に出ている。", caption: "用語をクリックすると、その意味と、用語が出てくる論文を表示します。" },
-        { alt: "グラフの全体。2 本の論文から、多くの用語へ線が伸びている。", caption: "論文と用語のつながりを、ひと目で見渡せます。" },
+    slides: {
+      scene: "輪講で",
+      kicker: "スライドと論文",
+      title: "スライドの根拠を、原文で確かめる。",
+      body: "スライドの一部を囲んでグループにし、論文の文・図・数式を選ぶと、同じ色の線で結ばれます。グループを押せば論文へ、論文側の印を押せばスライドへ移ります。",
+      bullets: ["PDF と PPTX のスライドを取り込めます", "スライドを差し替えても、囲みは残ります", "全画面にしても、線はそのまま映ります"],
+      cta: "スライドと論文を詳しく見る",
+    },
+    supplement: {
+      scene: "ひとりで読む",
+      kicker: "補足情報",
+      title: "用語・数式・対訳を、論文の隣に置く。",
+      body: "語を選んで「用語を調べる」を押すと、Claude が意味と、この論文での使われ方をまとめます。式を選んで「数式にする」を押すと、TeX に書き起こして記号の意味を添えます。",
+      bullets: [
+        "用語: 意味・説明・論文での使われ方・関連する用語",
+        "数式: TeX・式の役割・記号ごとの意味",
+        "対訳: Claude に頼んだ全文の訳を、1 文ずつ原文と並べます",
+      ],
+      cta: "補足情報を詳しく見る",
+    },
+    connected: {
+      kicker: "スライド・論文・補足情報",
+      title: "どこから見ても、論文に戻れる。",
+      body: "スライドと補足情報は、どちらも論文とつながっています。タブで［スライド｜論文］と［論文｜補足情報］を切り替えても、論文は同じ場所に残ります。",
+      nodes: ["スライド", "論文", "補足情報"],
+      shots: ["スライドで囲んだグループ", "線の先にある、論文の文と数式", "数式タブに書き起こした式"],
+    },
+    lists: {
+      scene: "あとで見返す",
+      kicker: "単語帳とグラフ",
+      title: "調べた用語は、論文をまたいで残る。",
+      body: "どの論文で調べた用語も単語帳に、書き起こした数式は数式帳に集まります。グラフでは、同じ用語を使う論文どうしが線でつながります。",
+      bullets: ["論文・ページ順と、五十音・ABC順で並べ替え", "項目から、その論文のページへ移れます"],
+      cta: "単語帳とグラフを詳しく見る",
+    },
+    mcp: {
+      scene: "",
+      kicker: "Claude から使う（MCP）",
+      title: "Claude に頼むと、結果がアプリに入る。",
+      body: "PaperLens を MCP サーバーとして登録すると、Claude Desktop や Claude Code から操作できます。全文の対訳も、会話で頼めます。",
+      bullets: ["全文の対訳に、API キーは要りません", "アプリを開いていれば、結果はすぐ画面に出ます", "会話で分かったことを、文やスライドのメモに残せます"],
+      cta: "Claude から使う方法を詳しく見る",
+      chatLabel: "Claude への頼み方と、アプリに入った結果の例",
+      chat: [
+        {
+          ask: "式 (11) を解説して",
+          result: "数式タブに、TeX と式の役割が入りました",
+          alt: "数式タブ。式 (11) 平滑化フィルタが TeX から表示されている。",
+        },
+        {
+          ask: "リカレンスプロットを用語に足して",
+          result: "用語タブに、意味と説明が入りました",
+          alt: "用語タブ。リカレンスプロットの意味と、初学者向けの説明。",
+        },
+        {
+          ask: "この囲みを、論文の該当箇所とつないで",
+          result: "スライドの囲みと論文が、線で結ばれました",
+          alt: "スライドで囲んだグループから、論文の数式へ赤い線が伸びている。",
+        },
       ],
     },
-    stagesLabel: "読解の段階",
-    stages: ["未読", "概要把握", "精読", "検討", "まとめ済み"],
-    moreTitle: "ほかにも、こんなことができます。",
-    more: [
-      {
-        title: "選んだ箇所に、訳や用語を書き込む",
-        body: "PDF の文を選ぶと、マーカーを引いて訳や用語の説明を書き込めます。数式は TeX で記録し、KaTeX で表示します。",
-      },
-      {
-        title: "Claude から使う（MCP）",
-        body: "MCP サーバーを登録すると、Claude Desktop や Claude Code からアプリと同じ操作ができます。アプリを開いていれば、Claude の書き込みがすぐ画面に反映されます。",
-      },
-      {
-        title: "単語帳・数式帳・グラフ",
-        body: "すべての論文の用語と数式を、単語帳と数式帳にまとめて調べられます。グラフでは、論文と用語のつながりを確認できます。",
-      },
-      {
-        title: "Obsidian 互換の保管庫",
-        body: "データはすべて、保管庫（データを置くフォルダ）のふつうのファイルです。データベースは使いません。Obsidian で note.md を書き換えると、その内容がすぐアプリに反映されます。",
-      },
-    ],
   },
 
   privacy: {
-    title: "PDF は、お使いの PC から出ません。",
-    lead: "外部と通信するのは、指示したときだけです。未公開の原稿も安心して読めます。",
-    local: {
-      tag: "常に",
-      title: "PC の中で完結すること",
-      items: [
-        "アプリのサーバーは、お使いの PC の中（127.0.0.1）だけで動きます。ほかの端末からは接続できません。",
-        "PDF とノートは、選んだ保管庫にだけ保存します。",
-        "文の区切りに使う GROBID も、PC 上の Docker で動かせます。",
-      ],
-    },
-    remote: {
-      tag: "指示したときだけ",
-      title: "外部と通信するとき",
-      lead: "次の場合だけです。",
-      items: [
-        "Claude Desktop や Claude Code から MCP で操作したとき。Claude が読んだ本文は、Claude に送られます。",
-        "設定で Claude の API キーを入力し、「訳す」「用語を調べる」「数式にする」を押したとき。送るのは、選んだ範囲とその前後の本文、論文の題名だけです。数式の場合は、選んだ範囲の画像も送ります。PDF 全体は送りません。",
-        "arXiv などの URL から論文を取り込んだとき。",
-        "GROBID を別のサーバーで動かしているとき。",
-      ],
-    },
+    title: "論文は、手元のフォルダに置いたまま。",
+    body: "アプリは自分の PC の中（127.0.0.1）で動きます。外と通信するのは、Claude に頼んだとき・URL から取り込んだとき・GROBID を別のサーバーに置いたときだけです。",
+    sendTitle: "Claude に送るもの",
+    detail: "「訳す」「用語を調べる」「数式にする」で送るのは、選んだ範囲と前後の本文、論文の題名です。数式では選んだ範囲の画像も送ります。PDF 全体は送りません。MCP で頼んだときは、Claude が読んだ本文やページの画像が Claude に送られます。",
+    apiNote: "3 つのボタンは Claude の API キーで動きます（利用量に応じて課金されます）。全文の対訳は MCP で頼むので、API キーは要りません。",
+    vaultTitle: "データの置き場所",
+    vault: "データは保管庫フォルダのふつうのファイルです。データベースは使わず、Obsidian の保管庫としてもそのまま開けます。",
   },
 
-  download: {
-    title: "無料で、すぐに試せます。",
-    lead: "PaperLens は GitHub で配布しています。{license} ライセンスのオープンソースです。",
-    desktopTitle: "デスクトップ版",
-    desktopDesc: "macOS・Windows・Linux 用のアプリは、準備ができしだい GitHub の Releases ページで公開します。",
-    desktopNote: "現在は、下の「ソースから動かす」の手順で起動してください。Node.js が動く PC なら、OS を問いません。",
-    platforms: [
-      { name: "macOS", file: ".dmg" },
-      { name: "Windows", file: "インストーラー" },
-      { name: "Linux", file: "AppImage" },
+  /** はじめ方（ページの締めを兼ねる） */
+  start: {
+    kicker: "はじめ方",
+    title: "次の輪講で、試してみてください。",
+    lead: "配布用のアプリは、まだありません。いまは GitHub のソースから起動します。Node.js 22.6 以上が必要です。",
+    stepsLabel: "ソースから動かす手順",
+    steps: [
+      {
+        title: "取得してビルドする",
+        body: "",
+        code: "git clone https://github.com/nico0748/LogiXiv.git\ncd LogiXiv\nnpm install\nnpm run build\ncd apps/reader",
+      },
+      {
+        title: "起動する",
+        body: "アプリのウィンドウが開きます。ブラウザで使うなら `npm start` のあと http://127.0.0.1:5175 を開きます。",
+        code: "npm run app",
+      },
+      {
+        title: "GROBID を動かす（推奨）",
+        body: "別のターミナルで、リポジトリの最上位（LogiXiv）から実行します。Docker が要ります。対訳の文の区切りが正確になります。無いと、区切りがずれることがあります。",
+        code: "docker compose \\\n  -f docker/grobid.yml up -d",
+      },
     ],
-    platformsLabel: "公開予定のアプリ",
-    platformsStatus: "準備中",
-    runCta: "ソースから動かす手順",
-    desktopCta: "Releases ページを開く",
-    sourceTitle: "ソースコード",
-    sourceDesc: "最新のソースコードを ZIP でダウンロードできます。git clone でも取得できます。",
-    sourceCta: "ソースコード（ZIP）",
-    runTitle: "ソースから動かす",
-    runRequirement: ["Node.js 22.6 以上が必要です。バージョンは ", "node -v", " で確認できます。"],
-    runStepsLabel: "ソースから動かす手順",
-    runOpenApp: "# アプリのウィンドウで開く",
-    runOr: "# または",
-    runOpenBrowser: "# ブラウザで http://127.0.0.1:5175 を開く",
-    grobidText: "文の区切りを正確にするため、GROBID を Docker で動かすことを強くおすすめします。リポジトリのルート（最上位のフォルダ）で、次のコマンドを実行してください。",
-    grobidLabel: "GROBID を起動する手順",
-    readme: ["詳しい使い方は、", "GitHub の README", " をご覧ください。"],
-  },
-
-  sharedBand: {
-    title: "訳とノートの付いた論文を、ダウンロードできます。",
-    body: "GitHub アカウントでログインすると、共有データ（ZIP）を入手できます。訳・用語・読解ノートがそろった状態から読み始められます。",
-    cta: "共有データを見る",
-  },
-
-  /** トップページのデザインで足した短い文言（チップ・タブ・締めの帯など） */
-  landing: {
-    kickers: { features: "FEATURES", screens: "SCREENS", privacy: "PRIVACY", download: "GET STARTED" },
-    trustLabel: "PaperLens の特長",
-    trust: ["{license} ライセンス・無料", "Node.js で動作（macOS・Windows・Linux）", "PDF を外部へ送りません", "Markdown で保存"],
-    chips: ["スライドと論文をつなぐ", "原文の隣に訳を表示", "数式と用語を記録", "ノートは Markdown"],
-    screens: {
-      lead: "下のタブで、数式・用語・単語帳・グラフの実際の画面を切り替えられます。",
-      tabsLabel: "表示する画面",
-      tabs: [
-        { label: "数式", sub: "TeX と記号の意味" },
-        { label: "用語", sub: "論文での使われ方" },
-        { label: "単語帳", sub: "全論文の用語" },
-        { label: "グラフ", sub: "用語から論文へ" },
-        { label: "全体図", sub: "つながりの全体" },
-      ],
-      enlarge: "画像を拡大して見る",
-    },
-    closing: {
-      title: "次に読む論文から、使ってみてください。",
-      body: "PDF もノートも、お使いの PC の中に残ります。",
-      facts: ["{license} ライセンス", "Node.js 22.6 以上", "macOS・Windows・Linux"],
-    },
+    codeLabel: "コマンド",
+    note: "リポジトリ名は旧名の LogiXiv のままです。",
+    readme: ["詳しい手順は ", "README", " にあります。"],
+    github: "GitHub で見る",
+    sourceZip: "ソースコード（ZIP）",
   },
 
   footer: {
-    tagline: "論文を 1 文ずつ対訳で読み、分かったことを Markdown に残す。",
-    product: "製品",
+    tagline: "輪講と精読のための、オープンソースの論文リーダー。",
+    features: "機能",
     resources: "資料",
     community: "コミュニティ",
+    start: "ソースから動かす",
     releases: "リリースノート",
     readme: "使い方（README）",
     zipFormat: "共有 ZIP の形式",
+    formats: "読み込めるファイル: PDF・PPTX ／ 連携: Obsidian・GROBID・MCP",
     source: "ソースコード",
     issues: "不具合の報告",
     license: "PaperLens は {license} ライセンスのオープンソースソフトウェアです。",
@@ -255,7 +270,7 @@ export const ja = {
     papers: "含まれる論文",
     singleFolder: "論文 1 本（フォルダ単体）",
     paperCount: "{count} 本",
-    withTemplates: "（テンプレート付き）",
+    withTemplates: "（_templates フォルダ付き）",
     size: "サイズ",
     uploadedBy: "登録者",
     uploadedAt: "登録日時",
@@ -267,9 +282,9 @@ export const ja = {
     howToIntro: "ZIP の中身は、PaperLens の保管庫と同じフォルダ構成です。",
     howToLayout: [
       "papers/<論文ID>/paper.pdf        原文の PDF（必ず入っています）",
-      "papers/<論文ID>/note.md          読解ノート",
       "papers/<論文ID>/paperlens.json   マーカー・用語・数式",
       "papers/<論文ID>/sentences.json   1 文ずつの対訳",
+      "papers/<論文ID>/slides.json      スライドの囲みとリンク（あれば）",
     ],
     howToSteps: [
       "ZIP をダウンロードして展開します。",
@@ -321,7 +336,7 @@ export const ja = {
     failed: "アップロードに失敗しました。",
     previewSingle: "論文 1 本（フォルダ単体）",
     previewCount: "論文 {count} 本",
-    previewTemplates: "（テンプレート付き）",
+    previewTemplates: "（_templates フォルダ付き）",
     previewMeta: "{name}・{size}・{files} ファイル（展開後 {unpacked}）",
   },
 };
