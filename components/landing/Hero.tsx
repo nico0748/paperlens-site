@@ -35,6 +35,7 @@ export function Hero({ dict }: { dict: Dictionary }) {
             </span>
           ))}
         </h1>
+        <p className="lp-hero-tagline">{t.tagline}</p>
         <p className="lp-hero-lead">{t.lead}</p>
         <div className="lp-cta">
           <a href="#download" className="btn btn-primary btn-lg">

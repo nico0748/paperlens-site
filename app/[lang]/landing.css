@@ -93,6 +93,7 @@
   background: none; text-decoration: underline 0.14em rgb(255 224 131 / 0.9);
   text-underline-offset: 0.16em; text-decoration-skip-ink: auto;
 }
+.lp-hero-tagline { max-width: 37em; margin: 0 0 12px; color: var(--c-text); font-size: calc(var(--fs-lead) * 1.15); font-weight: 700; line-height: 1.6; }
 .lp-hero-lead { max-width: 37em; margin: 0 0 28px; color: var(--c-text-2); font-size: var(--fs-lead); line-height: 1.75; }
 .lp-cta { display: flex; flex-wrap: wrap; gap: 12px; }
 .lp-hero .lp-cta, .lp-cta-center { justify-content: center; }
@@ -330,6 +331,7 @@
   /* ヒーローは読み込みと同時に CSS だけで出す。写真は透明にせず、位置だけ動かす（LCP を遅らせない） */
   .lp-hero .lp-eyebrow-pill { animation: lp-up 0.6s var(--ease-out-expo) both; }
   .lp-hero .lp-line { animation: lp-up 0.7s var(--ease-out-expo) both; animation-delay: calc(80ms + var(--i, 0) * 80ms); }
+  .lp-hero .lp-hero-tagline { animation: lp-up 0.7s 0.2s var(--ease-out-expo) both; }
   .lp-hero .lp-hero-lead { animation: lp-up 0.7s 0.24s var(--ease-out-expo) both; }
   .lp-hero .lp-cta, .lp-hero .lp-trust { animation: lp-up 0.7s 0.32s var(--ease-out-expo) both; }
   .lp-shot-hero { animation: lp-rise 0.9s 0.1s var(--ease-out-expo) both; }
