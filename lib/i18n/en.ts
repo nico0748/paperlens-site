@@ -45,8 +45,9 @@ export const en: Dictionary = {
 
   hero: {
     eyebrow: "A paper reader for journal clubs and close reading",
-    catch: ["From slide to source.", "From source to slide."],
-    lead: "Box part of a slide and link it to the paper. One click then opens the sentence it rests on. Terms, equations, and a sentence-by-sentence translation stay right beside the paper.",
+    catch: ["Slides that tell.", "Sources that prove."],
+    tagline: "A new paper reader that links your slides directly to the paper.",
+    lead: "Even mid-talk, jump straight to the sentence, figure, or equation behind each claim. Read, understand, present — all in one place.",
     primary: "Run from source",
     github: "View on GitHub",
     trustLabel: "PaperLens at a glance",

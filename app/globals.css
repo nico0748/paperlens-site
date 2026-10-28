@@ -172,7 +172,7 @@ svg { flex: none; }
 p { text-wrap: pretty; }
 h1, h2, h3, h4 { line-height: 1.4; letter-spacing: 0.02em; font-weight: 700; text-wrap: balance; }
 /* 和文は文節で折り返す（Chrome 119+。ほかのブラウザは通常の折り返し） */
-:lang(ja) :is(h1, h2, h3, h4, .lead, .btn, .lp-section-lead, .lp-hero-lead, .lp-tag) { word-break: auto-phrase; }
+:lang(ja) :is(h1, h2, h3, h4, .lead, .btn, .lp-section-lead, .lp-hero-lead, .lp-hero-tagline, .lp-tag) { word-break: auto-phrase; }
 code, pre { font-family: var(--font-mono); font-size: var(--fs-sm); letter-spacing: 0; }
 :not(pre) > code { background: var(--c-surface-2); border: 1px solid var(--c-border); padding: 1px 6px; border-radius: var(--radius-sm); }
 pre {
