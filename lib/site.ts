@@ -14,6 +14,12 @@ export const site = {
  * 機能の詳細ページ（/{lang}/features/{slug}）。並びはメニューとトップページの順（輪講が先）。
  * 表示名は辞書の featureNav.items[slug] にある。
  */
+/**
+ * プレリリース準備中。安全性の確認が済むまで、アプリ（.dmg）の配布と、ログイン・共有データ・アップロードを止めておく。
+ * 公開するときは、環境変数 PAPERLENS_PRERELEASE=off を設定する（コードは変えなくてよい）。
+ */
+export const prerelease = process.env.PAPERLENS_PRERELEASE !== "off";
+
 export const featureSlugs = ["slides-link", "supplement", "wordbook-graph", "mcp", "library-search"] as const;
 export type FeatureSlug = (typeof featureSlugs)[number];
 

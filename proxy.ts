@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALE_COOKIE, hasLocale, pickLocale } from "@/lib/i18n/config";
+import { prerelease } from "@/lib/site";
 
 /**
  * ページの URL には必ず言語（/ja/…、/en/…）を付ける。
@@ -8,6 +9,12 @@ import { LOCALE_COOKIE, hasLocale, pickLocale } from "@/lib/i18n/config";
  */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // プレリリース準備中は、ログインと共有データの API を受け付けない（画面だけでなく裏の受付も止める）
+  if (pathname.startsWith("/api/")) {
+    if (prerelease) return NextResponse.json({ error: "prerelease" }, { status: 503 });
+    return NextResponse.next();
+  }
   const first = pathname.split("/")[1];
 
   if (hasLocale(first)) {
@@ -27,5 +34,5 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // API・Next.js の内部・拡張子の付いたファイル（アイコンなど）は通さない
-  matcher: ["/((?!api/|_next/|.*\\..*).*)"],
+  matcher: ["/((?!api/|_next/|.*\\..*).*)", "/api/auth/:path*", "/api/shared/:path*"],
 };

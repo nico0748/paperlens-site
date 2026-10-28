@@ -5,8 +5,10 @@ import { auth, signIn } from "@/auth";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { GitHubIcon } from "@/components/icons";
 import { Notice } from "@/components/Notice";
+import { PrereleaseNotice } from "@/components/PrereleaseNotice";
 import { devLoginEnabled, safeCallbackUrl } from "@/lib/access";
 import { getDictionary, hasLocale } from "@/lib/i18n";
+import { prerelease } from "@/lib/site";
 import "../shared/shared.css";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/login">): Promise<Metadata> {
@@ -19,6 +21,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const t = dict.login;
+  if (prerelease) return <PrereleaseNotice lang={lang} dict={dict} title={t.title} />;
 
   const query = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);

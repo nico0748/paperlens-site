@@ -13,7 +13,7 @@ import { ScreenStage } from "@/components/features/ScreenStage";
 import { getDictionary, hasLocale } from "@/lib/i18n";
 import { stageByKey } from "@/components/features/data";
 import { stageMeta, stages, type StageKey } from "@/lib/scenes";
-import { featureHref, type FeatureSlug } from "@/lib/site";
+import { featureHref, prerelease, type FeatureSlug } from "@/lib/site";
 import type { Stage } from "@/lib/stage-types";
 
 /**
@@ -85,7 +85,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       </Zig>
 
       <Privacy t={dict.privacy} />
-      <Start t={dict.start} lang={lang} tour={tourStage()} />
+      <Start t={dict.start} lang={lang} tour={tourStage()} pre={prerelease ? dict.prerelease : undefined} />
       <Motion />
     </>
   );

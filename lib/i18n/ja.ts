@@ -24,6 +24,16 @@ export const ja = {
     backToTop: "ページの先頭へ",
   },
 
+  /** プレリリース準備中の表示（lib/site.ts の prerelease） */
+  prerelease: {
+    badge: "プレリリース準備中",
+    title: "プレリリースの準備中です",
+    body: "ログインと共有データは、安全性を確認してから公開します。公開までもうしばらくお待ちください。",
+    back: "トップへ戻る",
+    dmgTitle: "macOS 版（.dmg）",
+    dmgBody: "安全性の確認が済みしだい、ここからダウンロードできるようにします。それまでは、下の手順でソースから起動できます。",
+  },
+
   nav: {
     features: "機能",
     privacy: "プライバシー",

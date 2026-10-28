@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { Notice } from "@/components/Notice";
+import { PrereleaseNotice } from "@/components/PrereleaseNotice";
 import { getDictionary, hasLocale } from "@/lib/i18n";
+import { prerelease } from "@/lib/site";
 import { maxUploadBytes } from "@/lib/storage";
 import { getViewer } from "@/lib/viewer";
 import { UploadForm } from "./UploadForm";
@@ -19,6 +21,7 @@ export default async function UploadPage({ params }: PageProps<"/[lang]/upload">
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const t = dict.upload;
+  if (prerelease) return <PrereleaseNotice lang={lang} dict={dict} title={t.title} />;
 
   const viewer = await getViewer();
   if (!viewer) redirect(`/${lang}/login?callbackUrl=/${lang}/upload`);

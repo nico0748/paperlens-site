@@ -16,7 +16,7 @@ function withCode(text: string) {
  * 最後に GitHub とソースの ZIP。
  * id は #download のまま（ヒーローや詳細ページの「ソースから動かす」がここを指す）。
  */
-export function Start({ t, lang, tour }: { t: Dictionary["start"]; lang: "ja" | "en"; tour?: Stage }) {
+export function Start({ t, lang, tour, pre }: { t: Dictionary["start"]; lang: "ja" | "en"; tour?: Stage; pre?: Dictionary["prerelease"] }) {
   return (
     <section id="download" className="lp-section lp-start theme-dark" aria-labelledby="download-title">
       <div className="lp-section-art" aria-hidden="true" />
@@ -28,6 +28,19 @@ export function Start({ t, lang, tour }: { t: Dictionary["start"]; lang: "ja" | 
           </h2>
           <p className="lp-section-lead">{t.lead}</p>
         </header>
+
+        {pre && (
+          <div className="lp-dmg" data-reveal>
+            <div>
+              <h3 className="lp-dmg-title">{pre.dmgTitle}</h3>
+              <p>{pre.dmgBody}</p>
+            </div>
+            <span className="btn btn-secondary btn-lg lp-dmg-btn" aria-disabled="true">
+              <DownloadIcon size={18} />
+              {pre.badge}
+            </span>
+          </div>
+        )}
 
         <ol className="lp-steps" aria-label={t.stepsLabel}>
           {t.steps.map((s, i) => (

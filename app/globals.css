@@ -402,3 +402,6 @@ body:has(.page-center) > main { flex: 1 0 auto; display: flex; flex-direction: c
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* プレリリース準備中（ヘッダーのログインの代わり） */
+.prerelease-pill { display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border: 1px dashed var(--c-border-strong); border-radius: 999px; color: var(--c-text-2); font-family: var(--font-ui); font-size: 0.8125rem; font-weight: 700; white-space: nowrap; }

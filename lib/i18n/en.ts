@@ -22,6 +22,15 @@ export const en: Dictionary = {
     backToTop: "Back to top",
   },
 
+  prerelease: {
+    badge: "Pre-release",
+    title: "Getting ready for pre-release",
+    body: "Sign-in and shared data will open once we have finished checking their security. Thank you for your patience.",
+    back: "Back to home",
+    dmgTitle: "macOS app (.dmg)",
+    dmgBody: "Downloads will open here once the security review is done. Until then, you can run PaperLens from source with the steps below.",
+  },
+
   nav: {
     features: "Features",
     privacy: "Privacy",
