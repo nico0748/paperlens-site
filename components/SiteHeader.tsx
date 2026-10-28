@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import type { Dictionary, Locale } from "@/lib/i18n";
-import { featureHref, featureSlugs, site } from "@/lib/site";
+import { featureHref, featureSlugs, prerelease, site } from "@/lib/site";
 import { FeaturesMenu } from "./FeaturesMenu";
 import { GitHubIcon } from "./icons";
 import { LanguageSelector } from "./LanguageSelector";
@@ -22,7 +22,7 @@ async function currentUser() {
  * 「共有データ」は初めての人には意味が分からないので、ヘッダーには置かずフッターからだけ辿る。
  */
 export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
-  const user = await currentUser();
+  const user = prerelease ? null : await currentUser();
   const { common, nav, featureNav } = dict;
 
   async function logout() {
@@ -55,7 +55,9 @@ export async function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionar
               <span>{nav.github}</span>
             </a>
             <LanguageSelector lang={lang} label={common.language} listLabel={common.languageList} />
-            {user ? (
+            {prerelease ? (
+              <span className="prerelease-pill">{dict.prerelease.badge}</span>
+            ) : user ? (
               <form action={logout}>
                 <button type="submit" className="btn btn-ghost btn-sm">
                   {common.logout}
